@@ -7,6 +7,7 @@ import { aturSlide, bacaNaskah, buatDeck, idDeck, kembalikanSlide, suntingSlide,
 import type { SlideJadi } from '@/lib/materi/kotak';
 import { adaTeksAcuan, NAMA_POLA, type AsalBlok, type SlideNaskah } from '@/lib/materi/naskah';
 import { tulisPptx } from '@/lib/materi/pptx';
+import { diujiDi, labelTingkat, singkatTingkat, TINGKAT } from '@/lib/config';
 import { berlakuPada, daftarSubtema, PENGATURAN_MATERI_AWAL, susunNaskah, teksSlide, type Kepadatan, type SumberSoalMateri } from '@/lib/materi/susun';
 import { tataLetak } from '@/lib/materi/tata-letak';
 import { cariJebakan } from '@/lib/quality';
@@ -234,7 +235,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
         <aside className="panel kiri" aria-labelledby="mt-cakupan">
           <div className="panel-kepala"><h2 id="mt-cakupan" className="sub-judul" style={{ margin: 0 }}>Cakupan deck</h2></div>
           <div className="panel-isi">
-            <Segmented label="Tingkat" nilai={tingkat} ubah={(t) => atur({ t })} pilihan={[{ nilai: 'A', label: 'A' }, { nilai: 'B', label: 'A+B' }, { nilai: 'C', label: 'A+B+C' }]} />
+            <Segmented label="Tingkat" nilai={tingkat} ubah={(t) => atur({ t })} pilihan={TINGKAT.map((t) => ({ nilai: t, label: singkatTingkat(t), judul: labelTingkat(t) }))} />
             <Segmented label="Lingkup" nilai={lingkup} ubah={(l) => atur({ l })} pilihan={[{ nilai: 'subtema', label: 'Subtema', judul: 'Pilih subtema satu per satu' }, { nilai: 'materi', label: 'Materi (kode)', judul: 'Semua subtema satu materi' }, { nilai: 'tingkat', label: 'Tingkat', judul: 'Semua subtema dalam cakupan tingkat' }]} />
             {lingkup !== 'tingkat' && (
               <div className="form">
@@ -246,7 +247,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
               </div>
             )}
             {lingkup === 'tingkat' && tingkat !== 'A' && (
-              <label className="cek"><input type="checkbox" checked={hanyaBaru} onChange={(e) => atur({ baru: e.target.checked })} style={{ width: 16, height: 16 }} />Hanya subtema yang mulai di Tingkat {tingkat} ({nBaru})</label>
+              <label className="cek"><input type="checkbox" checked={hanyaBaru} onChange={(e) => atur({ baru: e.target.checked })} style={{ width: 16, height: 16 }} />Hanya subtema baru di Tingkat {tingkat} ({nBaru}, {diujiDi(tingkat)})</label>
             )}
             <fieldset className="tanpa-bingkai">
               <legend className="label-kecil">Subtema (satu deck per subtema)</legend>
@@ -269,7 +270,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                       <input type="checkbox" checked={cek.has(s.id)} onChange={() => setCek((c) => { const n = new Set(c); if (n.has(s.id)) n.delete(s.id); else n.add(s.id); return n; })} />
                       <span>
                         <span>{s.subtema}</span>
-                        <span className="meta"><span className={STATUS[s.status === 'semua' ? 'belum' : s.status].kelas}>{STATUS[s.status === 'semua' ? 'belum' : s.status].teks}</span> <span className="mono redup">Tk {s.tingkat} · {s.aturan} aturan{s.kuis ? ' · kuis' : ''}{s.model + s.orisinal ? ' · soal baru' : ''}</span></span>
+                        <span className="meta"><span className={STATUS[s.status === 'semua' ? 'belum' : s.status].kelas}>{STATUS[s.status === 'semua' ? 'belum' : s.status].teks}</span> <span className="mono redup">{diujiDi(s.tingkat)} · {s.aturan} aturan{s.kuis ? ' · kuis' : ''}{s.model + s.orisinal ? ' · soal baru' : ''}</span></span>
                       </span>
                     </label>
                   </Fragment>

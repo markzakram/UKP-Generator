@@ -1,6 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { HURUF, KESULITAN, LABEL_KESULITAN, TINGKAT, URUTAN_KODE } from '@/lib/config';
+import { diujiDi, HURUF, KESULITAN, LABEL_KESULITAN, TINGKAT, ujianUntuk, URUTAN_KODE } from '@/lib/config';
 import { tingkatAturan, tingkatSoal } from '@/lib/data';
 import { dariModel, seimbangkanKunci } from '@/lib/generate';
 import { kapasitasModel, kondisiTersedia, MODELS } from '@/lib/models';
@@ -64,7 +64,7 @@ function BankAcuan({ data, tanggalAcuan }: { data: DataUkp; tanggalAcuan: string
     <>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
         <select aria-label="Materi" value={kode} onChange={(e) => setKode(e.target.value as Kode)} style={pilihGaya}><option value="">Semua materi</option>{URUTAN_KODE.map((k) => <option key={k}>{k}</option>)}</select>
-        <select aria-label="Tingkat" value={tingkat} onChange={(e) => setTingkat(e.target.value as Tingkat)} style={pilihGaya}><option value="">Semua tingkat</option>{TINGKAT.map((t) => <option key={t}>{t}</option>)}</select>
+        <select aria-label="Tingkat" value={tingkat} onChange={(e) => setTingkat(e.target.value as Tingkat)} style={pilihGaya}><option value="">Semua tingkat</option>{TINGKAT.map((t) => <option key={t} value={t}>Diuji di {ujianUntuk(t)}</option>)}</select>
         <select aria-label="Kesulitan" value={sulit} onChange={(e) => setSulit(e.target.value)} style={pilihGaya}><option value="">Semua kesulitan</option>{KESULITAN.map((d) => <option key={d} value={d}>{LABEL_KESULITAN[d]}</option>)}</select>
         <input type="search" aria-label="Cari" placeholder="id, subtopik, atau teks" value={cari} onChange={(e) => { setCari(e.target.value); setBatas(60); }} style={{ ...pilihGaya, flex: '1 1 220px' }} />
         <span className="kecil redup">{hasil.length} soal</span>
@@ -72,12 +72,12 @@ function BankAcuan({ data, tanggalAcuan }: { data: DataUkp; tanggalAcuan: string
       <div className="dua-kolom">
         <div className="utama kotak-tabel" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           <table className="lembar">
-            <thead style={{ position: 'sticky', top: 0 }}><tr><th>Id</th><th>Kode</th><th>Subtema</th><th>Subtopik</th><th>Tk</th><th>Kesulitan</th></tr></thead>
+            <thead style={{ position: 'sticky', top: 0 }}><tr><th>Id</th><th>Kode</th><th>Subtema</th><th>Subtopik</th><th>Diuji di</th><th>Kesulitan</th></tr></thead>
             <tbody>
               {hasil.slice(0, batas).map((b) => (
                 <tr key={b.id} className={'baris-klik' + (aktif?.id === b.id ? ' pilih' : '')} onClick={() => setAktif(b)}>
                   <td className="mono">{b.id}</td><td className="mono">{b.kode}</td><td>{b.subtema}{b.subtemaDasar === 'kemiripan' && <span className="redup" title="Subtema ditebak dari kemiripan teks"> ≈</span>}</td>
-                  <td className="redup">{b.subtopik}</td><td className="mono">{tingkatSoal(b, data.mapping)}</td><td>{LABEL_KESULITAN[b.kesulitan]}</td>
+                  <td className="redup">{b.subtopik}</td><td className="mono" style={{ whiteSpace: 'nowrap' }}>{ujianUntuk(tingkatSoal(b, data.mapping))}</td><td>{LABEL_KESULITAN[b.kesulitan]}</td>
                 </tr>
               ))}
             </tbody>
@@ -111,7 +111,7 @@ function KartuAturan({ data }: { data: DataUkp }) {
                 {a.tarifDpp && <p style={{ margin: 0, fontSize: 13 }}><b>Tarif/DPP.</b> {a.tarifDpp}</p>}
                 {a.tenggat && <p style={{ margin: 0, fontSize: 13 }}><b>Tenggat.</b> {a.tenggat}</p>}
                 {a.jebakan.length > 0 && <p style={{ margin: 0, fontSize: 13 }}><b>Jebakan.</b> {a.jebakan.join(' ')}</p>}
-                <p className="kecil redup" style={{ margin: 0 }}>{a.dasarHukum.join('; ')} · berlaku {a.berlaku.mulai ?? '—'} · tingkat {tingkatAturan(a, data.mapping)}</p>
+                <p className="kecil redup" style={{ margin: 0 }}>{a.dasarHukum.join('; ')} · berlaku {a.berlaku.mulai ?? '—'} · {diujiDi(tingkatAturan(a, data.mapping))}</p>
               </article>
             ))}
           </div>
@@ -151,11 +151,11 @@ function PratinjauModel({ data, tanggalAcuan }: { data: DataUkp; tanggalAcuan: s
     <div className="dua-kolom">
       <div className="utama kotak-tabel">
         <table className="lembar">
-          <thead><tr><th>Model</th><th>Materi · subtema</th><th>Tk</th><th title="Kondisi yang bisa dibuat pada tanggal acuan / semua kondisi">Kondisi</th><th className="kanan">Kapasitas</th></tr></thead>
+          <thead><tr><th>Model</th><th>Materi · subtema</th><th>Diuji di</th><th title="Kondisi yang bisa dibuat pada tanggal acuan / semua kondisi">Kondisi</th><th className="kanan">Kapasitas</th></tr></thead>
           <tbody>
             {MODELS.map((x) => (
               <tr key={x.id} className={'baris-klik' + (x.id === id ? ' pilih' : '')} onClick={() => { setId(x.id); setKondisi(''); }}>
-                <td><b>{x.nama}</b><div className="kecil redup">{x.ringkas}</div></td><td>{x.kode} · {x.subtema}</td><td className="mono">{tingkatSoal(x, data.mapping)}</td>
+                <td><b>{x.nama}</b><div className="kecil redup">{x.ringkas}</div></td><td>{x.kode} · {x.subtema}</td><td className="mono" style={{ whiteSpace: 'nowrap' }}>{ujianUntuk(tingkatSoal(x, data.mapping))}</td>
                 <td className="mono">{kondisiTersedia(x, ctx).length}/{x.kondisi.length}</td><td className="kanan mono">{kapasitasModel(x, ctx)}</td>
               </tr>
             ))}

@@ -1,4 +1,5 @@
 'use client';
+import { labelTingkat } from '@/lib/config';
 import type { DataUkp, Workspace } from '@/lib/types';
 import { pulihkan } from '@/lib/workspace';
 
@@ -17,7 +18,7 @@ export default function Riwayat({ ws, daftar, buka, hapus, setWs, kabar }: {
             {daftar.map((w) => (
               <tr key={w.id} className={w.id === ws?.id ? 'pilih' : ''}>
                 <td><b>{w.judul}</b></td>
-                <td className="mono">{w.pengaturan.tingkat}</td>
+                <td style={{ whiteSpace: 'nowrap' }}>{labelTingkat(w.pengaturan.tingkat)}</td>
                 <td className="mono">{w.paket.length} × {w.paket[0]?.soal.length ?? 0}</td>
                 <td>{waktu(w.diperbarui)}</td>
                 <td className="mono">{w.riwayat.length + 1}</td>

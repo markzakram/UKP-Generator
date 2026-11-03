@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { HURUF, KESULITAN, KOMPOSISI_TINGKAT, pengaturanAwal, TINGKAT, URUTAN_KODE } from '../lib/config';
+import { CAKUPAN_TINGKAT, diujiDi, HURUF, KESULITAN, KOMPOSISI_TINGKAT, labelTingkat, pengaturanAwal, TINGKAT, ujianUntuk, URUTAN_KODE } from '../lib/config';
 import { dalamCakupan, tingkatAturan, tingkatSoal } from '../lib/data';
 import { FOLDER_DATA, muatDataNode } from '../lib/data-node';
 import { soalJebakan, totalBaris } from '../lib/blueprint';
@@ -55,6 +55,8 @@ cek('aturan ikut tingkat subtema', data.aturan.every((a) => tingkatAturan(a, dat
 cek('komposisi kesulitan bawaan per tingkat (A ringan → C berat, total 100)', TINGKAT.every((t) => KESULITAN.reduce((a, d) => a + KOMPOSISI_TINGKAT[t][d], 0) === 100)
   && KOMPOSISI_TINGKAT.A.mudah > KOMPOSISI_TINGKAT.C.mudah && KOMPOSISI_TINGKAT.C.sulit > KOMPOSISI_TINGKAT.A.sulit
   && JSON.stringify(pengaturanAwal().komposisi) === JSON.stringify(KOMPOSISI_TINGKAT.C));
+cek('label tingkat seragam dan cocok dengan cakupan (B · A+B, diuji di B, C)', labelTingkat('A') === 'Tingkat A' && labelTingkat('B') === 'Tingkat B · A+B' && labelTingkat('C') === 'Tingkat C · A+B+C'
+  && diujiDi('B') === 'diuji di B, C' && TINGKAT.every((t) => TINGKAT.every((u) => ujianUntuk(t).split(', ').includes(u) === dalamCakupan(t, u) && CAKUPAN_TINGKAT[u].split('+').includes(t) === dalamCakupan(t, u))));
 cek('blok kasus: tingkatBlok = tingkat tertinggi anggota', data.bank.filter((s) => s.kasusId).every((s) => s.tingkatBlok && s.tingkatBlok >= s.tingkat));
 cek('opsi angka terdeteksi (783)', data.bank.filter((s) => s.opsiAngka).length === 783);
 

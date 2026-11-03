@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { cekPersediaan, hitungKuota, hitungStok, totalBaris } from '@/lib/blueprint';
-import { KESULITAN, KOMPOSISI_TINGKAT, TINGKAT, URUTAN_KODE } from '@/lib/config';
+import { KESULITAN, KOMPOSISI_TINGKAT, labelTingkat, TINGKAT, URUTAN_KODE } from '@/lib/config';
 import { kodeBermodel } from '@/lib/models';
 import type { BarisKuota, DataUkp, JenisPaket, Kesulitan, Kode, Pengaturan, SumberSoal, Tingkat } from '@/lib/types';
 import { angka } from '@/lib/util';
@@ -11,7 +11,6 @@ const KUNCI_PRESET = 'ukp-studio-preset-v1';
 type Preset = { nama: string; peng: Pengaturan };
 const bacaPreset = (): Preset[] => { try { return JSON.parse(localStorage.getItem(KUNCI_PRESET) ?? '[]'); } catch { return []; } };
 
-const CAKUPAN: Record<Tingkat, string> = { A: 'Tingkat A', B: 'Tingkat B', C: 'Tingkat C · A+B+C' };
 
 export default function AturPaket({ data, peng, setPeng, buat, galat, kabar }: {
   data: DataUkp; peng: Pengaturan; setPeng: (p: Pengaturan) => void; buat: () => void; galat: string[]; kabar: (p: string, g?: boolean) => void;
@@ -65,7 +64,7 @@ export default function AturPaket({ data, peng, setPeng, buat, galat, kabar }: {
             <p>Pilih tingkat dan jenis, lalu atur kuota di tabel. Sel kuning bisa disunting; total dan cek stok dihitung ulang otomatis.</p>
           </div>
           <div role="tablist" aria-label="Tingkat" className="seg">
-            {TINGKAT.map((t) => <button key={t} type="button" role="tab" aria-selected={peng.tingkat === t} onClick={() => ubah({ tingkat: t, seed: peng.seed.replace(/UKP-[ABC]-/, 'UKP-' + t + '-'), komposisi: { ...KOMPOSISI_TINGKAT[t] } })}>{CAKUPAN[t]}</button>)}
+            {TINGKAT.map((t) => <button key={t} type="button" role="tab" aria-selected={peng.tingkat === t} onClick={() => ubah({ tingkat: t, seed: peng.seed.replace(/UKP-[ABC]-/, 'UKP-' + t + '-'), komposisi: { ...KOMPOSISI_TINGKAT[t] } })}>{labelTingkat(t)}</button>)}
           </div>
         </div>
 
@@ -179,7 +178,7 @@ export default function AturPaket({ data, peng, setPeng, buat, galat, kabar }: {
             <div>
               <div className="label-kecil" style={{ margin: 0 }}>Ringkasan</div>
               <div className="mono" style={{ fontSize: 24, fontWeight: 600 }}>{total} × {peng.jumlahPaket} paket</div>
-              <div className="redup" style={{ fontSize: 13 }}>{({ tryout: 'Tryout penuh', materi: 'Per materi', subtema: 'Per subtema', jebakan: 'Drill jebakan aturan' } as const)[peng.jenis]} · Tingkat {peng.tingkat} · {peng.durasi} menit</div>
+              <div className="redup" style={{ fontSize: 13 }}>{({ tryout: 'Tryout penuh', materi: 'Per materi', subtema: 'Per subtema', jebakan: 'Drill jebakan aturan' } as const)[peng.jenis]} · {labelTingkat(peng.tingkat)} · {peng.durasi} menit</div>
             </div>
             <div>
               <div className="label-kecil">Sebaran kesulitan (%)</div>

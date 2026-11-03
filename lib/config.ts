@@ -12,6 +12,18 @@ export const URUTAN_KODE: Kode[] = ['KUP', 'OP', 'PP', 'PPN', 'BM', 'PBB', 'AKT'
 
 export const BATAS = { paket: 50, soalPerPaket: 200, soalPerProses: 4000, riwayat: 20 };
 
+// Satu cara menulis tingkat di semua layar. Tingkat ujian (paket/deck) mencakup tingkat di bawahnya:
+// "Tingkat B · A+B". Label subtema/soal ditulis sebagai tingkat ujian yang mengujinya: "diuji di B, C".
+export const CAKUPAN_TINGKAT: Record<Tingkat, string> = { A: 'A', B: 'A+B', C: 'A+B+C' };
+/** Pilihan tingkat ujian yang ringkas, untuk tombol pilihan berlabel "Tingkat": "A", "B · A+B", "C · A+B+C". */
+export const singkatTingkat = (t: Tingkat) => (t === 'A' ? 'A' : t + ' · ' + CAKUPAN_TINGKAT[t]);
+/** Tingkat ujian lengkap: "Tingkat A", "Tingkat B · A+B", "Tingkat C · A+B+C". */
+export const labelTingkat = (t: Tingkat) => 'Tingkat ' + singkatTingkat(t);
+/** Tingkat ujian yang menguji subtema/soal berlabel `t`: "A, B, C", "B, C", "C". */
+export const ujianUntuk = (t: Tingkat) => TINGKAT.slice(TINGKAT.indexOf(t)).join(', ');
+/** Label subtema/soal: "diuji di A, B, C", "diuji di B, C", "diuji di C". */
+export const diujiDi = (t: Tingkat) => 'diuji di ' + ujianUntuk(t);
+
 /** Komposisi kesulitan bawaan per tingkat (persen mudah, sedang, sulit); tetap bisa diubah per paket. */
 export const KOMPOSISI_TINGKAT: Record<Tingkat, Record<Kesulitan, number>> = {
   A: { mudah: 40, sedang: 45, sulit: 15 },

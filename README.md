@@ -32,7 +32,7 @@ npm start
 ## Alur penggunaan
 
 1. **Atur paket.**
-   - Pilih tingkat: A, A+B, atau A+B+C (kumulatif). Cakupan per subtema ada di `data/ukp-mapping.json` bagian `subtema` (A 33, B 23, C 13 subtema; tabel lengkap di `docs/Cakupan-Materi-UKP.xlsx`). Soal yang labelnya lebih tinggi dari subtemanya hanya masuk paket tingkat labelnya.
+   - Pilih tingkat: *Tingkat A*, *Tingkat B · A+B*, atau *Tingkat C · A+B+C* (kumulatif). Di semua layar, subtema dan soal diberi label tingkat ujian yang mengujinya: *diuji di A, B, C*, *diuji di B, C*, atau *diuji di C*. Cakupan per subtema ada di `data/ukp-mapping.json` bagian `subtema` (A 33, B 23, C 13 subtema; tabel lengkap di `docs/Cakupan-Materi-UKP.xlsx`). Soal yang labelnya lebih tinggi dari subtemanya hanya masuk paket tingkat labelnya.
    - Sebaran kesulitan bawaan ikut tingkat: A 40/45/15, B 30/50/20, C 20/50/30 (mudah/sedang/sulit), dan bisa diubah.
    - Pilih jenis paket: tryout penuh, per materi, per subtema, atau drill jebakan aturan.
    - Pilih sumber soal:

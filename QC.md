@@ -285,3 +285,17 @@ Risiko sisa:
 - Isi deck masih teks acuan LatihUKP (KM2) dan belum ditelaah ahli (K8), jadi semua .pptx bertanda Draf internal.
 - Pembagian tingkat belum disahkan terhadap dokumen BPPK (K3).
 - Tanda Ditelaah dan suntingan naskah hanya ada di tab Materi. CLI selalu menyusun ulang dari data.
+
+## Label tingkat seragam (3 Nov 2026)
+
+Semua label tingkat di layar sekarang memakai helper di `lib/config.ts` (`labelTingkat`, `singkatTingkat`, `diujiDi`, `ujianUntuk`):
+
+- **Tingkat ujian:** "Tingkat A", "Tingkat B · A+B", "Tingkat C · A+B+C". Dipakai di tombol Atur paket, ringkasan, dan Riwayat. Tab Materi memakai bentuk ringkas "A", "B · A+B", "C · A+B+C" di bawah judul "Tingkat".
+- **Subtema/soal:** "diuji di A, B, C", "diuji di B, C", "diuji di C". Dipakai di daftar subtema tab Materi, saringan dan tabel Pustaka, kartu aturan, dan tabel model.
+- **Tidak diubah:** ekspor (PDF/Word/SiAdu), sampul deck, dan CLI tetap menulis "Tingkat X" sebagai nama resmi ujian.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Cek baru di `verify`: label cocok dengan `dalamCakupan` untuk semua pasangan tingkat | Lulus (verify 115) |
+| Browser 1440 dan 375 px: Atur paket, Materi, Pustaka tanpa geser horizontal | Lulus |
+| typecheck, build | Lulus |

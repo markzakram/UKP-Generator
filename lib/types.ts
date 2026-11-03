@@ -77,6 +77,8 @@ export interface MateriMapping {
 export interface Mapping {
   tingkat: { kode: Tingkat; nama: string; cakupan: Tingkat[] }[];
   materi: MateriMapping[];
+  /** Tingkat tiap subtema ("KODE::Subtema"), cakupan materi hasil impor (PRD K3). */
+  subtema: Record<string, Tingkat>;
   siadu: { category: string; lesson: string; chapter: string };
   override: Record<string, Tingkat>;
 }

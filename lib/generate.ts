@@ -1,6 +1,6 @@
 import { BATAS, HURUF, KESULITAN, PORSI_BARU_CAMPURAN, URUTAN_KODE } from './config';
 import { cekPersediaan, hitungKuota, poolBank, totalBaris, type HasilCek, type Pool, type Sel } from './blueprint';
-import { dalamCakupan } from './data';
+import { dalamCakupan, tingkatSoal } from './data';
 import { kondisiTersedia, modelUntuk } from './models';
 import type { HasilModel, KonteksModel, ModelSoal } from './models/types';
 import { checksumSoal, dariBank, hitungKunciKosong, pilihUrutan, terapkanUrutan, urutanAngka } from './soal';
@@ -42,7 +42,7 @@ export function dariModel(h: HasilModel, m: ModelSoal, data: DataUkp): Soal {
     materi: data.mapping.materi.find((x) => x.kode === m.kode)?.nama ?? m.kode,
     subtema: m.subtema,
     subtopik: h.subtopik,
-    tingkat: m.tingkat,
+    tingkat: tingkatSoal(m, data.mapping),
     tipe: h.tipe,
     bloom: h.bloom,
     kesulitan: h.kesulitan,
@@ -87,7 +87,7 @@ export interface OpsiCoba {
 
 /** Coba buat satu soal model untuk sel (materi, kesulitan) yang belum kembar dengan soal lain. */
 export function cobaModel(o: OpsiCoba): Soal | null {
-  const kandidat = modelUntuk(o.kode).filter((m) => dalamCakupan(m.tingkat, o.peng.tingkat)
+  const kandidat = modelUntuk(o.kode).filter((m) => dalamCakupan(tingkatSoal(m, o.data.mapping), o.peng.tingkat)
     && (!o.modelId || m.id === o.modelId)
     && (!o.subtema || m.subtema === o.subtema)
     && (o.peng.jenis !== 'subtema' || o.peng.subtema.includes(m.kode + '::' + m.subtema))
@@ -191,6 +191,17 @@ function rakitBaris(data: DataUkp, peng: Pengaturan, baris: BarisKuota, pool: Po
   }
   // 4. Sisa sel pada campuran boleh diisi model dengan materi dan kesulitan yang sama.
   if (peng.sumber === 'campuran' && adaModel && sisa() > 0) isiModel(sisa());
+  // 5. Soal tunggal habis: blok kasus tambahan yang muat di sisa sel (soal kasus bisa sedikit di atas target).
+  if (sisa() > 0) {
+    for (const bl of r.shuffle(pool.blok.filter((b) => b.kode === baris.kode))) {
+      if (sisa() <= 0) break;
+      if (!bl.anggota.every((x) => boleh(x) && bebas(x, global, lokal, peng.larangKembar))) continue;
+      const perSel: Sel = { mudah: 0, sedang: 0, sulit: 0 };
+      for (const b of bl.anggota) perSel[b.kesulitan]++;
+      if (KESULITAN.some((d) => perSel[d] > butuh[d])) continue;
+      ambil(bl.anggota.map((b) => dariBank(b, data)));
+    }
+  }
   for (const d of KESULITAN) if (butuh[d] > 0) kurang.push(label + ' · ' + baris.kode + ' · ' + d + ': kurang ' + butuh[d] + ' soal.');
   return unit;
 }

@@ -3,6 +3,7 @@ export const MIME = {
   pdf: 'application/pdf',
   docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   csv: 'text/csv;charset=utf-8',
   json: 'application/json',
   html: 'text/html;charset=utf-8',
@@ -19,7 +20,8 @@ export function unduh(isi: Uint8Array | Blob, nama: string, mime: string) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
-export async function zip(berkas: Record<string, Uint8Array>): Promise<Uint8Array> {
+/** Bungkus beberapa berkas jadi .zip; `level` 0 untuk isi yang sudah terkompresi (.pptx). */
+export async function zip(berkas: Record<string, Uint8Array>, level: 0 | 6 = 6): Promise<Uint8Array> {
   const { zipSync } = await import('fflate');
-  return zipSync(berkas);
+  return zipSync(berkas, { level });
 }

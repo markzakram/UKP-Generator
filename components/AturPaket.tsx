@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { cekPersediaan, hitungKuota, hitungStok, totalBaris } from '@/lib/blueprint';
-import { KESULITAN, TINGKAT, URUTAN_KODE } from '@/lib/config';
+import { KESULITAN, KOMPOSISI_TINGKAT, TINGKAT, URUTAN_KODE } from '@/lib/config';
 import { kodeBermodel } from '@/lib/models';
 import type { BarisKuota, DataUkp, JenisPaket, Kesulitan, Kode, Pengaturan, SumberSoal, Tingkat } from '@/lib/types';
 import { angka } from '@/lib/util';
@@ -65,7 +65,7 @@ export default function AturPaket({ data, peng, setPeng, buat, galat, kabar }: {
             <p>Pilih tingkat dan jenis, lalu atur kuota di tabel. Sel kuning bisa disunting; total dan cek stok dihitung ulang otomatis.</p>
           </div>
           <div role="tablist" aria-label="Tingkat" className="seg">
-            {TINGKAT.map((t) => <button key={t} type="button" role="tab" aria-selected={peng.tingkat === t} onClick={() => ubah({ tingkat: t, seed: peng.seed.replace(/UKP-[ABC]-/, 'UKP-' + t + '-') })}>{CAKUPAN[t]}</button>)}
+            {TINGKAT.map((t) => <button key={t} type="button" role="tab" aria-selected={peng.tingkat === t} onClick={() => ubah({ tingkat: t, seed: peng.seed.replace(/UKP-[ABC]-/, 'UKP-' + t + '-'), komposisi: { ...KOMPOSISI_TINGKAT[t] } })}>{CAKUPAN[t]}</button>)}
           </div>
         </div>
 

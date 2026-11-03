@@ -66,13 +66,15 @@
 - [x] QC M1 (3 Nov 2026)
 
 ## M2 · Penyusun naskah
-- [ ] `susunNaskah`, pola P8, P9, P11–P14, tanggal acuan, jebakan, catatan pembicara, status asal
-- [ ] QC M2 (69 subtema × 3 kepadatan)
+- [x] `susunNaskah`, pola P8, P9, P11–P14, tanggal acuan, jebakan, catatan pembicara, status asal
+- [x] QC M2 (69 subtema × 3 kepadatan, 3 Nov 2026)
 
 ## M3 · UI tab Materi
-- [ ] Cakupan, penyunting naskah, pratinjau, unduh, riwayat, konfirmasi hak pakai
-- [ ] QC M3
+- [x] Cakupan, penyunting naskah, pratinjau, unduh, riwayat, konfirmasi hak pakai, impor/ekspor naskah
+- [x] QC M3 (3 Nov 2026)
+- [x] Cakupan tingkat per subtema (A 33, B 23, C 13) untuk paket soal dan deck; komposisi kesulitan bawaan per tingkat; lingkup susun Subtema / Materi (kode) / Tingkat dan unduhan .zip per folder kode (3 Nov 2026)
 
 ## M4 · Produksi
-- [ ] CLI `npm run materi`, `agent-office.json`, unduhan massal .zip, README
-- [ ] QC akhir
+- [x] Unduhan massal .zip di tab Materi (lingkup materi/tingkat)
+- [x] CLI `npm run materi` (per tingkat, kode, atau subtema), job `buatmateri` di `agent-office.json`, README (3 Nov 2026)
+- [x] QC akhir (3 Nov 2026)

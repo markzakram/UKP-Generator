@@ -1,7 +1,7 @@
 // Token desain template dan komponen bersama slide (chip, judul, bilah navigasi).
 // Semua ukuran dalam pt pada kanvas 1440 x 810 (PRD-Materi bagian 5 dan 11).
 import type { Aset, Gradien, JenisLaporan, Kotak, KotakTeks, Laporan, Paragraf, SlideJadi } from '../kotak';
-import { CADANGAN_TINGGI, EPS, type HasilPas, kalimat, lebarTeks, pasUkuran, potongAgarMuat, ruang } from '../metrik';
+import { CADANGAN_TINGGI, EPS, type HasilPas, kalimat, lebarTeks, pasUkuran, potongAgarMuat, ruang, tinggiTeks } from '../metrik';
 import type { Ikon, Naskah, Pola, SlideNaskah } from '../naskah';
 
 export const W = {
@@ -147,3 +147,23 @@ export function pembukaPendek(s: Slide, teks: string | undefined, y: number, mak
 
 export const judulLanjutan = (judul: string, ke: number) => (ke > 0 ? `${judul} (lanjutan)` : judul);
 
+
+export interface RencanaTumpukan { n: number; pt: number; tinggi: number[] }
+
+/**
+ * Rencana baris berkotak yang ditumpuk (langkah, kuis, rangkuman): ukuran seragam terbesar (maks→min)
+ * yang memuat n baris pertama dalam `tersedia`; bila tidak ada, n dikurangi (sisanya ke slide lanjutan).
+ */
+export function rencanaTumpukan(baris: Paragraf[][], lebarTeks: number, tersedia: number, maks: number, min: number,
+  opsi: { jarak: number; tinggiMin: number; pad: number; perSlide: number; ptTetap?: number }): RencanaTumpukan {
+  const tinggiBaris = (p: Paragraf[], pt: number) => Math.max(opsi.tinggiMin, tinggiTeks(p, pt, lebarTeks).tinggi + 2 * opsi.pad);
+  const total = (n: number, pt: number) => baris.slice(0, n).reduce((x, p) => x + tinggiBaris(p, pt), 0) + opsi.jarak * (n - 1);
+  let n = Math.min(opsi.perSlide, baris.length), pt = opsi.ptTetap ?? maks;
+  for (;;) {
+    pt = opsi.ptTetap ?? maks;
+    while (opsi.ptTetap == null && pt > min && total(n, pt) > tersedia + EPS) pt--;
+    if (total(n, pt) <= tersedia + EPS || n <= 1) break;
+    n--;
+  }
+  return { n, pt, tinggi: baris.slice(0, n).map((p) => tinggiBaris(p, pt)) };
+}

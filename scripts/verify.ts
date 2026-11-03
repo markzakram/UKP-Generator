@@ -3,8 +3,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { HURUF, pengaturanAwal, TINGKAT, URUTAN_KODE } from '../lib/config';
-import { dalamCakupan, tingkatSoal } from '../lib/data';
+import { HURUF, KESULITAN, KOMPOSISI_TINGKAT, pengaturanAwal, TINGKAT, URUTAN_KODE } from '../lib/config';
+import { dalamCakupan, tingkatAturan, tingkatSoal } from '../lib/data';
 import { FOLDER_DATA, muatDataNode } from '../lib/data-node';
 import { soalJebakan, totalBaris } from '../lib/blueprint';
 import { buatPaket, GalatPersediaan, posisiKunci, tandaTeks } from '../lib/generate';
@@ -21,6 +21,7 @@ const data = muatDataNode();
 const laporan = JSON.parse(readFileSync(path.join(FOLDER_DATA, 'import-report.json'), 'utf8'));
 const bankById = new Map<string, BankSoal>([...data.bank, ...data.orisinal].map((b) => [b.id, b]));
 const P = (p: Partial<Pengaturan> = {}): Pengaturan => ({ ...pengaturanAwal(), tanggalAcuan: '2026-11-02', ...p });
+const lempar = (f: () => unknown) => { try { f(); return null; } catch (e) { return e; } };
 
 bagian('Tahap 1 · Data hasil impor');
 cek('2.387 soal', data.bank.length === 2387, data.bank.length);
@@ -39,10 +40,21 @@ cek('178 soal rujukan hilang tercatat', laporan.rujukanHilang.length === 178, la
 cek('mapping memuat 10 materi', data.mapping.materi.length === 10);
 cek('cakupan kumulatif A ⊂ B ⊂ C', dalamCakupan('A', 'B') && dalamCakupan('B', 'C') && !dalamCakupan('C', 'B') && !dalamCakupan('B', 'A'));
 const perTingkat = Object.fromEntries(TINGKAT.map((t) => [t, data.bank.filter((s) => dalamCakupan(tingkatSoal(s, data.mapping), t)).length]));
-cek('stok kumulatif A=1197, B=1901, C=2387', perTingkat.A === 1197 && perTingkat.B === 1901 && perTingkat.C === 2387, perTingkat);
+cek('stok kumulatif A=1170, B=1884, C=2387', perTingkat.A === 1170 && perTingkat.B === 1884 && perTingkat.C === 2387, perTingkat);
+const semuaSubtema = data.mapping.materi.flatMap((m) => m.subtema.map((s) => m.kode + '::' + s));
+const perTingkatSubtema = Object.fromEntries(TINGKAT.map((t) => [t, semuaSubtema.filter((k) => data.mapping.subtema[k] === t).length]));
+cek('tingkat subtema: 69 subtema terpetakan, A=33, B=23, C=13', semuaSubtema.length === 69 && semuaSubtema.every((k) => data.mapping.subtema[k]) && perTingkatSubtema.A === 33 && perTingkatSubtema.B === 23 && perTingkatSubtema.C === 13, perTingkatSubtema);
+cek('tingkat subtema mengikuti cakupan (KUP Sanksi A, PBB B, INT C)', data.mapping.subtema['KUP::Sanksi administrasi'] === 'A' && data.mapping.subtema['PBB::Objek & subjek PBB-P5L'] === 'B' && data.mapping.subtema['INT::P3B: residensi & tie breaker'] === 'C');
+cek('tingkat soal = yang lebih tinggi antara tingkat subtema dan label', data.bank.every((s) => { const sub = data.mapping.subtema[s.kode + '::' + s.subtema]; const t = tingkatSoal(s, data.mapping); return t === (TINGKAT.indexOf(sub) > TINGKAT.indexOf(s.tingkat) ? sub : s.tingkat); }));
+const pendalaman = data.bank.filter((s) => s.kode === 'PP' && s.subtema === 'PPh Pasal 22 & PPh Pasal 23' && s.tingkat === 'B');
+cek('soal pendalaman (PPh 22/23 berlabel B) tidak masuk cakupan A', pendalaman.length === 81 && pendalaman.every((s) => !dalamCakupan(tingkatSoal(s, data.mapping), 'A')), pendalaman.length);
 const ov = { ...data.mapping, override: { 'KUP::Sanksi administrasi': 'C' as const } };
 const contoh = data.bank.find((s) => s.kode === 'KUP' && s.subtema === 'Sanksi administrasi')!;
 cek('override subtema mengubah tingkat', tingkatSoal(contoh, ov) === 'C' && tingkatSoal(contoh, data.mapping) === contoh.tingkat);
+cek('aturan ikut tingkat subtema', data.aturan.every((a) => tingkatAturan(a, data.mapping) === data.mapping.subtema[a.kode + '::' + a.subtema]));
+cek('komposisi kesulitan bawaan per tingkat (A ringan → C berat, total 100)', TINGKAT.every((t) => KESULITAN.reduce((a, d) => a + KOMPOSISI_TINGKAT[t][d], 0) === 100)
+  && KOMPOSISI_TINGKAT.A.mudah > KOMPOSISI_TINGKAT.C.mudah && KOMPOSISI_TINGKAT.C.sulit > KOMPOSISI_TINGKAT.A.sulit
+  && JSON.stringify(pengaturanAwal().komposisi) === JSON.stringify(KOMPOSISI_TINGKAT.C));
 cek('blok kasus: tingkatBlok = tingkat tertinggi anggota', data.bank.filter((s) => s.kasusId).every((s) => s.tingkatBlok && s.tingkatBlok >= s.tingkat));
 cek('opsi angka terdeteksi (783)', data.bank.filter((s) => s.opsiAngka).length === 783);
 
@@ -103,7 +115,15 @@ bagian('Tahap 2 · Cakupan tingkat dan jenis paket');
 for (const t of TINGKAT) {
   const h = buatPaket(data, P({ tingkat: t, jumlahPaket: 2, sumber: 'bank' }));
   cek('Tingkat ' + t + ': semua soal dalam cakupan', h.paket.every((p) => p.soal.every((s) => dalamCakupan(s.tingkat, t) && (!s.kasusId || dalamCakupan(bankById.get(s.sumberId!)!.tingkatBlok ?? s.tingkat, t)))));
+  cek('Tingkat ' + t + ': subtema paket hanya dari cakupan tingkat ini', h.paket.every((p) => p.soal.every((s) => dalamCakupan(data.mapping.subtema[s.kode + '::' + s.subtema], t))));
+  for (const sumber of ['bank', 'campuran'] as const) {
+    const hb = lempar(() => buatPaket(data, P({ tingkat: t, sumber, jumlahPaket: 5, komposisi: { ...KOMPOSISI_TINGKAT[t] } })));
+    cek('Tingkat ' + t + ' · ' + sumber + ': 5 paket × 100 soal dengan komposisi bawaan tingkat', !(hb instanceof Error), (hb as Error)?.message);
+  }
 }
+const subA = new Set(semuaSubtema.filter((k) => data.mapping.subtema[k] === 'A'));
+const hA = buatPaket(data, P({ tingkat: 'A', jumlahPaket: 3, sumber: 'campuran', komposisi: { ...KOMPOSISI_TINGKAT.A } }));
+cek('Tingkat A: tidak ada materi PBB, AKT, BDN, BTI, INT', hA.paket.every((p) => p.soal.every((s) => subA.has(s.kode + '::' + s.subtema))));
 const hm = buatPaket(data, P({ jenis: 'materi', materi: ['PPN', 'KUP'], jumlahSoal: 40, sumber: 'bank' }));
 cek('per materi: hanya PPN dan KUP', hm.paket[0].soal.every((s) => s.kode === 'PPN' || s.kode === 'KUP') && hm.paket[0].soal.length === 40);
 const subtemaUji = ['PPN::Faktur Pajak & nota retur', 'KUP::Sanksi administrasi'];
@@ -118,7 +138,6 @@ const kasusAktual = h1.paket[0].soal.filter((s) => s.kasusId).length, kasusTarge
 cek('soal kasus mendekati target (selisih ≤ 4)', Math.abs(kasusAktual - kasusTarget) <= 4, { kasusAktual, kasusTarget });
 
 bagian('Tahap 2 · Batas dan stok');
-const lempar = (f: () => unknown) => { try { f(); return null; } catch (e) { return e; } };
 const e30 = lempar(() => buatPaket(data, P({ jumlahPaket: 30, sumber: 'bank' })));
 cek('30 paket tanpa kembar ditolak dengan GalatPersediaan', e30 instanceof GalatPersediaan && /cukup untuk \d+ dari 100/.test((e30 as Error).message), (e30 as Error)?.message);
 cek('30 paket boleh kembar berhasil', !lempar(() => buatPaket(data, P({ jumlahPaket: 30, larangKembar: false, sumber: 'bank' }))));

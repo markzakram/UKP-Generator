@@ -12,6 +12,13 @@ export const URUTAN_KODE: Kode[] = ['KUP', 'OP', 'PP', 'PPN', 'BM', 'PBB', 'AKT'
 
 export const BATAS = { paket: 50, soalPerPaket: 200, soalPerProses: 4000, riwayat: 20 };
 
+/** Komposisi kesulitan bawaan per tingkat (persen mudah, sedang, sulit); tetap bisa diubah per paket. */
+export const KOMPOSISI_TINGKAT: Record<Tingkat, Record<Kesulitan, number>> = {
+  A: { mudah: 40, sedang: 45, sulit: 15 },
+  B: { mudah: 30, sedang: 50, sulit: 20 },
+  C: { mudah: 20, sedang: 50, sulit: 30 },
+};
+
 /** Bagian slot materi bermodel yang diisi soal baru pada sumber "campuran". */
 export const PORSI_BARU_CAMPURAN = 0.5;
 
@@ -32,7 +39,7 @@ export function pengaturanAwal(): Pengaturan {
     tanggalAcuan: hariIni(),
     larangKembar: true,
     sumber: 'campuran',
-    komposisi: { mudah: 30, sedang: 50, sulit: 20 },
+    komposisi: { ...KOMPOSISI_TINGKAT.C },
     materi: [...URUTAN_KODE],
     subtema: [],
     urutan: 'materi',

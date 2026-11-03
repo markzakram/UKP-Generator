@@ -15,6 +15,7 @@
     "verify:export": "tsx scripts/export-verify.ts",
     "verify:materi": "tsx scripts/materi-verify.ts",
     "materi:dasar": "node scripts/materi-dasar.mjs",
+    "materi": "tsx scripts/materi.ts",
     "generate": "tsx scripts/generate.ts"
   },
   "engines": {

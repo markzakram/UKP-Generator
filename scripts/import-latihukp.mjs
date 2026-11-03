@@ -200,14 +200,30 @@ function main() {
   const fileMapping = path.join(DATA, 'ukp-mapping.json');
   const lama = existsSync(fileMapping) ? JSON.parse(readFileSync(fileMapping, 'utf8')) : {};
   const stok = {};
+  const stokSubtema = {};
   for (const s of soal) {
     const m = ((stok[s.kode] ??= { A: 0, B: 0, C: 0 }));
     m[s.tingkat]++;
+    ((stokSubtema[s.kode + '::' + s.subtema] ??= { A: 0, B: 0, C: 0 }))[s.tingkat]++;
+  }
+  // Tingkat subtema (cakupan materi, PRD K3): tingkat terendah yang punya minimal 5 soal dan minimal 15%
+  // dari soal subtema itu; bila tidak ada, tingkat dengan soal terbanyak; tanpa soal, tingkat kartu aturan terendah.
+  const tingkatSubtema = {};
+  for (const [kode] of MATERI) {
+    for (const st of subtemaPerKode[kode] ?? []) {
+      const c = stokSubtema[kode + '::' + st] ?? { A: 0, B: 0, C: 0 };
+      const total = c.A + c.B + c.C;
+      const berarti = TINGKAT.find((t) => c[t] >= 5 && c[t] >= 0.15 * total);
+      const terbanyak = TINGKAT.reduce((a, t) => (c[t] > c[a] ? t : a), 'A');
+      const dariAturan = TINGKAT.find((t) => aturan.some((a) => a.kode === kode && a.subtema === st && a.tingkat === t)) ?? 'C';
+      tingkatSubtema[kode + '::' + st] = berarti ?? (total ? terbanyak : dariAturan);
+    }
   }
   const mapping = {
-    _keterangan: 'Pemetaan tingkat UKP. Bawaan: tingkat soal = tingkat_kisi sumber, cakupan kumulatif (A, A+B, A+B+C). Isi "override" untuk mengganti tingkat per materi atau per materi::subtema, misalnya {"KUP::Sanksi administrasi": "C"}. Disahkan terhadap Cakupan Materi UKP BPPK (PRD K3). Bagian lain ditulis ulang oleh npm run import:data.',
+    _keterangan: 'Pemetaan tingkat UKP. "subtema" = tingkat tiap subtema (cakupan materi), dihitung dari label tingkat_kisi soal bank: tingkat terendah dengan minimal 5 soal dan minimal 15% soal subtema itu. Tingkat soal dan model = yang lebih tinggi antara tingkat subtema dan labelnya sendiri; kartu aturan ikut tingkat subtema. Cakupan kumulatif (A, A+B, A+B+C). Isi "override" untuk mengganti tingkat subtema per materi atau per materi::subtema, misalnya {"KUP::Sanksi administrasi": "C"}. Disahkan terhadap Cakupan Materi UKP BPPK (PRD K3). Bagian selain override ditulis ulang oleh npm run import:data.',
     tingkat: TINGKAT.map((k, i) => ({ kode: k, nama: 'Tingkat ' + k, cakupan: TINGKAT.slice(0, i + 1) })),
     materi: MATERI.map(([kode, nama]) => ({ kode, nama, subtema: subtemaPerKode[kode] ?? [], stok: stok[kode] ?? { A: 0, B: 0, C: 0 } })),
+    subtema: tingkatSubtema,
     siadu: { category: 'UKP Tingkat {tingkat}', lesson: '{materi}', chapter: '{subtema}' },
     override: lama.override ?? {},
   };

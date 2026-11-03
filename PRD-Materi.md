@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| Status | Versi 0.3, disetujui 3 November 2026. KM1–KM10 memakai usulan bawaan (bagian 16). Desain tab Materi: B+ disetujui (bagian 19) |
+| Status | Versi 0.5. Disetujui 3 November 2026; KM1–KM10 memakai usulan bawaan (bagian 16); desain tab Materi B+ (bagian 19). M0–M4 selesai dan lulus QC (lihat QC.md). Tambahan 3 November 2026: tingkat mengikuti cakupan per subtema, lingkup susun Subtema / Materi (kode) / Tingkat, unduhan massal .zip, dan CLI `npm run materi` |
 | Tanggal | 3 November 2026 |
 | Folder | `G:\Ali\code\UKP Generator` (modul baru di aplikasi yang sama) |
 | Template desain | `G:\Downloads\Template Desain Materi.pptx` (11 slide, ekspor Canva) |
@@ -186,6 +186,8 @@ Pemetaan ruas aturan ke pola slide:
 | … | Rangkuman | P14 | Selalu |
 | akhir | Penutup | P15 | Selalu |
 
+Catatan implementasi M2: pada kepadatan Standar, kesalahan umum setiap aturan dirangkum dalam satu tabel "Kesalahan umum" setelah semua aturan; slide P10 per aturan hanya dipakai pada kepadatan Lengkap. Hasil terukur pada 69 subtema: Ringkas 4–28, Standar 7–58, Lengkap 9–91 slide per deck. Deck berstatus Ditelaah tidak lagi diberi tanda Draf internal (KM2).
+
 Kepadatan bisa dipilih:
 
 | Kepadatan | Isi | Perkiraan untuk subtema 4–5 aturan |
@@ -227,6 +229,13 @@ Cakupan lain:
 ### F1. Pilih cakupan, P0
 Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tanggal acuan, sumber contoh soal, dan jumlah contoh soal/kuis.
 
+- **Tingkat** mengikuti tingkat subtema di `data/ukp-mapping.json` (PRD K3): A 33 subtema, A+B 56, A+B+C 69. Semua kartu aturan dalam subtema ikut tingkat subtemanya, jadi label kisi pada kartu tidak lagi menyaring isi deck. Sampul menulis tingkat subtema.
+- **Lingkup** (tambahan 3 November 2026), satu deck per subtema:
+  - *Subtema*: centang subtema satu per satu dari satu materi.
+  - *Materi (kode)*: semua subtema satu materi langsung tercentang.
+  - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 23, C 13).
+- Unduhan beberapa deck menjadi satu .zip tanpa kompresi ulang. Lingkup tingkat memberi satu folder per kode, misalnya `materi-tingkat-b-tambahan-23-deck.zip`.
+
 ### F2. Susun naskah otomatis, P0
 `susunNaskah()` deterministik untuk data dan pengaturan yang sama. Setiap blok mencatat `asal` (acuan, ditulis ulang, atau orisinal) dan rujukan ID aturan/kartu/soal.
 
@@ -247,13 +256,16 @@ Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tang
 ### F6. Riwayat, P1
 Naskah disimpan di IndexedDB dengan 20 versi terakhir, sama seperti paket soal. Tersedia cadangan dan impor.
 
-### F7. CLI dan Agent Office, P0
+### F7. CLI dan Agent Office, P0 (selesai 3 November 2026)
 ```
-npm run materi -- --subtema "PPh 21: pemotong, penerima & objek" --kepadatan standar --format pptx,json --out output\materi
-npm run materi -- --materi PPN --format pptx --zip
+npm run materi -- --subtema "PP::PPh 21: pemotong, penerima & objek" --kepadatan standar --format pptx,json --setuju-acuan --out output/materi
+npm run materi -- --tingkat A --kode PPN --setuju-acuan --zip
+npm run materi -- --tingkat B --hanya-baru --setuju-acuan
 ```
-- CLI mencetak `RINGKASAN ->` dan `BERKAS ->`.
-- `agent-office.json` mendapat pekerjaan "Buat materi".
+- Lingkup: `--subtema` (per subtema), `--kode` (per materi), atau keduanya kosong (per tingkat, opsi `--hanya-baru`). Cakupan mengikuti `--tingkat`; subtema atau kode di luar cakupan ditolak. `--daftar` menampilkan subtema tanpa menulis berkas.
+- `--setuju-acuan` wajib untuk .pptx yang memuat teks acuan LatihUKP (KM2, setara dialog di tab Materi); `--format json` tidak memerlukannya.
+- CLI mencetak `RINGKASAN ->` dan `BERKAS ->`, lalu menulis `laporan.json` (slide, teks meluap, catatan penyusun per deck) serta berkas per subtema dengan folder per kode, atau satu .zip.
+- `agent-office.json` mendapat pekerjaan `buatmateri` ("Buat deck materi UKP"); `verify:materi` memeriksa opsinya terhadap `--help`.
 
 ### F8. Impor naskah, P1
 - Naskah JSON dari luar (ditulis manusia atau agen) dirender dengan mesin yang sama.
@@ -333,7 +345,7 @@ scripts/materi-verify.ts
 | M1 · Mesin PPTX | Paket dasar, metrik, 10 pola dari template (P1–P7, P10, P15, P16), pemecah slide lanjutan | Uji render COM, cek struktur, 0 luapan pada data uji |
 | M2 · Penyusun naskah | `susunNaskah`, pola baru (P8, P9, P11–P14), tanggal acuan, jebakan, catatan pembicara, status asal | 69 subtema × 3 kepadatan lulus `verify:materi` |
 | M3 · UI | Tab Materi: cakupan, penyunting, pratinjau, unduh, riwayat, konfirmasi hak pakai | Uji browser 1440 dan 375 px |
-| M4 · Produksi | CLI, `agent-office.json`, unduhan massal .zip, README | QC akhir lintas tahap, `npm audit` 0 |
+| M4 · Produksi | CLI `npm run materi` (per tingkat, kode, subtema), job `buatmateri` di `agent-office.json`, README, unduhan massal .zip | QC akhir lintas tahap, `npm audit` 0 (selesai 3 Nov 2026) |
 | M5 · Perluasan (opsional) | Impor naskah non-UKP, PDF, ikon tambahan | Per fitur |
 
 ## 16. Keputusan

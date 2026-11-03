@@ -9,7 +9,7 @@ Generator paket soal Uji Kompetensi Perpajakan (UKP) Tingkat A, B, C, ditambah g
 - `lib/materi/` mesin deck materi: `naskah.ts` (format naskah), `metrik.ts` (lebar huruf Poppins), `tata-letak/` (pola P1–P16 → kotak berposisi), `pptx.ts` (penulis .pptx), `cek.ts` (pemeriksaan).
 - `assets/materi/` template sumber, paket dasar `dasar.pptx` (dibuat `npm run materi:dasar`, juga disalin ke `public/materi/`), dan `metrik-poppins.json`.
 - `components/` dan `app/` tampilan desain B+ (PRD bagian 18; tab Materi: PRD-Materi bagian 19).
-- `scripts/` impor data, CLI, dan pemeriksa.
+- `scripts/` impor data, CLI (`generate.ts` untuk paket soal, `materi.ts` untuk deck materi), dan pemeriksa.
 
 ## Cara memeriksa (wajib setelah mengubah kode atau data)
 
@@ -25,6 +25,7 @@ Generator paket soal Uji Kompetensi Perpajakan (UKP) Tingkat A, B, C, ditambah g
 
 - Sumber data adalah `../Scrape UKP/output/latihukp/`. Jangan menyunting `data/ukp-bank.json` dengan tangan; ubah `scripts/import-latihukp.mjs` lalu jalankan `npm run import:data`.
 - Tarif, ambang, dan tenggat hanya boleh ada di `data/ukp-parameter.json` beserta `berlaku` dan `dasar_hukum`. Model soal tidak boleh menanam angka aturan di kode.
+- Tingkat UKP per subtema ada di `data/ukp-mapping.json` bagian `subtema` (ditulis impor) dan `override` (disunting tangan). Tingkat soal/model = yang lebih tinggi antara tingkat subtema dan labelnya; kartu aturan ikut tingkat subtema. Pakai `tingkatSoal`, `tingkatAturan`, atau `tingkatSubtema` dari `lib/data.ts`, jangan membaca `.tingkat` mentah.
 - Model tidak boleh menebak data resmi yang tidak ada (tabel TER, tarif bunga KMK bulanan). Angka seperti itu ditulis sebagai fakta di soal, atau model menolak generate.
 - Soal bank LatihUKP berstatus acuan internal (PRD K2). Ekspor SiAdu yang memuatnya harus meminta konfirmasi. Teks kartu aturan LatihUKP di deck materi juga acuan (PRD-Materi KM2).
 - Deck materi: ukuran dan posisi hanya dihitung lewat `lib/materi/metrik.ts` (lebar huruf hasil ukur PowerPoint). Teks isi tidak boleh dipotong; bila tidak muat, dipecah ke slide "(lanjutan)". Jangan menyunting `assets/materi/dasar.pptx` dengan tangan; ubah `scripts/materi-dasar.mjs` lalu jalankan `npm run materi:dasar`.

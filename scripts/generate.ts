@@ -2,7 +2,7 @@
 // Contoh: npm run generate -- --tingkat C --soal 100 --paket 3 --seed UKP-C-01 --format json,pdf,docx --out output
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { pengaturanAwal, TINGKAT, URUTAN_KODE } from '../lib/config';
+import { KESULITAN, KOMPOSISI_TINGKAT, pengaturanAwal, TINGKAT, URUTAN_KODE } from '../lib/config';
 import { muatDataNode } from '../lib/data-node';
 import { buatPaket, posisiKunci } from '../lib/generate';
 import { cekPaket } from '../lib/quality';
@@ -21,7 +21,7 @@ const BANTUAN = `Pemakaian: npm run generate -- [opsi]
   --durasi M                 menit (bawaan 180)
   --seed TEKS                bawaan UKP-<tingkat>-01
   --sumber bank|baru|campuran (bawaan campuran)
-  --kesulitan 30,50,20       persen mudah,sedang,sulit
+  --kesulitan 30,50,20       persen mudah,sedang,sulit (bawaan per tingkat: A 40,45,15 · B 30,50,20 · C 20,50,30)
   --tanggal YYYY-MM-DD       tanggal acuan aturan (bawaan hari ini)
   --urutan materi|acak
   --boleh-kembar             izinkan soal sama di paket berbeda
@@ -47,7 +47,7 @@ const subtema = (ambil('--subtema') ?? '').split(';').map((s) => s.trim()).filte
 const materi = ambil('--materi') ? ambil('--materi')!.split(',').map((s) => s.trim().toUpperCase()) as Kode[] : jenis === 'subtema' ? URUTAN_KODE.filter((k) => subtema.some((s) => s.startsWith(k + '::'))) : [...URUTAN_KODE];
 for (const k of materi) if (!URUTAN_KODE.includes(k)) gagal('kode materi tidak dikenal: ' + k);
 const angka = (nama: string, bawaan: number) => { const v = ambil(nama); if (v === undefined) return bawaan; const n = Number(v); if (!Number.isInteger(n) || n < 1) gagal(nama + ' harus bilangan bulat positif'); return n; };
-const komposisi = (ambil('--kesulitan') ?? '30,50,20').split(',').map(Number);
+const komposisi = (ambil('--kesulitan') ?? KESULITAN.map((d) => KOMPOSISI_TINGKAT[tingkat][d]).join(',')).split(',').map(Number);
 if (komposisi.length !== 3 || komposisi.some((n) => !Number.isFinite(n) || n < 0)) gagal('--kesulitan harus tiga angka, misalnya 30,50,20');
 const format = (ambil('--format') ?? 'json').split(',').map((s) => s.trim()) as (FormatEkspor | 'docx')[];
 const isi = (ambil('--isi') ?? 'lengkap') as ModeIsi;

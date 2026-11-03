@@ -29,7 +29,7 @@ const hitungBunga = (p: P, ctx: KonteksModel) => {
   return { tarif, bulanAsli, bulan, bunga: Math.round(Number(p.pokok) * tarif * bulan) };
 };
 export const sanksiBunga: ModelSoal = {
-  id: 'sanksi-bunga', nama: 'Sanksi bunga per bulan (KMK)', kode: 'KUP', subtema: 'Sanksi administrasi', tingkat: 'C',
+  id: 'sanksi-bunga', nama: 'Sanksi bunga per bulan (KMK)', kode: 'KUP', subtema: 'Sanksi administrasi', tingkat: 'A',
   ringkas: 'Pokok × tarif KMK pasal yang tepat × jumlah bulan (bagian bulan = 1 bulan, maks 24). Tabel tarif disebut di soal sebagai fakta.',
   kondisi: Object.keys(PASAL_BUNGA),
   kesulitan: (k) => (k === '9-2a' ? 'sedang' : 'sulit'),
@@ -99,7 +99,7 @@ const hitungNppn = (p: P, ctx: KonteksModel) => {
   return { ptkp, neto, pkp, pajak: pph17(pkp, lapisan17(ctx, tgl)) };
 };
 export const nppn: ModelSoal = {
-  id: 'nppn', nama: 'PPh OP dengan NPPN', kode: 'OP', subtema: 'NPPN & pembukuan', tingkat: 'B',
+  id: 'nppn', nama: 'PPh OP dengan NPPN', kode: 'OP', subtema: 'NPPN & pembukuan', tingkat: 'A',
   ringkas: 'Neto = norma × peredaran bruto; dikurangi PTKP; PKP × tarif Pasal 17.',
   kondisi: ['satu-lapisan', 'multi-lapisan'],
   kesulitan: (k) => (k === 'satu-lapisan' ? 'sedang' : 'sulit'),
@@ -435,7 +435,7 @@ const hitungKons = (p: P, ctx: KonteksModel) => {
   return { tarif: t[KONSTRUKSI[String(p.kondisi)].kunci], t, pph: Math.round(Number(p.nilai) * t[KONSTRUKSI[String(p.kondisi)].kunci]) };
 };
 export const jasaKonstruksi: ModelSoal = {
-  id: 'jasa-konstruksi', nama: 'PPh final jasa konstruksi', kode: 'PP', subtema: 'PPh final Pasal 4 ayat (2)', tingkat: 'C',
+  id: 'jasa-konstruksi', nama: 'PPh final jasa konstruksi', kode: 'PP', subtema: 'PPh final Pasal 4 ayat (2)', tingkat: 'A',
   ringkas: 'PP 9/2022: pelaksana 1,75%/2,65%/4%; konsultansi 3,5%/6%; dari pembayaran tanpa PPN.',
   kondisi: Object.keys(KONSTRUKSI),
   kesulitan: (k) => (k === 'kecil' || k === 'menengah-besar' ? 'mudah' : 'sedang'),

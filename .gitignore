@@ -8,3 +8,6 @@ test-results/
 !.env.example
 .vercel/
 .DS_Store
+
+# Berkas kunci Office saat dokumen sedang dibuka
+~$*

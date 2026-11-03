@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { HURUF, KESULITAN, LABEL_KESULITAN, TINGKAT, URUTAN_KODE } from '@/lib/config';
-import { tingkatSoal } from '@/lib/data';
+import { tingkatAturan, tingkatSoal } from '@/lib/data';
 import { dariModel, seimbangkanKunci } from '@/lib/generate';
 import { kapasitasModel, kondisiTersedia, MODELS } from '@/lib/models';
 import { cekSoal } from '@/lib/quality';
@@ -111,7 +111,7 @@ function KartuAturan({ data }: { data: DataUkp }) {
                 {a.tarifDpp && <p style={{ margin: 0, fontSize: 13 }}><b>Tarif/DPP.</b> {a.tarifDpp}</p>}
                 {a.tenggat && <p style={{ margin: 0, fontSize: 13 }}><b>Tenggat.</b> {a.tenggat}</p>}
                 {a.jebakan.length > 0 && <p style={{ margin: 0, fontSize: 13 }}><b>Jebakan.</b> {a.jebakan.join(' ')}</p>}
-                <p className="kecil redup" style={{ margin: 0 }}>{a.dasarHukum.join('; ')} · berlaku {a.berlaku.mulai ?? '—'} · tingkat {a.tingkat}</p>
+                <p className="kecil redup" style={{ margin: 0 }}>{a.dasarHukum.join('; ')} · berlaku {a.berlaku.mulai ?? '—'} · tingkat {tingkatAturan(a, data.mapping)}</p>
               </article>
             ))}
           </div>
@@ -155,7 +155,7 @@ function PratinjauModel({ data, tanggalAcuan }: { data: DataUkp; tanggalAcuan: s
           <tbody>
             {MODELS.map((x) => (
               <tr key={x.id} className={'baris-klik' + (x.id === id ? ' pilih' : '')} onClick={() => { setId(x.id); setKondisi(''); }}>
-                <td><b>{x.nama}</b><div className="kecil redup">{x.ringkas}</div></td><td>{x.kode} · {x.subtema}</td><td className="mono">{x.tingkat}</td>
+                <td><b>{x.nama}</b><div className="kecil redup">{x.ringkas}</div></td><td>{x.kode} · {x.subtema}</td><td className="mono">{tingkatSoal(x, data.mapping)}</td>
                 <td className="mono">{kondisiTersedia(x, ctx).length}/{x.kondisi.length}</td><td className="kanan mono">{kapasitasModel(x, ctx)}</td>
               </tr>
             ))}

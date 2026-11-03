@@ -193,3 +193,95 @@ Temuan dan perbaikan selama QC M1:
 7. Ukuran huruf slide lanjutan bisa berbeda dari slide pertama. Kini dikunci sama setelah dipecah (dicek otomatis).
 8. Calibri ikut terdaftar karena font tema template. Font tema diganti Poppins di paket dasar.
 9. Uji render penuh pertama menemukan 1 luapan dari 23.282 kotak: judul kartu "PP 20/2026 anti-pemecahan usaha". PowerPoint memutus baris setelah tanda hubung, sedangkan mesin memutus kata panjang per huruf. Aturan pemutusan diuji lewat COM: tanda hubung adalah titik putus, garis miring bukan. Mesin disesuaikan, dan 10 kasus hasil ukur PowerPoint menjadi cek otomatis.
+
+## M2 · Penyusun naskah (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `susunNaskah`: 69 subtema × 3 kepadatan dari aturan, kartu rumus/hafalan, kuis B/S, dan contoh soal model/orisinal | Ringkas 822 slide (maks 28/deck), Standar 1.519 (maks 58), Lengkap 2.402 (maks 91) |
+| Pola baru P8 Rumus, P9 Angka besar, P11 Kuis (pernyataan lalu jawaban), P12 Contoh soal, P13 Pembahasan, P14 Rangkuman, termasuk kasus tepi (15 baris rumus, 7 butir kuis, kasus 2.000 huruf, 9 langkah, 9 poin) | Lulus; isi tidak pernah dipotong, nomor berlanjut di slide lanjutan |
+| Tanggal acuan dan tingkat menyaring aturan; aturan yang dikeluarkan dicatat untuk penelaah | Lulus (R-KUP-01 keluar pada 2024-06-01; tingkat A tanpa aturan C) |
+| Contoh soal: sumber "baru" hanya model/orisinal; "bank" memakai bank acuan bertanda acuan; kunci dan teks kunci pembahasan cocok dengan soal | Lulus; 22 subtema punya model/orisinal, 50 subtema punya kuis terpetakan |
+| Catatan pembicara (ID aturan, keyakinan, berlaku, dasar hukum, sumber, kunci kuis/soal) di setiap slide; dibaca ulang dari PowerPoint lewat COM | Lulus |
+| Tanda Draf internal (KM2) di properti berkas dan catatan bila ada teks acuan; hilang bila semua ditulis ulang atau deck ditelaah | Lulus |
+| Ketentuan lama di teks naskah dicatat untuk penelaah (uji sisipan "disetor tanggal 10") | Lulus |
+| Deterministik: naskah dan berkas identik untuk pengaturan sama; seed berbeda → contoh soal berbeda | Lulus |
+| `npm run verify:materi` | 112 cek lulus pada akhir M2 |
+| Uji render PowerPoint penuh: 69 deck naskah Standar | 69 dibuka tanpa perbaikan, 16.349 kotak teks, 0 meluap; diulang dengan kode final setelah perbaikan 6–7: 16.347 kotak teks, 0 meluap |
+| Uji render sampel + QC visual (PNG): deck PPh 21 final (3 kepadatan) dan kasus tepi pola baru | 8 deck, 3.422 kotak teks, 0 meluap |
+
+Temuan dan perbaikan M2:
+
+1. Baris kuis dan pembahasan meluap 4 pt: rencana tinggi memakai bantalan 10 pt, kotak digambar dengan 12 pt. Disamakan.
+2. Judul kartu "Contoh" di slide rumus 1 pt kurang tinggi. Tinggi kotak memakai `ruang()`.
+3. Keterangan rumus panjang terpotong. Lampiran rumus kini disusun berdampingan, lalu bertumpuk, lalu satu per slide, tanpa memotong.
+4. Kepadatan Standar terlalu gemuk (1 slide kesalahan umum per aturan). Di Standar, kesalahan umum dirangkum dalam satu tabel; slide per aturan hanya di Lengkap. Standar turun dari 1.751 menjadi 1.519 slide.
+5. Label pendek "Pemotong PPh 21/26 dan pihak" menggantung. Pemotongan kini didahulukan sebelum "dan/serta/atau".
+6. Soal model tanpa kasus terpisah tampil tebal seluruhnya. Kalimat terakhir menjadi pertanyaan, sisanya kasus.
+7. Kartu rumus menyisakan 40% ruang di setiap slide walau rumus belum selesai. Ruang hanya disisakan di slide tempat rumus terakhir muat.
+
+## M3 · Tab Materi (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Tab "Materi" (desain B+ Materi): panel cakupan dengan status per subtema dan saring, susun beberapa deck, tab deck, strip angka, catatan penyusun, tabel naskah, mode Perbesar (deretan slide + pratinjau besar), panel isian per pola, pemeriksaan slide, catatan pembicara, atur slide (naik/turun/gandakan/sembunyikan), urungkan, kembalikan teks acuan, tandai ditelaah, hapus deck | Lulus di browser (1440 dan 375 px) |
+| Pratinjau di browser dari kotak tata letak yang sama dengan .pptx (Poppins, gradien, ikon SVG) | Lulus; tampilan sama dengan render PowerPoint |
+| Sunting judul: asal slide berubah menjadi "Ditulis ulang", tata letak dihitung ulang, riwayat bertambah, tersimpan di IndexedDB setelah muat ulang | Lulus |
+| Unduh: dialog konfirmasi Draf internal untuk deck bertek acuan yang belum ditelaah; berkas .pptx dibuat di browser (2,4 MB, zip sah) | Lulus (unduhan dicegat di memori saat uji) |
+| Impor naskah .json, ekspor naskah, unduh .zip beberapa deck | Logika dicek otomatis (`bacaNaskah`, `buatDeck`, `zip`) |
+| Logika deck (sunting, kembalikan, urungkan, atur slide, batas riwayat 20, status telaah kembali draf setelah disunting, opsi ditelaah tanpa tanda Draf) | 12 cek di `verify:materi` |
+| Lebar 375 px: tanpa geser horizontal; konsol tanpa galat | Lulus |
+| Rangkaian lengkap: typecheck, verify 98, verify:quality 40, verify:models 114, verify:export 52, verify:materi 124 | 428 cek lulus |
+| `npm run build`, `npm audit` | Lulus, 0 kerentanan |
+
+Temuan dan perbaikan M3: kotak pilihan "Sumber contoh soal" melebar keluar panel kiri pada layar sempit; isian di tab Materi kini selebar kolomnya.
+
+Risiko sisa materi: isi deck masih teks acuan LatihUKP (KM2) dan belum ditelaah ahli (K8); 47 subtema belum punya contoh soal model/orisinal dan 19 belum punya kuis terpetakan; pemetaan kartu ke subtema memakai kemiripan kata (bisa keliru, terlihat di catatan pembicara "Kartu ...").
+
+## Cakupan tingkat dan lingkup materi (3 Nov 2026)
+
+Keputusan user: cakupan mengikuti pembagian di `docs/Cakupan-Materi-UKP.xlsx` (dari label soal bank), soal berlabel lebih tinggi dari subtemanya tetap di tingkat labelnya, dan sebaran kesulitan bawaan dibedakan per tingkat. Lihat PRD K3 dan K4.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `npm run import:data` menulis `subtema` di `data/ukp-mapping.json`: 69 subtema, A 33, B 23, C 13; berkas data lain tidak berubah (dibandingkan byte demi byte) | Lulus |
+| Tingkat soal = yang lebih tinggi antara tingkat subtema dan label; 81 soal PPh 22/23 berlabel B di luar cakupan A; stok kumulatif A 1.170, A+B 1.884, A+B+C 2.387 | Lulus (`verify`) |
+| Paket tiap tingkat hanya memuat subtema dalam cakupannya; Tingkat A tanpa PBB, AKT, BDN, BTI, INT | Lulus (`verify`, browser) |
+| Komposisi bawaan A 40/45/15, B 30/50/20, C 20/50/30 di Atur paket (berganti saat tingkat diganti) dan CLI `--kesulitan` bila kosong | Lulus (`verify`, browser, CLI) |
+| 5 paket × 100 soal untuk A, B, C dengan komposisi bawaan, sumber bank dan campuran | Lulus (`verify`) |
+| Deck materi: daftar subtema A 33, A+B 56, A+B+C 69; kartu aturan ikut tingkat subtema; sampul menulis tingkat subtema; subtema B ditolak di deck A | Lulus (`verify:materi`) |
+| Tab Materi lingkup Subtema / Materi (kode) / Tingkat, opsi "hanya subtema yang mulai di tingkat ini" (B 23, C 13), pilih semua/kosongkan, kelompok per materi, pilihan deck berupa daftar bila lebih dari 6 deck | Lulus di browser |
+| Susun 23 deck tambahan Tingkat B sekaligus; unduh .zip dengan dialog Draf internal, 23 .pptx dalam 5 folder kode (54 MB, sekitar 4 detik) | Lulus (unduhan dicegat di memori; deck uji dihapus dari IndexedDB pratinjau) |
+| Lebar 375 px: tanpa geser horizontal | Lulus |
+| Rangkaian lengkap: typecheck, verify 114, verify:quality 40, verify:models 114, verify:export 52, verify:materi 128; `npm run build` | 448 cek lulus, build lulus |
+
+Temuan dan perbaikan:
+
+1. Cek persediaan menghitung anggota blok kasus sebagai stok penuh per kesulitan. Akibatnya cek bisa lulus lalu perakitan gagal (terlihat pada Tingkat C 10 paket dengan 30% sulit). Sekarang batas per kesulitan memakai `stokSel` (anggota blok hanya sebanyak kuota kasus), dan perakit mengisi sisa sel dengan blok kasus tambahan yang muat.
+2. Label tiga model disamakan dengan soal bank topiknya (bunga sanksi 41 soal A, NPPN 20 soal A, jasa konstruksi 14 soal A): `sanksi-bunga`, `nppn`, dan `jasa-konstruksi` menjadi A.
+
+Risiko sisa:
+
+- Pembagian tingkat belum disahkan terhadap dokumen BPPK (K3).
+- 56 soal bank bertipe "Tingkat B" berlabel tingkat A, jadi ikut paket A. Ini mengikuti data sumber.
+- 10 paket × 100 soal tanpa kembar di Tingkat A atau B (sumber bank/campuran) bisa gagal saat dirakit karena kurang 1–4 soal, padahal cek persediaan lulus. Ini sudah terjadi dengan aturan lama dan komposisi 30/50/20. Pesan galatnya menyebut materi dan jumlah kekurangannya.
+- Uji render PowerPoint tidak diulang karena tata letak tidak berubah; teks pil sampul hanya menjadi lebih pendek.
+
+## M4 · Produksi dan QC akhir materi (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| CLI `npm run materi`: lingkup per subtema (`--subtema`), per materi (`--kode`), dan per tingkat (tanpa keduanya, opsi `--hanya-baru`); `--daftar` A 33 subtema, tambahan B 23 | Lulus (`verify:materi`, uji manual) |
+| Penolakan dengan `Error:` dan kode keluar 1: .pptx bertek acuan tanpa `--setuju-acuan` (KM2), subtema/kode di luar cakupan tingkat, opsi tidak valid; `--format json` tanpa persetujuan diizinkan | Lulus |
+| Hasil: `laporan.json` per deck (tingkat subtema, slide, teks meluap, catatan penyusun, Draf internal), .pptx/.json dengan folder per kode, atau satu .zip tanpa kompresi ulang dengan nama sama dengan tab Materi | Lulus; .zip tambahan Tingkat C berisi 13 .pptx sah di folder AKT, BTI, INT |
+| Satu tingkat penuh lewat CLI: Tingkat A 33 deck, 746 slide, 0 teks meluap, sekitar 9 detik | Lulus |
+| Uji render PowerPoint atas 33 deck CLI Tingkat A (script render kini membaca subfolder) | 33 deck terbuka, 8.293 kotak teks, 0 meluap |
+| `agent-office.json`: job `buatmateri` (opsi dicek terhadap `--help`), bantuan tingkat dan kapasitas paket diperbarui (bank tanpa kembar: A 9, B 7, C 10 paket tryout 100 soal) | Lulus (`verify`, `verify:materi`) |
+| Rangkaian lengkap: typecheck, verify 114, verify:quality 40, verify:models 114, verify:export 52, verify:materi 137 | 457 cek lulus |
+| `npm run build`, `npm audit` | Lulus, 0 kerentanan |
+
+Risiko sisa:
+
+- Isi deck masih teks acuan LatihUKP (KM2) dan belum ditelaah ahli (K8), jadi semua .pptx bertanda Draf internal.
+- Pembagian tingkat belum disahkan terhadap dokumen BPPK (K3).
+- Tanda Ditelaah dan suntingan naskah hanya ada di tab Materi. CLI selalu menyusun ulang dari data.

@@ -1,5 +1,5 @@
 # Uji render deck materi di PowerPoint (khusus Windows dengan PowerPoint terpasang).
-# Membuka setiap .pptx di folder (gagal = berkas perlu diperbaiki), lalu membandingkan ukuran teks hasil render
+# Membuka setiap .pptx di folder dan subfolder (gagal = berkas perlu diperbaiki), lalu membandingkan ukuran teks hasil render
 # PowerPoint (BoundHeight/BoundWidth) dengan kotak teksnya. Opsional: ekspor PNG setiap slide.
 # Pakai: powershell -ExecutionPolicy Bypass -File scripts/materi-render.ps1 output/materi-uji [-Gambar]
 param(
@@ -9,7 +9,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $Folder = (Resolve-Path $Folder).Path
-$berkas = Get-ChildItem -Path $Folder -Filter *.pptx | Sort-Object Name
+$berkas = Get-ChildItem -Path $Folder -Filter *.pptx -Recurse | Sort-Object Name
 if (-not $berkas) { Write-Output "Error: tidak ada .pptx di $Folder"; exit 1 }
 $pp = New-Object -ComObject PowerPoint.Application
 $laporan = @()

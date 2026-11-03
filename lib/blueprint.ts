@@ -42,6 +42,8 @@ const selKosong = (): Sel => ({ mudah: 0, sedang: 0, sulit: 0 });
 
 export interface Stok {
   bank: Record<Kode, Sel>;
+  /** Bagian `bank` yang berada di blok kasus; hanya terpakai sebanyak kuota soal kasus. */
+  blok: Record<Kode, Sel>;
   kasus: Record<Kode, number>;
   model: Record<Kode, Sel>;
 }
@@ -49,17 +51,18 @@ export interface Stok {
 export function hitungStok(data: DataUkp, peng: Pengaturan, ctx: KonteksModel): Stok {
   const pool = poolBank(data, peng);
   const bank = Object.fromEntries(URUTAN_KODE.map((k) => [k, selKosong()])) as Record<Kode, Sel>;
+  const blok = Object.fromEntries(URUTAN_KODE.map((k) => [k, selKosong()])) as Record<Kode, Sel>;
   const kasus = Object.fromEntries(URUTAN_KODE.map((k) => [k, 0])) as Record<Kode, number>;
   const model = Object.fromEntries(URUTAN_KODE.map((k) => [k, selKosong()])) as Record<Kode, Sel>;
   // Sumber "baru" = model + bank orisinal (bukan salinan LatihUKP).
   const boleh = (b: BankSoal) => peng.sumber !== 'baru' || b.bank === 'orisinal';
   for (const b of pool.tunggal) if (boleh(b)) bank[b.kode][b.kesulitan]++;
-  for (const bl of pool.blok) if (bl.anggota.every(boleh)) for (const b of bl.anggota) { bank[b.kode][b.kesulitan]++; kasus[b.kode]++; }
+  for (const bl of pool.blok) if (bl.anggota.every(boleh)) for (const b of bl.anggota) { bank[b.kode][b.kesulitan]++; blok[b.kode][b.kesulitan]++; kasus[b.kode]++; }
   if (peng.sumber !== 'bank' && peng.jenis !== 'jebakan') {
     for (const k of URUTAN_KODE) {
       if (!peng.materi.includes(k)) continue;
       for (const m of modelUntuk(k)) {
-        if (!dalamCakupan(m.tingkat, peng.tingkat)) continue;
+        if (!dalamCakupan(tingkatSoal(m, data.mapping), peng.tingkat)) continue;
         if (peng.jenis === 'subtema' && !peng.subtema.includes(k + '::' + m.subtema)) continue;
         const tersedia = kondisiTersedia(m, ctx);
         if (!tersedia.length) continue;
@@ -68,7 +71,16 @@ export function hitungStok(data: DataUkp, peng: Pengaturan, ctx: KonteksModel): 
       }
     }
   }
-  return { bank, kasus, model };
+  return { bank, blok, kasus, model };
+}
+
+/**
+ * Soal yang benar-benar bisa mengisi sel (materi, kesulitan): soal tunggal, model, dan anggota blok kasus
+ * paling banyak sejumlah soal kasus yang dipakai. Sisa anggota blok tidak bisa menjadi soal tunggal.
+ */
+export function stokSel(stok: Stok, k: Kode, d: Kesulitan, pakaiKasus: number, sumber: Pengaturan['sumber']): number {
+  const tunggal = stok.bank[k][d] - stok.blok[k][d];
+  return tunggal + Math.min(stok.blok[k][d], pakaiKasus) + (sumber === 'bank' ? 0 : stok.model[k][d]);
 }
 
 const jumlahSel = (s: Sel) => s.mudah + s.sedang + s.sulit;
@@ -112,8 +124,9 @@ export function hitungKuota(data: DataUkp, peng: Pengaturan, ctx: KonteksModel):
   const totalKomposisi = KESULITAN.reduce((a, d) => a + Math.max(0, peng.komposisi[d]), 0) || 1;
   return kode.map((k, i) => {
     const q = perKode[i];
-    const ada = tersedia(k);
-    const batas = KESULITAN.map((d) => Math.floor(ada[d] / faktor));
+    const shareKasus = peng.sumber === 'baru' || !jumlahSel(stok.bank[k]) ? 0 : stok.kasus[k] / jumlahSel(stok.bank[k]);
+    const kasus = Math.min(Math.round(q * shareKasus), Math.floor(stok.kasus[k] / faktor));
+    const batas = KESULITAN.map((d) => Math.floor(stokSel(stok, k, d, kasus * faktor, peng.sumber) / faktor));
     let bagi = bagiSisaTerbesar(q, KESULITAN.map((d) => Math.max(0, peng.komposisi[d]) / totalKomposisi), batas);
     // Kesulitan yang stoknya kurang dialihkan ke kesulitan lain yang masih punya ruang (urutan sedang, mudah, sulit).
     let kurang = q - bagi.reduce((a, b) => a + b, 0);
@@ -122,8 +135,6 @@ export function hitungKuota(data: DataUkp, peng: Pengaturan, ctx: KonteksModel):
       const tambah = Math.min(kurang, batas[j] - bagi[j]);
       if (tambah > 0) { bagi = bagi.map((v, x) => (x === j ? v + tambah : v)); kurang -= tambah; }
     }
-    const shareKasus = peng.sumber === 'baru' || !jumlahSel(stok.bank[k]) ? 0 : stok.kasus[k] / jumlahSel(stok.bank[k]);
-    const kasus = Math.min(Math.round(q * shareKasus), Math.floor(stok.kasus[k] / faktor));
     return { kode: k, mudah: bagi[0], sedang: bagi[1], sulit: bagi[2], kasus };
   });
 }
@@ -154,7 +165,7 @@ export function cekPersediaan(data: DataUkp, peng: Pengaturan, baris: BarisKuota
     const stokBaris = jumlahSel(stok.bank[b.kode]) + (peng.sumber === 'bank' ? 0 : jumlahSel(stok.model[b.kode]));
     for (const d of KESULITAN) {
       const butuh = b[d] * faktor;
-      const ada = stok.bank[b.kode][d] + (peng.sumber === 'bank' ? 0 : stok.model[b.kode][d]);
+      const ada = stokSel(stok, b.kode, d, b.kasus * faktor, peng.sumber);
       if (butuh > ada) pesan.push(b.kode + ' · ' + d + ': butuh ' + butuh + ' soal untuk ' + faktor + ' paket, tersedia ' + Math.floor(ada) + '.');
     }
     if (b.kasus > q) pesan.push(b.kode + ': soal kasus (' + b.kasus + ') melebihi kuota materi (' + q + ').');

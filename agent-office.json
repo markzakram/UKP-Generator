@@ -1,5 +1,5 @@
 {
-  "_keterangan": "Pekerjaan tanpa token untuk Agent Office (operator UKP Generator / UKP Studio). Meniru npm run dev / generate / verify / verify:quality / verify:models / verify:export / verify:materi / import:data di package.json dan opsi scripts/generate.ts (lihat npm run generate -- --help). Kalau script atau opsi CLI berubah, sesuaikan berkas ini di perubahan yang sama. Format: README Agent Office bagian agent-office.json.",
+  "_keterangan": "Pekerjaan tanpa token untuk Agent Office (operator UKP Generator / UKP Studio). Meniru npm run dev / generate / materi / verify / verify:quality / verify:models / verify:export / verify:materi / import:data di package.json dan opsi scripts/generate.ts serta scripts/materi.ts (lihat npm run generate -- --help dan npm run materi -- --help). Kalau script atau opsi CLI berubah, sesuaikan berkas ini di perubahan yang sama. Format: README Agent Office bagian agent-office.json.",
   "nama": "UKP Generator",
   "pekerjaan": [
     {
@@ -42,11 +42,11 @@
         ["--out", "output/{waktu}"]
       ],
       "parameter": {
-        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif: B = materi A+B, C = A+B+C.", "contoh": "C", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
+        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif per subtema: A 33, A+B 56, A+B+C 69. Sebaran kesulitan bawaan ikut tingkat (A 40/45/15, B 30/50/20, C 20/50/30).", "contoh": "C", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
         "jenis": { "jenis": "teks", "label": "Jenis paket", "bantuan": "tryout (semua materi), materi (isi kode materi), atau jebakan (drill ketentuan yang berubah 2025–2026). Jenis subtema hanya lewat aplikasi atau terminal.", "contoh": "tryout", "bawaan": "tryout", "pola": "^(tryout|materi|jebakan)$", "dari_tugas": "\\b(tryout|jebakan)\\b" },
         "materi": { "jenis": "teks", "label": "Materi (khusus jenis materi)", "bantuan": "Kode dipisah koma: KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT. Kosongkan untuk semua materi.", "contoh": "PPN,KUP", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
         "soal": { "jenis": "teks", "label": "Soal per paket", "bantuan": "1 sampai 200. Kosongkan untuk bawaan: tryout 100, lainnya 40.", "contoh": "100", "pola": "^(?:[1-9]|[1-9]\\d|1\\d\\d|200)$", "dari_tugas": "\\d+(?=\\s*(?:soal|butir)\\b)" },
-        "paket": { "jenis": "teks", "label": "Jumlah paket", "bantuan": "1 sampai 50 (bawaan 1). Tanpa soal kembar, bank acuan cukup untuk 12 paket tryout 100 soal Tingkat C, 7 Tingkat B, atau 6 Tingkat A (diukur 2 Nov 2026); lebih dari itu gagal dengan pesan Persediaan.", "contoh": "3", "bawaan": "1", "pola": "^(?:[1-9]|[1-4]\\d|50)$", "dari_tugas": "\\d+(?=\\s*paket\\b)" },
+        "paket": { "jenis": "teks", "label": "Jumlah paket", "bantuan": "1 sampai 50 (bawaan 1). Tanpa soal kembar, bank acuan cukup untuk 10 paket tryout 100 soal Tingkat C, 7 Tingkat B, atau 9 Tingkat A (diukur 3 Nov 2026 dengan sebaran kesulitan bawaan tiap tingkat); lebih dari itu gagal dengan pesan Persediaan.", "contoh": "3", "bawaan": "1", "pola": "^(?:[1-9]|[1-4]\\d|50)$", "dari_tugas": "\\d+(?=\\s*paket\\b)" },
         "sumber": { "jenis": "teks", "label": "Sumber soal", "bantuan": "campuran (bawaan: soal baru dari model untuk materi bermodel + bank acuan), bank (hanya bank acuan LatihUKP), atau baru (hanya soal baru).", "contoh": "campuran", "bawaan": "campuran", "pola": "^(campuran|bank|baru)$" },
         "seed": { "jenis": "teks", "label": "Seed", "bantuan": "Seed yang sama menghasilkan paket yang sama. Kosongkan untuk UKP-<tingkat>-01.", "contoh": "UKP-C-01", "pola": "^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$", "dari_tugas": "\\bseed\\s*[:=]?\\s*([A-Za-z0-9][A-Za-z0-9._-]*)" },
         "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "Dipisah koma: json, pdf, docx, csv, siadu-docx (Word SiAdu), siadu-xlsx (Excel template Bank Soal SiAdu), uji-html (berkas uji peserta tanpa kunci, satu per paket). Bawaan json. SiAdu hanya isi lengkap atau soal-jawaban.", "contoh": "json,pdf,siadu-docx", "bawaan": "json", "pola": "^(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html)(,(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html))*$" },
@@ -65,6 +65,48 @@
       "gagal": "Error: ([^\\r\\n]+)",
       "saran_gagal": { "pola": "Persediaan", "pesan": "Kurangi jumlah paket atau soal, atau centang 'Boleh pakai soal yang sama di paket berbeda'." },
       "ringkasan": "Paket UKP selesai dibuat",
+      "batas_menit": 5
+    },
+    {
+      "id": "buatmateri",
+      "judul": "Buat deck materi UKP (CLI)",
+      "singkat": "Buat materi UKP",
+      "tab": "Materi",
+      "tombol": "Susun naskah",
+      "kata_kunci": ["buat", "membuat", "buatkan", "bikin", "bikinin", "generate", "materi", "deck", "ppt", "pptx", "slide", "presentasi", "bahan ajar"],
+      "wajib_salah_satu": ["materi ukp", "deck ukp", "ppt ukp", "pptx ukp", "slide ukp", "presentasi ukp", "bahan ajar ukp", "materi tingkat a", "materi tingkat b", "materi tingkat c", "deck materi", "ppt materi"],
+      "perintah": [
+        "npm", "run", "materi", "--",
+        ["--tingkat", "{tingkat}"],
+        ["--kode", "{kode}"],
+        ["--subtema", "{subtema}"],
+        "{hanya_baru?--hanya-baru}",
+        ["--kepadatan", "{kepadatan}"],
+        ["--format", "{format}"],
+        "{zip?--zip}",
+        "{setuju_acuan?--setuju-acuan}",
+        ["--out", "output/materi-{waktu}"]
+      ],
+      "parameter": {
+        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif: A 33 subtema, A+B 56, A+B+C 69 (lihat docs/Cakupan-Materi-UKP.xlsx).", "contoh": "A", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
+        "kode": { "jenis": "teks", "label": "Materi (kode)", "bantuan": "Per materi: kode dipisah koma (KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT). Kosongkan kode dan subtema untuk semua subtema dalam cakupan tingkat.", "contoh": "PPN", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
+        "subtema": { "jenis": "teks", "label": "Subtema", "bantuan": "Per subtema: KODE::Nama subtema, dipisah titik koma, persis seperti di tab Materi atau npm run materi -- --daftar.", "contoh": "PPN::DPP & tarif PPN", "pola": "^([A-Z]{2,3}::[^;]+(;[A-Z]{2,3}::[^;]+)*)?$" },
+        "hanya_baru": { "jenis": "tanda", "label": "Hanya subtema yang mulai di tingkat ini", "bantuan": "Per tingkat tanpa kode/subtema: B 23 subtema, C 13 subtema.", "jika_disebut": ["hanya tambahan", "subtema baru", "tambahan tingkat", "materi baru tingkat"] },
+        "kepadatan": { "jenis": "teks", "label": "Kepadatan", "bantuan": "ringkas (±9 slide per deck), standar (±18), atau lengkap (±31).", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b" },
+        "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "pptx (deck) dan/atau json (naskah yang bisa diimpor di tab Materi), dipisah koma. Bawaan pptx.", "contoh": "pptx", "bawaan": "pptx", "pola": "^(pptx|json)(,(pptx|json))?$" },
+        "zip": { "jenis": "tanda", "label": "Bungkus jadi satu .zip", "bantuan": "Satu folder per kode bila lebih dari satu materi; sekitar 2,4 MB per deck.", "jika_disebut": ["zip", "satu berkas"] },
+        "setuju_acuan": { "jenis": "tanda", "label": "Setuju deck memuat teks acuan LatihUKP (Draf internal)", "bantuan": "Wajib untuk .pptx: isi deck masih teks acuan LatihUKP yang belum ditelaah, jadi berkas diberi tanda Draf internal dan bukan untuk peserta (PRD-Materi KM2).", "jika_disebut": ["setuju acuan", "draf internal", "internal"] }
+      },
+      "catatan": [
+        "menjalankan npm run materi (scripts/materi.ts); tanpa API key dan tanpa internet; satu deck per subtema",
+        "lingkup: isi subtema untuk per subtema, kode untuk per materi, atau kosongkan keduanya untuk per tingkat",
+        "hasil di output/materi-<tanggal_jam>/: laporan.json (slide, teks meluap, catatan penyusun per deck) dan .pptx/.json per subtema (folder per kode) atau satu .zip",
+        "suntingan naskah, pratinjau, dan tanda Ditelaah hanya di aplikasi (tab Materi)"
+      ],
+      "hasil": "^(?:RINGKASAN|BERKAS) -> (.+)$",
+      "gagal": "Error: ([^\\r\\n]+)",
+      "saran_gagal": { "pola": "teks acuan", "pesan": "Centang 'Setuju deck memuat teks acuan LatihUKP (Draf internal)' untuk penggunaan internal, atau pilih format json." },
+      "ringkasan": "Deck materi UKP selesai dibuat",
       "batas_menit": 5
     },
     {

@@ -27,11 +27,27 @@ export function susunData(m: DataMentah): DataUkp {
   };
 }
 
-/** Tingkat efektif sebuah soal: override "KODE::Subtema" > override "KODE" > tingkat sumber. */
-export function tingkatSoal(s: Pick<BankSoal, 'kode' | 'subtema' | 'tingkat'>, mapping: Mapping): Tingkat {
-  return mapping.override[s.kode + '::' + s.subtema] ?? mapping.override[s.kode] ?? s.tingkat;
-}
 export const naik = (t: Tingkat) => TINGKAT.indexOf(t);
+const lebihTinggi = (a: Tingkat, b: Tingkat) => (naik(a) >= naik(b) ? a : b);
+
+/** Tingkat subtema (cakupan materi): override "KODE::Subtema" > override "KODE" > hasil impor; null bila tidak dikenal. */
+export function tingkatSubtema(kode: string, subtema: string, mapping: Mapping): Tingkat | null {
+  return mapping.override[kode + '::' + subtema] ?? mapping.override[kode] ?? mapping.subtema?.[kode + '::' + subtema] ?? null;
+}
+
+/**
+ * Tingkat efektif soal bank atau model: yang lebih tinggi antara tingkat subtema dan label tingkatnya sendiri,
+ * jadi soal pendalaman (label di atas subtema) baru masuk paket tingkat labelnya.
+ */
+export function tingkatSoal(s: Pick<BankSoal, 'kode' | 'subtema' | 'tingkat'>, mapping: Mapping): Tingkat {
+  const sub = tingkatSubtema(s.kode, s.subtema, mapping);
+  return sub ? lebihTinggi(sub, s.tingkat) : s.tingkat;
+}
+
+/** Tingkat efektif kartu aturan untuk deck materi: ikut tingkat subtemanya. */
+export function tingkatAturan(a: Pick<Aturan, 'kode' | 'subtema' | 'tingkat'>, mapping: Mapping): Tingkat {
+  return tingkatSubtema(a.kode, a.subtema, mapping) ?? a.tingkat;
+}
 /** Cakupan kumulatif: soal tingkat A masuk paket A, B, dan C. */
 export const dalamCakupan = (soal: Tingkat, paket: Tingkat) => naik(soal) <= naik(paket);
 

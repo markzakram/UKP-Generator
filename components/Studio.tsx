@@ -14,9 +14,10 @@ import HasilPaket from './HasilPaket';
 import Pustaka from './Pustaka';
 import Riwayat from './Riwayat';
 import UjiPeserta from './UjiPeserta';
+import TabMateri from './materi/TabMateri';
 import { IkonLembar, Toast } from './ui';
 
-export type Tab = 'atur' | 'hasil' | 'uji' | 'pustaka' | 'riwayat';
+export type Tab = 'atur' | 'hasil' | 'uji' | 'materi' | 'pustaka' | 'riwayat';
 const KUNCI_PENGATURAN = 'ukp-studio-pengaturan-v1';
 
 function bacaPengaturan(): Pengaturan {
@@ -100,6 +101,7 @@ export default function Studio() {
     { id: 'atur', label: 'Atur paket' },
     { id: 'hasil', label: 'Hasil paket' },
     { id: 'uji', label: 'Uji peserta' },
+    { id: 'materi', label: 'Materi' },
     { id: 'pustaka', label: 'Pustaka' },
     { id: 'riwayat', label: 'Riwayat' },
   ];
@@ -129,6 +131,7 @@ export default function Studio() {
       {data && tab === 'atur' && <AturPaket data={data} peng={peng} setPeng={setPeng} buat={buat} galat={galatBuat} kabar={kabar} />}
       {data && tab === 'hasil' && ws && <HasilPaket data={data} ws={ws} setWs={setWs} kabar={kabar} />}
       {data && tab === 'uji' && ws && <UjiPeserta ws={ws} kabar={kabar} />}
+      {data && tab === 'materi' && <TabMateri data={data} tanggalAcuan={peng.tanggalAcuan} kabar={kabar} />}
       {data && tab === 'pustaka' && <Pustaka data={data} tanggalAcuan={peng.tanggalAcuan} />}
       {data && tab === 'riwayat' && <Riwayat ws={ws} daftar={daftar} buka={(w) => { setWsState(w); setTab('hasil'); }} hapus={hapus} setWs={setWs} kabar={kabar} data={data} />}
       {toast && <Toast pesan={toast.pesan} galat={toast.galat} tutup={tutupToast} />}

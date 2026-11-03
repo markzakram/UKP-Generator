@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| Status | Versi 1.0. Tahap 0–5 selesai dan lulus QC (2 Nov 2026, lihat QC.md). K1–K9 memakai usulan bawaan (bagian 15); penelaah materi (K8) dan dokumen BPPK (K3) masih ditunggu |
+| Status | Versi 1.1. Tahap 0–5 selesai dan lulus QC (2 Nov 2026, lihat QC.md). 3 Nov 2026: cakupan tingkat per subtema dan komposisi kesulitan per tingkat (K3, K4). K1–K9 memakai usulan bawaan (bagian 15); penelaah materi (K8) dan dokumen BPPK (K3) masih ditunggu |
 | Tanggal | 2 November 2026 |
 | Folder | `G:\Ali\code\UKP Generator` |
 | Acuan pola | `G:\Ali\code\SKD Generator` (JadiASN SKD Studio v2.2) |
@@ -115,7 +115,7 @@ Kode materi `g` dari sumber dipakai sebagai kunci utama.
 
 Hierarkinya: **Tingkat → Materi (g) → Subtema (dari kartu aturan, 5–8 per materi) → Kartu aturan → Soal.**
 
-**Masalah label tingkat.** Label tingkat di soal mengikuti pengelompokan materi situs (KUP, OP, PP, PPN, BM sebagian besar A). Kisi-kisi di `topics.json` membagi tiap materi per butir. Contohnya, KUP: "C: STP dan SKP…, pembetulan, keberatan…, sanksi…" dan "A: NPWP/PKP, pembayaran & pelaporan…". Label tingkat di kartu aturan juga berbeda (KUP: A 13, B 4, C 22). Karena itu generator menyimpan pemetaan tingkat per subtema dalam satu berkas `data/ukp-mapping.json`, seperti `skd-mapping.json` di SKD Generator. Isi awalnya mengikuti kisi-kisi, lalu disahkan terhadap dokumen resmi *Cakupan Materi UKP – BPPK (14 Okt 2026)*. Lihat keputusan K3.
+**Masalah label tingkat.** Label tingkat di soal mengikuti pengelompokan materi situs (KUP, OP, PP, PPN, BM sebagian besar A). Kisi-kisi di `topics.json` membagi tiap materi per butir. Contohnya, KUP: "C: STP dan SKP…, pembetulan, keberatan…, sanksi…" dan "A: NPWP/PKP, pembayaran & pelaporan…". Label tingkat di kartu aturan juga berbeda (KUP: A 13, B 4, C 22). Karena itu generator menyimpan pemetaan tingkat per subtema dalam satu berkas `data/ukp-mapping.json`, seperti `skd-mapping.json` di SKD Generator, lalu disahkan terhadap dokumen resmi *Cakupan Materi UKP – BPPK (14 Okt 2026)*. Sejak 3 November 2026 pemetaan itu dihitung dari label soal bank, bukan dari kisi-kisi: A 33, B 23, C 13 subtema (lihat keputusan K3).
 
 ## 8. Lingkup fitur
 
@@ -129,7 +129,7 @@ Prioritas: **P0** = versi pertama (MVP), **P1** = tahap berikut, **P2** = nanti.
   - *Latihan per materi*: satu atau beberapa kode `g`.
   - *Latihan per subtema*: filter `Materi::Subtema`.
   - *Drill jebakan aturan* (P1): hanya soal yang menguji ketentuan yang berubah 2025–2026.
-- **Komposisi:** kuota per materi (proporsional bawaan, bisa disunting di tabel), sebaran kesulitan (mudah/sedang/sulit), dan porsi soal kasus.
+- **Komposisi:** kuota per materi (proporsional bawaan, bisa disunting di tabel), sebaran kesulitan (mudah/sedang/sulit), dan porsi soal kasus. Sebaran kesulitan bawaan mengikuti tingkat: A 40/45/15, B 30/50/20, C 20/50/30. Saat tingkat diganti, sebaran ikut berganti dan masih bisa diubah.
 - **Sumber:** bank acuan, soal baru (model berparameter), atau campuran. Lihat F2.
 - **Pengaturan lanjutan:** jumlah paket (maksimal 50), seed, larangan soal kembar antarpaket, dan tanggal acuan aturan (lihat F5).
 - **Cek persediaan sebelum generate.** Kalau stok kurang, tampilkan pesan dengan angka sebenarnya. Kuota tidak boleh diisi diam-diam dengan materi lain.
@@ -361,8 +361,13 @@ Setiap tahap ditutup dengan satu QA gabungan, mengikuti aturan hemat token di CL
 
 - **K1:** nama "UKP Studio" dan aksen amber `#B45309`, diatur di `lib/config.ts`.
 - **K2:** bank LatihUKP berstatus acuan internal. Ekspor Word/Excel SiAdu yang memuat soal *Acuan sumber* meminta konfirmasi.
-- **K3:** dokumen BPPK belum ada. Tingkat diambil dari `tingkat_kisi` soal sumber, dengan cakupan kumulatif A ⊂ A+B ⊂ A+B+C. Penggantian per materi/subtema ditulis di `data/ukp-mapping.json` bagian `override`.
-- **K4:** tryout 100 soal / 180 menit, kuota proporsional terhadap stok, target 5 paket per tingkat tanpa soal kembar.
+- **K3:** dokumen BPPK belum ada. Cakupan kumulatif A ⊂ A+B ⊂ A+B+C. Revisi 3 November 2026, dipilih user:
+  - **Tingkat subtema** (`data/ukp-mapping.json` bagian `subtema`, ditulis `npm run import:data`) = tingkat terendah yang punya minimal 5 soal bank dan minimal 15% soal subtema itu. Hasilnya A 33, B 23, C 13 subtema (tabel di `docs/Cakupan-Materi-UKP.xlsx`). Kisi-kisi situs dan label kartu aturan tidak dipakai, karena keduanya menaruh STP/SKP, sanksi, keberatan, PTKP & tarif OP, serta objek, DPP, dan faktur PPN di C.
+  - **Tingkat soal dan model** = yang lebih tinggi antara tingkat subtema dan label soal/model. Soal pendalaman (misalnya 81 soal PPh 22/23 berlabel B, 24 soal PPh 26 berlabel C) baru masuk paket tingkat labelnya. Stok kumulatif: A 1.170, A+B 1.884, A+B+C 2.387 soal bank.
+  - **Kartu aturan** ikut tingkat subtemanya (deck materi Tingkat A memuat 33 subtema, A+B 56, A+B+C 69).
+  - **`override`** mengganti tingkat subtema per materi atau per materi::subtema.
+  - Label tiga model disamakan dengan soal bank topiknya: `sanksi-bunga`, `nppn`, dan `jasa-konstruksi` menjadi A.
+- **K4:** tryout 100 soal / 180 menit, kuota proporsional terhadap stok, target 5 paket per tingkat tanpa soal kembar. Sebaran kesulitan bawaan per tingkat (3 Nov 2026): A 40/45/15, B 30/50/20, C 20/50/30 (`KOMPOSISI_TINGKAT` di `lib/config.ts`; CLI `--kesulitan` ikut tingkat bila tidak diisi).
 - **K5:** Category = `UKP Tingkat <tingkat soal>`, Lesson = nama materi, Chapter = subtema.
 - **K6:** 4 opsi (A–D).
 - **K7:** tanggal acuan bawaan = hari ini.

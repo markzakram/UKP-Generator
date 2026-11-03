@@ -1,6 +1,6 @@
 // Deck materi tersimpan (tab Materi): naskah yang bisa disunting, naskah asli untuk "kembalikan teks acuan",
 // status telaah, dan riwayat versi. Logika murni; penyimpanan IndexedDB ada di lib/storage.ts.
-import type { Naskah, SlideNaskah } from './naskah';
+import type { Naskah, SlideNaskah, StatusTelaah, TelaahSlide } from './naskah';
 import type { PengaturanMateri } from './susun';
 
 export type StatusDeck = 'draf' | 'telaah';
@@ -33,14 +33,40 @@ function denganNaskah(d: DeckMateri, naskah: Naskah, waktu: string): DeckMateri 
   return { ...d, naskah, riwayat, diperbarui: waktu, status: d.status === 'telaah' ? 'draf' : d.status };
 }
 
-/** Sunting satu slide. Slide berasal acuan berubah menjadi "ditulis ulang". */
+/** Sunting satu slide. Slide berasal acuan berubah menjadi "ditulis ulang"; hasil telaahnya dihapus supaya ditelaah ulang. */
 export function suntingSlide(d: DeckMateri, id: string, ubah: (s: SlideNaskah) => SlideNaskah, waktu: string): DeckMateri {
   const slides = d.naskah.slides.map((s) => {
     if (s.id !== id) return s;
-    const baru = ubah(s);
-    return { ...baru, asal: s.asal === 'acuan' ? 'tulis' as const : baru.asal };
+    const { telaah: _lama, ...baru } = ubah(s);
+    return { ...baru, asal: s.asal === 'acuan' ? 'tulis' as const : baru.asal } as SlideNaskah;
   });
   return denganNaskah(d, { ...d.naskah, slides }, waktu);
+}
+
+/** Catat hasil telaah satu slide (null = hapus). Isi slide tidak berubah, jadi status deck tidak diturunkan. */
+export function telaahSlide(d: DeckMateri, id: string, telaah: TelaahSlide | null, waktu: string): DeckMateri {
+  const slides = d.naskah.slides.map((s) => {
+    if (s.id !== id) return s;
+    const { telaah: _lama, ...sisa } = s;
+    return (telaah ? { ...sisa, telaah } : sisa) as SlideNaskah;
+  });
+  const riwayat = [{ waktu: d.diperbarui, naskah: d.naskah }, ...d.riwayat].slice(0, BATAS_RIWAYAT_MATERI);
+  return { ...d, naskah: { ...d.naskah, slides }, riwayat, diperbarui: waktu };
+}
+
+/** Terapkan baris lembar telaah ke deck yang cocok. Slide yang tidak ada atau status kosong dilewati. */
+export function terapkanLembarTelaah(decks: Record<string, DeckMateri>, baris: { deck: string; slide: string; status: StatusTelaah | null; catatan: string; oleh: string }[], waktu: string) {
+  const hasil: Record<string, DeckMateri> = {};
+  let diterapkan = 0, dilewati = 0;
+  for (const b of baris) {
+    const d = hasil[b.deck] ?? decks[b.deck];
+    if (!d || !b.status || !d.naskah.slides.some((s) => s.id === b.slide)) { dilewati++; continue; }
+    const lama = d.naskah.slides.find((s) => s.id === b.slide)?.telaah;
+    if (lama && lama.status === b.status && (lama.catatan ?? '') === b.catatan && (lama.oleh ?? '') === b.oleh) { dilewati++; continue; }
+    hasil[b.deck] = telaahSlide(d, b.slide, { status: b.status, catatan: b.catatan || undefined, oleh: b.oleh || undefined, waktu }, waktu);
+    diterapkan++;
+  }
+  return { decks: Object.values(hasil), diterapkan, dilewati };
 }
 
 /** Kembalikan slide ke teks hasil susun (naskah asli). */

@@ -33,5 +33,6 @@ export function muatDataNode(): DataUkp {
     konteks: baca(BERKAS_DATA.konteks),
     jebakan: baca(BERKAS_DATA.jebakan),
     orisinal: bacaOrisinal(),
+    tulis: baca(BERKAS_DATA.tulis),
   });
 }

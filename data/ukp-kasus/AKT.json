@@ -1,0 +1,62 @@
+[
+  {
+    "id": "O-AKT-02", "bank": "orisinal", "paketSumber": null, "kode": "AKT", "materi": "Akuntansi Perpajakan", "subtema": "Aspek pajak aset, piutang & persediaan", "subtemaDasar": "manual",
+    "subtopik": "Metode persediaan dan penurunan nilai", "tingkat": "B", "tipe": "Jebakan umum", "bloom": "understand", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "Secara komersial, PT Pangan Lestari menilai persediaan dengan metode LIFO dan membentuk penyisihan penurunan nilai persediaan ke nilai realisasi neto Rp75.000.000. Perlakuan fiskal yang benar dalam rekonsiliasi adalah ...",
+    "opsi": { "A": "LIFO tetap diterima asal diterapkan taat asas; penyisihan boleh dibiayakan", "B": "Harga pokok dihitung ulang dengan rata-rata atau FIFO; penyisihan dikoreksi positif", "C": "LIFO tetap diterima asal diterapkan taat asas; penyisihan dikoreksi positif", "D": "Harga pokok dihitung ulang dengan rata-rata atau FIFO; penyisihan boleh dibiayakan" },
+    "kunci": "B",
+    "inti": "Fiskal menilai persediaan berdasarkan harga perolehan dengan rata-rata atau FIFO (UU PPh Pasal 10 ayat (6)); LIFO tidak diperkenankan. Penyisihan penurunan nilai persediaan tidak boleh dikurangkan (Pasal 9 ayat (1) huruf c), sehingga dikoreksi positif.",
+    "langkah": ["Harga pokok fiskal memakai harga perolehan dengan rata-rata atau FIFO, diterapkan taat asas.", "Selisih harga pokok LIFO dengan rata-rata/FIFO dikoreksi dalam rekonsiliasi.", "Penyisihan penurunan nilai ke nilai realisasi neto Rp75.000.000 dikoreksi positif."],
+    "kenapaSalah": { "A": "LIFO tidak diperkenankan, dan penyisihan penurunan nilai persediaan tidak boleh dikurangkan.", "C": "Fiskal hanya mengenal rata-rata atau FIFO (UU PPh Pasal 10 ayat (6)).", "D": "Penyisihan penurunan nilai persediaan tidak boleh dikurangkan (Pasal 9 ayat (1) huruf c)." },
+    "penyebabSalah": { "A": "belum_tahu_aturan", "C": "lupa_syarat", "D": "lupa_syarat" },
+    "dasarHukum": ["UU PPh Pasal 10 ayat (6)", "UU PPh Pasal 9 ayat (1) huruf c"], "ruleIds": ["R-AKT-15"],
+    "catatanAturan": null, "poinIngat": "Persediaan fiskal: rata-rata atau FIFO (LIFO tidak boleh); penurunan nilai ke NRV tidak diakui fiskal.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-AKT-03", "bank": "orisinal", "paketSumber": null, "kode": "AKT", "materi": "Akuntansi Perpajakan", "subtema": "Aspek pajak aset, piutang & persediaan", "subtemaDasar": "manual",
+    "subtopik": "Koreksi CKPN dan penghapusan piutang tanpa bukti", "tingkat": "B", "tipe": "Hitungan dasar", "bloom": "analyze", "kesulitan": "sulit", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Mitra Dagang (bukan bank atau lembaga pembiayaan) membebankan dalam laba rugi 2025: (1) pembentukan CKPN piutang usaha Rp80.000.000; (2) penghapusan piutang Rp30.000.000 yang hanya didukung memo direksi (debiturnya bukan debitur kecil); (3) penghapusan piutang Rp20.000.000 yang perkaranya telah diserahkan ke Pengadilan Negeri dan daftarnya diserahkan ke DJP. Koreksi fiskal positif atas ketiga beban tersebut adalah ...",
+    "opsi": { "A": "Rp80.000.000", "B": "Rp130.000.000", "C": "Rp110.000.000", "D": "Rp30.000.000" },
+    "kunci": "C",
+    "inti": "CKPN Rp80.000.000 tidak boleh dikurangkan dan penghapusan Rp30.000.000 tanpa bukti penagihan tidak memenuhi syarat, sehingga koreksi positif Rp110.000.000; penghapusan Rp20.000.000 memenuhi syarat dan tetap menjadi biaya.",
+    "langkah": ["Cadangan/CKPN piutang usaha selain bank dan lembaga pembiayaan tertentu tidak boleh dikurangkan: koreksi Rp80.000.000.", "Penghapusan piutang boleh dibiayakan bila dibebankan di laba rugi, daftarnya diserahkan ke DJP, dan ada bukti penagihan; memo direksi tidak cukup: koreksi Rp30.000.000.", "Butir (3) memenuhi syarat. Koreksi positif = Rp80.000.000 + Rp30.000.000 = Rp110.000.000."],
+    "kenapaSalah": { "A": "Hanya mengoreksi CKPN; penghapusan piutang tanpa bukti penagihan juga tidak boleh dibiayakan.", "B": "Mengoreksi seluruh beban; penghapusan butir (3) memenuhi syarat Pasal 6 ayat (1) huruf h.", "D": "CKPN bagi usaha selain bank dan lembaga pembiayaan tidak boleh dikurangkan (Pasal 9 ayat (1) huruf c)." },
+    "penyebabSalah": { "A": "lupa_syarat", "B": "salah_hitung", "D": "belum_tahu_aturan" },
+    "dasarHukum": ["UU PPh Pasal 6 ayat (1) huruf h dan Pasal 9 ayat (1) huruf c s.t.d.d. UU 7/2021 (HPP)", "PP 55/2022 Pasal 19"], "ruleIds": ["R-AKT-14"],
+    "catatanAturan": null, "poinIngat": "Non-bank: CKPN dikoreksi positif; penghapusan piutang perlu beban di laba rugi, daftar ke DJP, dan bukti penagihan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-AKT-04", "bank": "orisinal", "paketSumber": null, "kode": "AKT", "materi": "Akuntansi Perpajakan", "subtema": "Organisasi nirlaba", "subtemaDasar": "manual",
+    "subtopik": "Sisa lebih yang tidak ditanamkan dalam 4 tahun", "tingkat": "B", "tipe": "Kasus singkat", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Yayasan Pendidikan Cendekia (nirlaba, terdaftar pada instansi yang membidanginya) memperoleh sisa lebih Rp800.000.000 pada Tahun 2022. Selama 2023–2026 yayasan menanamkan Rp650.000.000 dalam sarana dan prasarana pendidikan di Indonesia dan melaporkannya dalam SPT. Perlakuan atas sisa lebih Rp150.000.000 yang tidak ditanamkan adalah ...",
+    "opsi": { "A": "Menjadi objek PPh pada Tahun Pajak 2027, setelah jangka 4 tahun berakhir", "B": "Seluruh sisa lebih Rp800.000.000 menjadi objek PPh Tahun Pajak 2022", "C": "Tetap dikecualikan dari objek selama yayasan bersifat nirlaba", "D": "Menjadi objek PPh pada Tahun Pajak 2026, saat jangka 4 tahun berakhir" },
+    "kunci": "D",
+    "inti": "Sisa lebih Tahun 2022 dikecualikan sebesar yang ditanamkan dalam sarana dan prasarana paling lama 4 tahun (sampai 2026); sisa Rp150.000.000 yang tidak ditanamkan menjadi objek PPh pada Tahun Pajak 2026.",
+    "langkah": ["Sisa lebih badan nirlaba pendidikan yang terdaftar dikecualikan dari objek bila ditanamkan dalam sarana dan prasarana pendidikan paling lama 4 tahun.", "Sisa lebih 2022 → jangka penanaman sampai 2026.", "Bagian yang tidak ditanamkan, Rp150.000.000, menjadi objek pada akhir Tahun Pajak 2026 dan dikoreksi dalam SPT 2026."],
+    "kenapaSalah": { "A": "Pola aturan lama; kini sisa yang tidak ditanamkan menjadi objek pada akhir tahun pajak saat jangka 4 tahun berakhir.", "B": "Yang menjadi objek hanya bagian yang tidak ditanamkan dalam 4 tahun.", "C": "Pengecualian hanya sebesar yang ditanamkan dalam jangka 4 tahun." },
+    "penyebabSalah": { "A": "salah_periode", "B": "salah_hitung", "C": "lupa_syarat" },
+    "dasarHukum": ["UU PPh Pasal 4 ayat (3) huruf m s.t.d.d. UU 7/2021 (HPP)", "PP 55/2022 Pasal 14"], "ruleIds": ["R-AKT-20"],
+    "catatanAturan": null, "poinIngat": "Sisa lebih nirlaba pendidikan: tanamkan dalam 4 tahun; sisanya objek pada akhir tahun keempat.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-AKT-05", "bank": "orisinal", "paketSumber": null, "kode": "AKT", "materi": "Akuntansi Perpajakan", "subtema": "Merger & likuidasi", "subtemaDasar": "manual",
+    "subtopik": "Keuntungan likuidasi atas pengalihan harta", "tingkat": "C", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Armada Jaya dilikuidasi pada 2026. Mesin produksi dengan nilai sisa buku fiskal Rp1.200.000.000 dan harga pasar Rp1.700.000.000 dialihkan kepada pemegang saham sebagai pembagian sisa kekayaan. Tidak ada penetapan lain dari Menteri Keuangan. Penghasilan PT Armada Jaya dari pengalihan mesin tersebut adalah ...",
+    "opsi": { "A": "Rp500.000.000", "B": "Rp0", "C": "Rp1.700.000.000", "D": "Rp1.200.000.000" },
+    "kunci": "A",
+    "inti": "Pengalihan harta dalam likuidasi dinilai dengan harga pasar (UU PPh Pasal 10 ayat (3)); keuntungan = Rp1.700.000.000 − Rp1.200.000.000 = Rp500.000.000.",
+    "langkah": ["Nilai pengalihan harta dalam likuidasi adalah jumlah yang seharusnya menurut harga pasar (UU PPh Pasal 10 ayat (3)).", "Keuntungan karena likuidasi merupakan penghasilan (Pasal 4 ayat (1) huruf d angka 3).", "Rp1.700.000.000 − Rp1.200.000.000 = Rp500.000.000."],
+    "kenapaSalah": { "B": "Pengalihan harta dalam likuidasi memakai harga pasar, sehingga selisihnya dengan nilai sisa buku menjadi penghasilan.", "C": "Penghasilan adalah selisih harga pasar dengan nilai sisa buku fiskal, bukan seluruh harga pasar.", "D": "Nilai sisa buku bukan penghasilan; yang menjadi penghasilan adalah keuntungan di atasnya." },
+    "penyebabSalah": { "B": "belum_tahu_aturan", "C": "salah_hitung", "D": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 10 ayat (3)", "UU PPh Pasal 4 ayat (1) huruf d angka 3"], "ruleIds": ["R-AKT-23"],
+    "catatanAturan": null, "poinIngat": "Likuidasi dan restrukturisasi memakai harga pasar; selisih dengan nilai sisa buku fiskal adalah penghasilan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  }
+]

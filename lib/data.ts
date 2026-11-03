@@ -1,5 +1,5 @@
 import { TINGKAT } from './config';
-import type { Aturan, BankSoal, DataUkp, Jebakan, Konteks, Mapping, MateriData, ParameterData, Tingkat } from './types';
+import type { Aturan, BankSoal, DataUkp, Jebakan, Konteks, Mapping, MateriData, ParameterData, Tingkat, TulisUlang } from './types';
 
 export interface DataMentah {
   bank: { soal: BankSoal[] };
@@ -10,6 +10,7 @@ export interface DataMentah {
   konteks?: Konteks;
   jebakan?: Jebakan[];
   orisinal?: BankSoal[];
+  tulis?: TulisUlang;
 }
 
 export const KONTEKS_KOSONG: Konteks = { kota: [], usaha: [], namaPt: [], namaOrang: [] };
@@ -24,6 +25,7 @@ export function susunData(m: DataMentah): DataUkp {
     parameter: m.parameter ?? {},
     konteks: m.konteks ?? KONTEKS_KOSONG,
     jebakan: m.jebakan ?? [],
+    tulis: { aturan: m.tulis?.aturan ?? {}, kartu: m.tulis?.kartu ?? {}, kuis: m.tulis?.kuis ?? {}, materi: m.tulis?.materi ?? {} },
   };
 }
 
@@ -60,6 +62,7 @@ export const BERKAS_DATA = {
   konteks: 'ukp-konteks.json',
   jebakan: 'ukp-jebakan.json',
   orisinal: 'ukp-orisinal.json',
+  tulis: 'ukp-tulis.json',
 } as const;
 
 /** Pemuat untuk browser: berkas disalin ke public/data oleh npm run import:data. */
@@ -72,7 +75,7 @@ export async function muatDataBrowser(base = '/data/'): Promise<DataUkp> {
     }
     return res.json() as Promise<T>;
   };
-  const [bank, rules, mapping, materi, parameter, konteks, jebakan, orisinal] = await Promise.all([
+  const [bank, rules, mapping, materi, parameter, konteks, jebakan, orisinal, tulis] = await Promise.all([
     ambil<DataMentah['bank']>(BERKAS_DATA.bank, true),
     ambil<DataMentah['rules']>(BERKAS_DATA.rules, true),
     ambil<Mapping>(BERKAS_DATA.mapping, true),
@@ -81,6 +84,7 @@ export async function muatDataBrowser(base = '/data/'): Promise<DataUkp> {
     ambil<Konteks>(BERKAS_DATA.konteks, false),
     ambil<Jebakan[]>(BERKAS_DATA.jebakan, false),
     ambil<BankSoal[]>(BERKAS_DATA.orisinal, false),
+    ambil<TulisUlang>(BERKAS_DATA.tulis, false),
   ]);
-  return susunData({ bank: bank!, rules: rules!, mapping: mapping!, materi: materi!, parameter, konteks, jebakan, orisinal });
+  return susunData({ bank: bank!, rules: rules!, mapping: mapping!, materi: materi!, parameter, konteks, jebakan, orisinal, tulis });
 }

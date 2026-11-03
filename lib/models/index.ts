@@ -5,10 +5,11 @@ import { MODEL_LANJUTAN } from './lanjutan';
 import { pphOp, umkm } from './op';
 import { pph21BukanPegawai, pph23, pph26P3b, pph42Sewa } from './pp';
 import { ppnDpp, ppnTerutang } from './ppn';
+import { MODEL_TAMBAHAN } from './tambahan';
 import type { KonteksModel, ModelSoal } from './types';
 
-// Daftar model soal berparameter (PRD bagian 9). Tahap 3: 10 model MVP. Tahap 5: 11 model lanjutan.
-export const MODELS: ModelSoal[] = [pph23, pph42Sewa, pph21BukanPegawai, pph26P3b, ppnDpp, ppnTerutang, pphOp, umkm, beaMeterai, tenggat, ...MODEL_LANJUTAN];
+// Daftar model soal berparameter (PRD bagian 9). Tahap 3: 10 model MVP. Tahap 5: 11 model lanjutan. R4: 4 model tambahan.
+export const MODELS: ModelSoal[] = [pph23, pph42Sewa, pph21BukanPegawai, pph26P3b, ppnDpp, ppnTerutang, pphOp, umkm, beaMeterai, tenggat, ...MODEL_LANJUTAN, ...MODEL_TAMBAHAN];
 
 export const modelUntuk = (kode: Kode) => MODELS.filter((m) => m.kode === kode);
 export const modelById = (id: string) => MODELS.find((m) => m.id === id);

@@ -121,7 +121,10 @@ export function kunciTetap(s: Soal): Huruf | null {
   return s.posisiTetap ? s.kunci : null;
 }
 
-function rakitBaris(data: DataUkp, peng: Pengaturan, baris: BarisKuota, pool: Pool, ctx: KonteksModel, r: Rng, global: Terpakai, lokal: Terpakai, kondisiPaket: Set<string>, kurang: string[], label: string, tetap: Record<Huruf, number>): Soal[][] {
+/** Kesulitan pengganti terdekat bila stok satu kesulitan habis (R6). */
+const TETANGGA: Record<Kesulitan, Kesulitan[]> = { mudah: ['sedang', 'sulit'], sedang: ['mudah', 'sulit'], sulit: ['sedang', 'mudah'] };
+
+function rakitBaris(data: DataUkp, peng: Pengaturan, baris: BarisKuota, pool: Pool, ctx: KonteksModel, r: Rng, global: Terpakai, lokal: Terpakai, kondisiPaket: Set<string>, kurang: string[], label: string, tetap: Record<Huruf, number>, geser: string[], sisaPaket = 1): Soal[][] {
   const unit: Soal[][] = [];
   const butuh: Sel = { mudah: baris.mudah, sedang: baris.sedang, sulit: baris.sulit };
   const ambil = (soal: Soal[]) => { unit.push(soal); for (const s of soal) { catatTerpakai(lokal, s); butuh[s.kesulitan]--; const h = kunciTetap(s); if (h) tetap[h]++; } };
@@ -177,18 +180,25 @@ function rakitBaris(data: DataUkp, peng: Pengaturan, baris: BarisKuota, pool: Po
       if (!dapat) break;
     }
   };
-  if (targetModel > 0) isiModel(targetModel);
-  // 3. Soal tunggal dari bank (sumber "baru": bank orisinal saja).
-  {
+  const isiBank = (jatah: (d: Kesulitan, calon: number) => number = () => Infinity) => {
     for (const d of KESULITAN) {
       if (butuh[d] <= 0) continue;
       const calon = r.shuffle(pool.tunggal.filter((b) => b.kode === baris.kode && b.kesulitan === d && boleh(b)));
+      let sisaJatah = jatah(d, calon.filter((b) => bebas(b, global, lokal, peng.larangKembar)).length);
       for (const b of calon) {
-        if (butuh[d] <= 0) break;
-        if (bebas(b, global, lokal, peng.larangKembar)) ambil([dariBank(b, data)]);
+        if (butuh[d] <= 0 || sisaJatah <= 0) break;
+        if (bebas(b, global, lokal, peng.larangKembar)) { ambil([dariBank(b, data)]); sisaJatah--; }
       }
     }
-  }
+  };
+  // Sumber "baru": soal orisinal lebih dulu (menjangkau subtema konsep yang tidak punya model), dibagi rata
+  // antarpaket bila soal kembar dilarang (sisa stok ÷ sisa paket); sisanya diisi model.
+  // Paket awal tidak mengambil lebih dari bagian adilnya (dibulatkan ke bawah); sisa pembulatan jatuh ke paket akhir,
+  // saat stok model paling tipis.
+  if (peng.sumber === 'baru') isiBank((_, n) => (peng.larangKembar ? Math.floor(n / sisaPaket) : Infinity));
+  if (targetModel > 0) isiModel(peng.sumber === 'baru' ? sisa() : targetModel);
+  // 3. Soal tunggal dari bank (sumber "baru": bank orisinal saja).
+  isiBank();
   // 4. Sisa sel pada campuran boleh diisi model dengan materi dan kesulitan yang sama.
   if (peng.sumber === 'campuran' && adaModel && sisa() > 0) isiModel(sisa());
   // 5. Soal tunggal habis: blok kasus tambahan yang muat di sisa sel (soal kasus bisa sedikit di atas target).
@@ -200,6 +210,25 @@ function rakitBaris(data: DataUkp, peng: Pengaturan, baris: BarisKuota, pool: Po
       for (const b of bl.anggota) perSel[b.kesulitan]++;
       if (KESULITAN.some((d) => perSel[d] > butuh[d])) continue;
       ambil(bl.anggota.map((b) => dariBank(b, data)));
+    }
+  }
+  // 6. Stok satu kesulitan habis (biasanya pada banyak paket tanpa soal kembar): isi dari kesulitan terdekat
+  // pada materi yang sama, lalu catat pergeserannya. Materi dan jumlah soal per materi tidak berubah.
+  for (const d of KESULITAN) {
+    for (const alt of TETANGGA[d]) {
+      let n = 0;
+      const ambilGanti = (s: Soal) => { unit.push([s]); catatTerpakai(lokal, s); butuh[d]--; n++; const h = kunciTetap(s); if (h) tetap[h]++; };
+      for (const b of r.shuffle(pool.tunggal.filter((x) => x.kode === baris.kode && x.kesulitan === alt && boleh(x)))) {
+        if (butuh[d] <= 0) break;
+        if (bebas(b, global, lokal, peng.larangKembar)) ambilGanti(dariBank(b, data));
+      }
+      while (butuh[d] > 0 && adaModel && peng.sumber !== 'bank' && peng.jenis !== 'jebakan') {
+        const s = cobaModel({ data, peng, ctx, r, kode: baris.kode, kesulitan: alt, global, lokal, kondisiPaket });
+        if (!s) break;
+        ambilGanti(s);
+      }
+      if (n) geser.push(`${label} · ${baris.kode}: ${n} soal ${d} diganti ${alt} (stok ${d} habis)`);
+      if (butuh[d] <= 0) break;
     }
   }
   for (const d of KESULITAN) if (butuh[d] > 0) kurang.push(label + ' · ' + baris.kode + ' · ' + d + ': kurang ' + butuh[d] + ' soal.');
@@ -231,6 +260,8 @@ export interface HasilGenerate {
   paket: Paket[];
   baris: BarisKuota[];
   cek: HasilCek;
+  /** Sel yang diisi dari kesulitan lain karena stok habis (R6); kosong pada kondisi biasa. */
+  geser: string[];
 }
 
 export function cekBatas(peng: Pengaturan): string[] {
@@ -255,6 +286,7 @@ export function buatPaket(data: DataUkp, peng: Pengaturan, sudahAda: Paket[] = [
   const pool = poolBank(data, peng);
   const global = terpakaiDari(sudahAda);
   const kurang: string[] = [];
+  const geser: string[] = [];
   const paket: Paket[] = [];
   for (let nomor = 1; nomor <= peng.jumlahPaket; nomor++) {
     const lokal = terpakaiKosong();
@@ -265,7 +297,7 @@ export function buatPaket(data: DataUkp, peng: Pengaturan, sudahAda: Paket[] = [
     for (const b of baris) {
       if (!totalBaris(b)) continue;
       const r = rng(peng.seed + '|paket-' + nomor + '|' + b.kode);
-      perKode.push(rakitBaris(data, peng, b, pool, ctx, r, global, lokal, kondisiPaket, kurang, label, tetap));
+      perKode.push(rakitBaris(data, peng, b, pool, ctx, r, global, lokal, kondisiPaket, kurang, label, tetap, geser, peng.jumlahPaket - nomor + 1));
     }
     const r = rng(peng.seed + '|paket-' + nomor + '|urutan');
     const unit = peng.urutan === 'acak'
@@ -276,7 +308,7 @@ export function buatPaket(data: DataUkp, peng: Pengaturan, sudahAda: Paket[] = [
     paket.push({ id: 'P' + nomor, nomor, seed: peng.seed + '|paket-' + nomor, soal });
   }
   if (kurang.length) throw new GalatPersediaan(kurang);
-  return { paket, baris, cek };
+  return { paket, baris, cek, geser };
 }
 
 export const posisiKunci = (soal: Soal[]): Record<Huruf, number> => {

@@ -42,11 +42,11 @@
         ["--out", "output/{waktu}"]
       ],
       "parameter": {
-        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif per subtema: A 33, A+B 56, A+B+C 69. Sebaran kesulitan bawaan ikut tingkat (A 40/45/15, B 30/50/20, C 20/50/30).", "contoh": "C", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
+        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif per subtema (disahkan terhadap dokumen BPPK): A 34, A+B 48, A+B+C 69. Sebaran kesulitan bawaan ikut tingkat (A 40/45/15, B 30/50/20, C 20/50/30).", "contoh": "C", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
         "jenis": { "jenis": "teks", "label": "Jenis paket", "bantuan": "tryout (semua materi), materi (isi kode materi), atau jebakan (drill ketentuan yang berubah 2025–2026). Jenis subtema hanya lewat aplikasi atau terminal.", "contoh": "tryout", "bawaan": "tryout", "pola": "^(tryout|materi|jebakan)$", "dari_tugas": "\\b(tryout|jebakan)\\b" },
         "materi": { "jenis": "teks", "label": "Materi (khusus jenis materi)", "bantuan": "Kode dipisah koma: KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT. Kosongkan untuk semua materi.", "contoh": "PPN,KUP", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
         "soal": { "jenis": "teks", "label": "Soal per paket", "bantuan": "1 sampai 200. Kosongkan untuk bawaan: tryout 100, lainnya 40.", "contoh": "100", "pola": "^(?:[1-9]|[1-9]\\d|1\\d\\d|200)$", "dari_tugas": "\\d+(?=\\s*(?:soal|butir)\\b)" },
-        "paket": { "jenis": "teks", "label": "Jumlah paket", "bantuan": "1 sampai 50 (bawaan 1). Tanpa soal kembar, bank acuan cukup untuk 10 paket tryout 100 soal Tingkat C, 7 Tingkat B, atau 9 Tingkat A (diukur 3 Nov 2026 dengan sebaran kesulitan bawaan tiap tingkat); lebih dari itu gagal dengan pesan Persediaan.", "contoh": "3", "bawaan": "1", "pola": "^(?:[1-9]|[1-4]\\d|50)$", "dari_tugas": "\\d+(?=\\s*paket\\b)" },
+        "paket": { "jenis": "teks", "label": "Jumlah paket", "bantuan": "1 sampai 50 (bawaan 1). Tanpa soal kembar, sumber bank cukup untuk 19 paket tryout 100 soal Tingkat C, 15 Tingkat B, atau 10 Tingkat A (campuran: 20+, 16, 17; soal baru saja tanpa soal acuan: 10, 8, 7). Mulai paket ke-10 atau ke-11, sebagian kecil soal bisa diisi dari kesulitan lain karena stok satu kesulitan habis; RINGKASAN dan validasi.json menyebutnya (diukur ulang 3 Nov 2026 setelah bank orisinal 56 soal); lebih dari itu gagal dengan pesan Persediaan.", "contoh": "3", "bawaan": "1", "pola": "^(?:[1-9]|[1-4]\\d|50)$", "dari_tugas": "\\d+(?=\\s*paket\\b)" },
         "sumber": { "jenis": "teks", "label": "Sumber soal", "bantuan": "campuran (bawaan: soal baru dari model untuk materi bermodel + bank acuan), bank (hanya bank acuan LatihUKP), atau baru (hanya soal baru).", "contoh": "campuran", "bawaan": "campuran", "pola": "^(campuran|bank|baru)$" },
         "seed": { "jenis": "teks", "label": "Seed", "bantuan": "Seed yang sama menghasilkan paket yang sama. Kosongkan untuk UKP-<tingkat>-01.", "contoh": "UKP-C-01", "pola": "^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$", "dari_tugas": "\\bseed\\s*[:=]?\\s*([A-Za-z0-9][A-Za-z0-9._-]*)" },
         "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "Dipisah koma: json, pdf, docx, csv, siadu-docx (Word SiAdu), siadu-xlsx (Excel template Bank Soal SiAdu), uji-html (berkas uji peserta tanpa kunci, satu per paket). Bawaan json. SiAdu hanya isi lengkap atau soal-jawaban.", "contoh": "json,pdf,siadu-docx", "bawaan": "json", "pola": "^(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html)(,(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html))*$" },
@@ -85,19 +85,23 @@
         ["--kepadatan", "{kepadatan}"],
         ["--format", "{format}"],
         "{zip?--zip}",
+        "{handout?--handout}",
+        "{pdf?--pdf}",
         "{setuju_acuan?--setuju-acuan}",
         ["--out", "output/materi-{waktu}"]
       ],
       "parameter": {
-        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif: A 33 subtema, A+B 56, A+B+C 69 (lihat docs/Cakupan-Materi-UKP.xlsx).", "contoh": "A", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
+        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif (disahkan terhadap dokumen BPPK): A 34 subtema, A+B 48, A+B+C 69 (lihat docs/Cakupan-Materi-UKP.xlsx).", "contoh": "A", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
         "kode": { "jenis": "teks", "label": "Materi (kode)", "bantuan": "Per materi: kode dipisah koma (KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT). Kosongkan kode dan subtema untuk semua subtema dalam cakupan tingkat.", "contoh": "PPN", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
         "subtema": { "jenis": "teks", "label": "Subtema", "bantuan": "Per subtema: KODE::Nama subtema, dipisah titik koma, persis seperti di tab Materi atau npm run materi -- --daftar.", "contoh": "PPN::DPP & tarif PPN", "pola": "^([A-Z]{2,3}::[^;]+(;[A-Z]{2,3}::[^;]+)*)?$" },
-        "hanya_baru": { "jenis": "tanda", "label": "Hanya subtema yang mulai di tingkat ini", "bantuan": "Per tingkat tanpa kode/subtema: B 23 subtema, C 13 subtema.", "jika_disebut": ["hanya tambahan", "subtema baru", "tambahan tingkat", "materi baru tingkat"] },
+        "hanya_baru": { "jenis": "tanda", "label": "Hanya subtema yang mulai di tingkat ini", "bantuan": "Per tingkat tanpa kode/subtema: B 14 subtema, C 21 subtema.", "jika_disebut": ["hanya tambahan", "subtema baru", "tambahan tingkat", "materi baru tingkat"] },
         "gabung": { "jenis": "tanda", "label": "Satu deck per materi", "bantuan": "Subtema dalam lingkup digabung menjadi satu deck per materi untuk tingkat itu: sampul, daftar isi (tanda subtema baru di tingkat itu), pembatas per subtema. Tanpa centang: satu deck per subtema.", "jika_disebut": ["per materi", "satu deck per materi", "deck gabungan", "gabungan", "gabung"] },
         "kepadatan": { "jenis": "teks", "label": "Kepadatan", "bantuan": "ringkas (±9 slide per subtema), standar (±18), atau lengkap (±31). Deck gabungan per materi = jumlah semua subtemanya.", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b" },
         "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "pptx (deck) dan/atau json (naskah yang bisa diimpor di tab Materi), dipisah koma. Bawaan pptx.", "contoh": "pptx", "bawaan": "pptx", "pola": "^(pptx|json)(,(pptx|json))?$" },
         "zip": { "jenis": "tanda", "label": "Bungkus jadi satu .zip", "bantuan": "Satu folder per kode bila lebih dari satu materi; sekitar 2,4 MB per deck.", "jika_disebut": ["zip", "satu berkas"] },
-        "setuju_acuan": { "jenis": "tanda", "label": "Setuju deck memuat teks acuan LatihUKP (Draf internal)", "bantuan": "Wajib untuk .pptx: isi deck masih teks acuan LatihUKP yang belum ditelaah, jadi berkas diberi tanda Draf internal dan bukan untuk peserta (PRD-Materi KM2).", "jika_disebut": ["setuju acuan", "draf internal", "internal"] }
+        "handout": {"jenis": "tanda", "label": "Handout peserta", "bantuan": "Versi ringkas untuk peserta: sampul, daftar isi, ikhtisar, rumus, rangkuman, dan kuis Benar/Salah, tanpa catatan pembicara (nama berkas -handout.pptx). Deck BM gabungan Tingkat A: 24 slide dari 73.", "jika_disebut": ["handout", "untuk peserta", "versi peserta", "ringkasan peserta"]},
+        "pdf": {"jenis": "tanda", "label": "Simpan juga PDF", "bantuan": "PDF setiap .pptx lewat PowerPoint (hanya Windows dengan PowerPoint terpasang); tidak bisa bersama zip.", "jika_disebut": ["pdf"]},
+        "setuju_acuan": { "jenis": "tanda", "label": "Setuju deck memuat teks acuan LatihUKP (Draf internal)", "bantuan": "Wajib untuk .pptx yang masih memuat teks acuan LatihUKP yang belum ditulis ulang atau ditelaah; berkas diberi tanda Draf internal dan bukan untuk peserta (PRD-Materi KM2). Bea Meterai sudah ditulis ulang sehingga tidak memerlukannya.", "jika_disebut": ["setuju acuan", "draf internal", "internal"] }
       },
       "catatan": [
         "menjalankan npm run materi (scripts/materi.ts); tanpa API key dan tanpa internet; satu deck per subtema, atau satu deck per materi bila Satu deck per materi dicentang",
@@ -110,6 +114,38 @@
       "saran_gagal": { "pola": "teks acuan", "pesan": "Centang 'Setuju deck memuat teks acuan LatihUKP (Draf internal)' untuk penggunaan internal, atau pilih format json." },
       "ringkasan": "Deck materi UKP selesai dibuat",
       "batas_menit": 5
+    },
+    {
+      "id": "buatsilabus",
+      "judul": "Buat silabus materi UKP per tingkat (CLI)",
+      "singkat": "Buat silabus UKP",
+      "tab": "Materi",
+      "tombol": "Unduh silabus .xlsx",
+      "kata_kunci": ["silabus", "jadwal", "pertemuan", "rencana", "durasi", "jam pelajaran", "jp", "kelas"],
+      "wajib_salah_satu": ["silabus", "jadwal materi", "rencana pertemuan", "pembagian pertemuan", "jadwal kelas"],
+      "perintah": [
+        "npm", "run", "materi", "--", "--silabus",
+        ["--tingkat", "{tingkat}"],
+        "{hanya_baru?--hanya-baru}",
+        ["--menit-pertemuan", "{menit_pertemuan}"],
+        ["--kepadatan", "{kepadatan}"],
+        ["--out", "output/silabus-{waktu}"]
+      ],
+      "parameter": {
+        "tingkat": {"jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C (kumulatif). Diukur 3 Nov 2026 dengan kepadatan standar dan 90 menit: A 34 subtema ±26 jam (20 pertemuan), A+B 48 subtema ±37 jam (27 pertemuan), A+B+C 69 subtema ±53 jam (40 pertemuan).", "contoh": "A", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b"},
+        "hanya_baru": {"jenis": "tanda", "label": "Hanya subtema yang mulai di tingkat ini", "bantuan": "Untuk peserta yang sudah lulus tingkat sebelumnya: B 14 subtema, C 21 subtema.", "jika_disebut": ["hanya tambahan", "subtema baru", "tambahan tingkat"]},
+        "menit_pertemuan": {"jenis": "teks", "label": "Durasi satu pertemuan (menit)", "bantuan": "60, 90, 120, atau 180 menit (bawaan 90; 1 JP = 45 menit).", "contoh": "90", "bawaan": "90", "pola": "^(60|90|120|180)$", "dari_tugas": "\\b(60|90|120|180)(?=\\s*menit)"},
+        "kepadatan": {"jenis": "teks", "label": "Kepadatan deck", "bantuan": "ringkas, standar, atau lengkap; menentukan jumlah slide dan durasi.", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b"}
+      },
+      "catatan": [
+        "menjalankan npm run materi -- --silabus (scripts/materi.ts); tanpa API key dan tanpa internet",
+        "silabus memakai deck gabungan per materi untuk tingkat itu; durasi dihitung per pola slide (isi 2 menit, contoh soal dan pembahasan 3 menit, pembatas 0,5 menit)",
+        "hasil satu berkas silabus-tingkat-<t>-<menit>-menit.xlsx berisi lembar Silabus (per pertemuan), Per materi, dan Ringkasan beserta asumsi durasi"
+      ],
+      "hasil": "^(?:RINGKASAN|BERKAS) -> (.+)$",
+      "gagal": "Error: ([^\\r\\n]+)",
+      "ringkasan": "Silabus materi UKP selesai dibuat",
+      "batas_menit": 2
     },
     {
       "id": "verifikasi",

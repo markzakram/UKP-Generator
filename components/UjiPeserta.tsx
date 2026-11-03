@@ -1,20 +1,26 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { HURUF } from '@/lib/config';
+import { diujiDi, HURUF } from '@/lib/config';
 import { buatBerkas } from '@/lib/export/jalankan';
 import { unduh } from '@/lib/export/unduh';
 import { daftarSesiUji, simpanSesiUji } from '@/lib/storage';
-import type { Workspace } from '@/lib/types';
+import { BATAS_REMEDIAL, MIN_RESPONS_REMEDIAL, saranRemedial } from '@/lib/remedial';
+import type { DataUkp, Kode, Tingkat, Workspace } from '@/lib/types';
 import { bacaHasilUji, statistik, type SesiUji } from '@/lib/uji';
 
 type SesiSimpan = SesiUji & { workspaceId: string };
 
-export default function UjiPeserta({ ws, kabar }: { ws: Workspace; kabar: (p: string, g?: boolean) => void }) {
+export default function UjiPeserta({ data, ws, kabar, bukaMateri, latihan }: {
+  data: DataUkp; ws: Workspace; kabar: (p: string, g?: boolean) => void;
+  bukaMateri: (kode: Kode, subtema: string, tingkat: Tingkat) => void; latihan: (subtema: string[], tingkat: Tingkat) => void;
+}) {
   const [ip, setIp] = useState(0);
   const [sesi, setSesi] = useState<SesiSimpan[]>([]);
   const paket = ws.paket[Math.min(ip, ws.paket.length - 1)];
   useEffect(() => { daftarSesiUji<SesiSimpan>().then((s) => setSesi(s.filter((x) => x.workspaceId === ws.id))).catch((e: Error) => kabar(e.message, true)); }, [ws.id, kabar]);
   const stat = useMemo(() => statistik(paket, sesi), [paket, sesi]);
+  const remedial = useMemo(() => saranRemedial(data, paket, stat), [data, paket, stat]);
+  const tingkat = ws.pengaturan.tingkat;
 
   const unduhUji = async () => {
     const b = await buatBerkas({ format: 'uji-html', mode: 'naskah', paket: [paket], peng: ws.pengaturan, gabung: true });
@@ -61,6 +67,28 @@ export default function UjiPeserta({ ws, kabar }: { ws: Workspace; kabar: (p: st
         <div><span className="angka">{stat.sesiLengkap >= 30 ? 'aktif' : 'perlu ' + (30 - stat.sesiLengkap)}</span>daya beda (≥ 30 sesi)</div>
       </div>
       <p className="kecil redup" style={{ margin: 0 }}>Label empiris (mudah ≥ 0,80; sedang 0,40–0,79; sulit &lt; 0,40) dan daya beda baru dihitung pada ≥ 30 respons. Batas ini aturan awal proyek, bukan keputusan psikometrik final.</p>
+      {stat.sesi > 0 && (
+        <section className="panel" aria-labelledby="uji-remedial">
+          <div className="panel-kepala"><h2 id="uji-remedial" className="sub-judul" style={{ margin: 0 }}>Saran remedial</h2>
+            {remedial.length > 1 && <button type="button" className="btn btn-kecil" onClick={() => latihan(remedial.slice(0, 5).map((r) => r.kode + '::' + r.subtema), tingkat)}>Latihan {Math.min(5, remedial.length)} subtema terlemah</button>}
+          </div>
+          <div className="panel-isi">
+            <p className="kecil redup" style={{ margin: 0 }}>Subtema dengan proporsi benar di bawah {Math.round(BATAS_REMEDIAL * 100)}% (minimal {MIN_RESPONS_REMEDIAL} respons), dari soal {paket.id}. Buka deck materinya untuk diulang, atau rakit paket latihan subtema itu.</p>
+            {remedial.length ? (
+              <div className="kotak-tabel"><table>
+                <thead><tr><th>Subtema</th><th>Diuji di</th><th className="kanan">Soal</th><th className="kanan">Respons</th><th className="kanan">p benar</th><th>Nomor soal</th><th>Aksi</th></tr></thead>
+                <tbody>{remedial.map((r) => (
+                  <tr key={r.kode + r.subtema}>
+                    <td><b>{r.kode}</b> · {r.subtema}</td><td className="kecil">{r.tingkat ? diujiDi(r.tingkat) : '—'}</td><td className="kanan">{r.soal}</td><td className="kanan">{r.respons}</td>
+                    <td className="kanan" style={{ color: 'var(--merah)', fontWeight: 600 }}>{persen(r.p)}</td><td className="mono kecil">{r.nomor.join(', ')}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}><button type="button" className="btn-teks" onClick={() => bukaMateri(r.kode, r.subtema, tingkat)}>Buka materi</button> · <button type="button" className="btn-teks" onClick={() => latihan([r.kode + '::' + r.subtema], tingkat)}>Latihan</button></td>
+                  </tr>
+                ))}</tbody>
+              </table></div>
+            ) : <p className="kecil" style={{ margin: 0 }}>Belum ada subtema di bawah batas.</p>}
+          </div>
+        </section>
+      )}
       <div className="kotak-tabel">
         <table className="lembar" style={{ minWidth: 820 }}>
           <thead><tr><th>No</th><th className="kanan">N</th><th className="kanan">p benar</th>{HURUF.map((h) => <th key={h} className="kanan">{h}</th>)}<th className="kanan">Kosong</th><th className="kanan">Rata detik</th><th>Pengecoh jarang</th><th className="kanan">Daya beda</th><th>Label</th><th>Catatan</th></tr></thead>

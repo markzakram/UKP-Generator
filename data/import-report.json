@@ -1,5 +1,5 @@
 {
-  "dibuat": "2026-11-03T06:45:47.924Z",
+  "dibuat": "2026-11-03T10:02:32.890Z",
   "folderSumber": "G:\\Ali\\code\\Scrape UKP\\output\\latihukp",
   "hash": {
     "questions": "c995454b31b3902675c360c3557582e80b05b1e98ee6baa7cb5de2f4af2201ae",
@@ -32,7 +32,7 @@
     "subtemaAturan": 1731,
     "subtemaKemiripan": 656,
     "subtemaLainnya": 0,
-    "posisiTetap": 7,
+    "posisiTetap": 3,
     "opsiAngka": 783,
     "akurasiTebakSubtema": 84.4
   },

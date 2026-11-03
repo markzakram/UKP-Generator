@@ -84,7 +84,7 @@ async function main() {
   });
   const tulis = (nama: string, isiBerkas: Uint8Array | string) => { const f = path.join(out, nama); writeFileSync(f, isiBerkas); return f; };
   const berkas: string[] = [];
-  berkas.push(tulis('validasi.json', JSON.stringify({ pengaturan: peng, kuota: hasil.baris, cekPersediaan: hasil.cek, mutu }, null, 2)));
+  berkas.push(tulis('validasi.json', JSON.stringify({ pengaturan: peng, kuota: hasil.baris, cekPersediaan: hasil.cek, geserKesulitan: hasil.geser, mutu }, null, 2)));
   const PETA_FORMAT: Record<string, FormatEkspor> = { json: 'json', pdf: 'pdf', docx: 'word', csv: 'csv', 'siadu-docx': 'siadu-word', 'siadu-xlsx': 'siadu-excel', 'uji-html': 'uji-html' };
   let acuanDikeluarkan = 0;
   for (const f of format) {
@@ -108,6 +108,7 @@ async function main() {
   }
   const totalGagal = mutu.reduce((a, m) => a + m.gagal, 0);
   console.log('RINGKASAN -> ' + hasil.paket.length + ' paket × ' + peng.jumlahSoal + ' soal (Tingkat ' + peng.tingkat + ', ' + peng.sumber + '), ' + mutu.reduce((a, m) => a + m.soalBaru, 0) + ' soal baru, ' + (totalGagal ? totalGagal + ' soal gagal cek (lihat validasi.json)' : 'valid') + ', ' + mutu.reduce((a, m) => a + m.catatan, 0) + ' catatan mutu'
+    + (hasil.geser.length ? ', ' + hasil.geser.reduce((a, g) => a + Number(g.match(/: (\d+) soal/)?.[1] ?? 0), 0) + ' soal diisi dari kesulitan lain karena stok habis (lihat validasi.json)' : '')
     + (acuanDikeluarkan ? ', ' + acuanDikeluarkan + ' soal acuan dikeluarkan dari ekspor SiAdu' : ''));
   for (const f of berkas) console.log('BERKAS -> ' + f);
 }

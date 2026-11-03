@@ -91,14 +91,14 @@ interface KuisMentah { id: string; ref: string[]; tipe: string; teks: string; ja
 
 export function kartuSubtema(data: DataUkp, kode: Kode, subtema: string): Kartu[] {
   const peta = petaKartu(data);
-  return data.materi.kartu.filter((k) => peta.get(k.id) === kode + '|' + subtema);
+  return data.materi.kartu.filter((k) => peta.get(k.id) === kode + '|' + subtema).map((k) => (data.tulis.kartu[k.id] ? { ...k, ...data.tulis.kartu[k.id] } : k));
 }
 
 export function kuisSubtema(data: DataUkp, kode: Kode, subtema: string): ButirKuis[] {
   const kartu = new Set(kartuSubtema(data, kode, subtema).map((k) => k.id));
   return (data.materi.kuis as KuisMentah[])
     .filter((q) => q.tipe === 'bs' && typeof q.jawab === 'boolean' && q.ref.some((r) => kartu.has(r)))
-    .map((q) => ({ teks: q.teks, jawab: q.jawab!, jelas: q.jelas }));
+    .map((q) => ({ id: q.id, teks: data.tulis.kuis[q.id]?.teks ?? q.teks, jawab: q.jawab!, jelas: data.tulis.kuis[q.id]?.jelas ?? q.jelas }));
 }
 
 // ---------- contoh soal ----------
@@ -155,7 +155,10 @@ export function susunNaskah(data: DataUkp, p: PengaturanMateri): Naskah {
   const catatan: string[] = [];
   const semua = data.aturan.filter((a) => a.kode === p.kode && a.subtema === p.subtema);
   if (!semua.length) throw new Error(`Subtema tidak ditemukan: ${p.kode} · ${p.subtema}`);
-  const aturan = semua.filter((a) => {
+  // Teks tulis ulang (R2) menggantikan teks acuan per kartu aturan; slide dari teks itu berasal "ditulis ulang".
+  const ditulis = (id: string) => !!data.tulis.aturan[id];
+  const asalAturan = (xs: Aturan[]) => (xs.length && xs.every((a) => ditulis(a.id)) ? 'tulis' as const : 'acuan' as const);
+  const aturan = semua.map((a) => (ditulis(a.id) ? { ...a, ...data.tulis.aturan[a.id] } : a)).filter((a) => {
     const t = tingkatAturan(a, data.mapping);
     if (!dalamCakupan(t, p.tingkat)) { catatan.push(`${a.id} tidak dipakai: tingkat ${t} di luar cakupan ${p.tingkat}.`); return false; }
     if (!berlakuPada(a, p.tanggalAcuan)) { catatan.push(`${a.id} tidak dipakai: tidak berlaku pada ${p.tanggalAcuan} (${a.berlaku.mulai ?? '…'} s.d. ${a.berlaku.sampai ?? 'sekarang'}).`); return false; }
@@ -186,14 +189,14 @@ export function susunNaskah(data: DataUkp, p: PengaturanMateri): Naskah {
   const slides: SlideNaskah[] = [];
   slides.push({ id: 'sampul', pola: 'P1', judul: p.subtema, pil: [materi, `${tingkatLabel} · UKP ${p.tanggalAcuan.slice(0, 4)}`], asal: 'otomatis', catatanPembicara: `Deck subtema ${p.kode} · ${p.subtema}. ${aturan.length} aturan, kepadatan ${p.kepadatan}, aturan per ${tanggal(p.tanggalAcuan)}.` });
   slides.push({
-    id: 'ikhtisar', pola: 'P2', judul: materi, subjudul: p.subtema, asal: 'acuan', sumber: aturan.map((a) => a.id),
+    id: 'ikhtisar', pola: 'P2', judul: materi, subjudul: p.subtema, asal: asalAturan(aturan), sumber: aturan.map((a) => a.id),
     kartu: [...aturan.map((a, i) => ({ judul: label[i].chip, isi: a.konsep, ikon: ((i % 5) + 1) as Ikon })), ...(adaLatihan ? [{ judul: 'Latihan', isi: 'Kuis cepat dan contoh soal berbasis kasus beserta pembahasan.' }] : [])]
   });
 
   aturan.forEach((a, i) => {
     const dasar = {
-      chip: label[i].chip, ikon: ((i % 5) + 1) as Ikon, asal: 'acuan' as const, sumber: [a.id],
-      catatanPembicara: `${a.id} · keyakinan ${a.keyakinan ?? '-'} · berlaku sejak ${a.berlaku.mulai ? tanggal(a.berlaku.mulai) : '-'}${a.berlaku.sampai ? ' s.d. ' + tanggal(a.berlaku.sampai) : ''}\nDasar hukum: ${a.dasarHukum.join('; ')}${a.sumber.length ? '\nSumber: ' + a.sumber.map((x) => x.url).join(' ; ') : ''}`
+      chip: label[i].chip, ikon: ((i % 5) + 1) as Ikon, asal: asalAturan([a]), sumber: [a.id],
+      catatanPembicara: `${a.id}${ditulis(a.id) ? " · teks ditulis ulang (belum ditelaah)" : ""} · keyakinan ${a.keyakinan ?? '-'} · berlaku sejak ${a.berlaku.mulai ? tanggal(a.berlaku.mulai) : '-'}${a.berlaku.sampai ? ' s.d. ' + tanggal(a.berlaku.sampai) : ''}\nDasar hukum: ${a.dasarHukum.join('; ')}${a.sumber.length ? '\nSumber: ' + a.sumber.map((x) => x.url).join(' ; ') : ''}`
     };
     slides.push({ ...dasar, id: a.id + '-konsep', bagian: bagian(i, 'Konsep'), pola: 'P3', judul: label[i].judul, pembuka: a.konsep, isi: a.pokok, sorotan: a.dasarHukum.length ? { label: 'Dasar hukum', teks: a.dasarHukum.join('; ') } : undefined, gambar: GAMBAR[i % 2] });
     if (!standar) return;
@@ -212,19 +215,20 @@ export function susunNaskah(data: DataUkp, p: PengaturanMateri): Naskah {
     if (lengkap && a.jebakan[0]) slides.push({ ...dasar, id: a.id + '-jebakan', bagian: bagian(i, 'Contoh'), pola: 'P10', judul: 'Kesalahan umum', keliru: { judul: 'Yang sering keliru', isi: a.jebakan[0] }, benar: { judul: 'Yang benar', isi: a.konsep } });
   });
   const jebakan = aturan.map((a, i) => [label[i].chip, a.jebakan[0] ?? ''] as [string, string]).filter(([, j]) => j);
-  if (standar && !lengkap && jebakan.length) slides.push({ id: 'kesalahan-umum', pola: 'P6', judul: 'Kesalahan umum', pembuka: 'Pola jawaban keliru yang sering muncul pada subtema ini.', kolom: ['Topik', 'Yang sering keliru'], baris: jebakan, lebar: [1, 2.6], bagian: perAturan ? undefined : 'Contoh', chip: p.subtema, ikon: 2, asal: 'acuan', sumber: aturan.filter((a) => a.jebakan[0]).map((a) => a.id) });
+  if (standar && !lengkap && jebakan.length) slides.push({ id: 'kesalahan-umum', pola: 'P6', judul: 'Kesalahan umum', pembuka: 'Pola jawaban keliru yang sering muncul pada subtema ini.', kolom: ['Topik', 'Yang sering keliru'], baris: jebakan, lebar: [1, 2.6], bagian: perAturan ? undefined : 'Contoh', chip: p.subtema, ikon: 2, asal: asalAturan(aturan.filter((a) => a.jebakan[0])), sumber: aturan.filter((a) => a.jebakan[0]).map((a) => a.id) });
 
   // Kartu rumus (standar) dan hafalan (lengkap) yang terpetakan ke subtema.
   if (standar) {
     for (const k of kartuSubtema(data, p.kode, p.subtema)) {
       if (k.status && k.status !== 'berlaku') continue;
-      const dasar = { asal: 'acuan' as const, sumber: [k.id], chip: labelPendek(k.judul, 40).teks, ikon: 3 as Ikon, bagian: perAturan ? undefined : 'Angka', catatanPembicara: `Kartu ${k.id} (${k.jenis})${k.dasar ? '\nDasar: ' + k.dasar : ''}${k.jebakan ? '\nJebakan: ' + k.jebakan : ''}` };
+      const kartuTulis = !!data.tulis.kartu[k.id];
+      const dasar = { asal: kartuTulis ? 'tulis' as const : 'acuan' as const, sumber: [k.id], chip: labelPendek(k.judul, 40).teks, ikon: 3 as Ikon, bagian: perAturan ? undefined : 'Angka', catatanPembicara: `Kartu ${k.id} (${k.jenis})${kartuTulis ? ' · ditulis ulang' : ''}${k.dasar ? '\nDasar: ' + k.dasar : ''}${k.jebakan && !kartuTulis ? '\nJebakan: ' + k.jebakan : ''}` };
       if (k.jenis === 'rumus' && k.rumus.length) slides.push({ ...dasar, id: 'kartu-' + k.id, pola: 'P8', judul: labelPendek(k.judul, 90).teks, rumus: k.rumus, keterangan: k.rumusKet || undefined, contoh: k.contoh.length ? k.contoh : undefined });
       else if (lengkap && k.isi.length) slides.push({ ...dasar, id: 'kartu-' + k.id, pola: 'P6', judul: labelPendek(k.judul, 90).teks, kolom: ['Yang perlu dihafal'], baris: k.isi.map((t) => [t]) });
     }
   }
 
-  if (kuis.length) slides.push({ id: 'kuis', pola: 'P11', judul: 'Kuis cepat', butir: kuis, bagian: bagianAkhir, chip: 'Latihan', ikon: 4, asal: 'acuan', catatanPembicara: 'Kunci: ' + kuis.map((k, i) => `${i + 1} ${k.jawab ? 'Benar' : 'Salah'}`).join(' · ') });
+  if (kuis.length) slides.push({ id: 'kuis', pola: 'P11', judul: 'Kuis cepat', butir: kuis, bagian: bagianAkhir, chip: 'Latihan', ikon: 4, asal: kuis.every((q) => q.id && data.tulis.kuis[q.id]) ? 'tulis' : 'acuan', catatanPembicara: 'Kunci: ' + kuis.map((k, i) => `${i + 1} ${k.jawab ? 'Benar' : 'Salah'}`).join(' · ') });
   soal.daftar.forEach(({ soal: s, asal, label: asalLabel }, i) => {
     const no = soal.daftar.length > 1 ? ' ' + (i + 1) : '';
     const dasar = { bagian: bagianAkhir, chip: 'Latihan', ikon: 4 as Ikon, asal, sumber: s.sumberId ? [s.sumberId] : s.modelId ? ['model ' + s.modelId] : [] };
@@ -235,7 +239,7 @@ export function susunNaskah(data: DataUkp, p: PengaturanMateri): Naskah {
     slides.push({ ...dasar, id: 'soal-' + (i + 1), pola: 'P12', judul: 'Contoh soal' + no, kasus, soal: tanya, opsi: { A: s.opsi.A, B: s.opsi.B, C: s.opsi.C, D: s.opsi.D }, catatanPembicara: `Soal ${asalLabel} · kunci ${s.kunci} · ${s.kesulitan}` });
     slides.push({ ...dasar, id: 'bahas-' + (i + 1), pola: 'P13', judul: 'Pembahasan' + no, kunci: s.kunci, teksKunci: s.opsi[s.kunci], inti: s.inti, langkah: s.langkah, dasar: s.dasarHukum.join('; ') || undefined, catatanPembicara: `Soal ${asalLabel} · kunci ${s.kunci}` });
   });
-  if (standar) slides.push({ id: 'rangkuman', pola: 'P14', judul: 'Rangkuman', poin: aturan.map((a, i) => ({ judul: label[i].chip, isi: a.konsep })), bagian: perAturan ? undefined : 'Konsep', chip: p.subtema, ikon: 5, asal: 'acuan', sumber: aturan.map((a) => a.id) });
+  if (standar) slides.push({ id: 'rangkuman', pola: 'P14', judul: 'Rangkuman', poin: aturan.map((a, i) => ({ judul: label[i].chip, isi: a.konsep })), bagian: perAturan ? undefined : 'Konsep', chip: p.subtema, ikon: 5, asal: asalAturan(aturan), sumber: aturan.map((a) => a.id) });
   slides.push({ id: 'penutup', pola: 'P15', judul: 'Terima kasih', asal: 'otomatis' });
 
   // Ketentuan lama di teks naskah (kecuali sisi "keliru" slide kesalahan umum yang memang membahasnya).

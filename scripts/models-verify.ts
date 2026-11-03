@@ -69,6 +69,24 @@ cek('Kredit PPh 24: DN 8 M, LN 2 M, pajak LN 600 jt → Rp440.000.000', hu('kred
 cek('NPPN: bruto Rp1,2 M, norma 30%, TK/0 → Rp45.500.000', hu('nppn', { bruto: 1_200_000_000, norma: 0.3, kawin: false, anak: 0, tanggal: '2025-12-31' }) === 'Rp45.500.000');
 cek('PPh 25: (1,2 M − 100 jt − 50 jt) / 12 → Rp87.500.000', hu('angsuran-pph25', { terutang: 1_200_000_000, pph22: 100_000_000, pph23: 50_000_000, pph24: 0 }) === 'Rp87.500.000');
 
+bagian('Uji emas model tambahan (R4)');
+const pm = (kondisi: string) => hu('pengkreditan-pm', { kondisi, harga: 120_000_000, pmBahan: 4_000_000, pmLain: 1_000_000, tanggal: '2026-03-10' });
+cek('PM: PK 12% × 11/12 × Rp120 jt = 13,2 jt; PM tanpa hubungan usaha tidak dikreditkan → Rp9.200.000', pm('tanpa-hubungan-usaha') === 'Rp9.200.000');
+cek('PM: Faktur Pajak tanpa identitas pembeli tidak dikreditkan → Rp9.200.000', pm('faktur-tidak-lengkap') === 'Rp9.200.000');
+cek('PM: PM sedan dapat dikreditkan pasca-UU HPP → Rp8.200.000 (R-PPN-28)', pm('sedan-operasional') === 'Rp8.200.000');
+cek('PM: PM masa sebelumnya (≤ 3 masa) dapat dikreditkan → Rp8.200.000 (R-PPN-27)', pm('pm-masa-sebelumnya') === 'Rp8.200.000');
+const rekon = (arah: string, tanya: string) => hu('rekonsiliasi-fiskal', { kondisi: 'x', tanya, arah, laba: 5_000_000_500, sumbangan: 100_000_000, sanksi: 20_000_000, bunga: 50_000_000, selisih: 80_000_000, tanggal: '2025-12-31' });
+cek('Rekonsiliasi: 5 M + 100 jt + 20 jt − 50 jt + 80 jt → PKP Rp5.150.000.000 (dibulatkan ke bawah ribuan)', rekon('positif', 'pkp') === 'Rp5.150.000.000');
+cek('Rekonsiliasi: penyusutan komersial lebih kecil → PKP Rp4.990.000.000', rekon('negatif', 'pkp') === 'Rp4.990.000.000');
+cek('Rekonsiliasi: PPh badan 22% × 5,15 M → Rp1.133.000.000', rekon('positif', 'pph') === 'Rp1.133.000.000');
+cek('Pajak tangguhan: beda temporer kena pajak Rp500 jt × 22% → liabilitas Rp110.000.000 (R-AKT-11)', hu('pajak-tangguhan', { kondisi: 'liabilitas-penyusutan', akhir: 500_000_000, awal: 0, tanggal: '2025-12-31' }) === 'Rp110.000.000');
+cek('Pajak tangguhan: beban = (800 jt − 500 jt) × 22% → Rp66.000.000 (R-AKT-12)', hu('pajak-tangguhan', { kondisi: 'beban-perubahan', akhir: 800_000_000, awal: 500_000_000, tanggal: '2025-12-31' }) === 'Rp66.000.000');
+const keberatan = (kondisi: string, menurutSk: number, tanggal = '2026-06-01') => hu('denda-keberatan', { kondisi, skpkb: 1_000_000_000, dibayar: 200_000_000, menurutSk, tanggal });
+cek('Denda keberatan ditolak: 30% × (1 M − 200 jt) → Rp240.000.000 (R-KUP-21)', keberatan('ditolak', 1_000_000_000) === 'Rp240.000.000');
+cek('Denda keberatan dikabulkan sebagian: 30% × (600 jt − 200 jt) → Rp120.000.000', keberatan('dikabulkan-sebagian', 600_000_000) === 'Rp120.000.000');
+cek('Denda keberatan: WP banding → Rp0 (Pasal 25 ayat (10))', keberatan('banding', 1_000_000_000) === 'Rp0');
+cek('Denda keberatan sebelum UU HPP (Juni 2021) memakai 50% → Rp400.000.000', keberatan('ditolak', 1_000_000_000, '2021-06-01') === 'Rp400.000.000');
+
 bagian('Setiap model di banyak seed');
 const SEED_TOTAL = 240;
 let totalSoal = 0;
@@ -131,7 +149,7 @@ cek('tanggal 10 untuk masa 2024 (aturan saat itu)', hLama === '10 April 2024', h
 bagian('Integrasi dengan perakit');
 const P = (p: Partial<Pengaturan>): Pengaturan => ({ ...pengaturanAwal(), tanggalAcuan: ACUAN, ...p });
 const baru = buatPaket(data, P({ sumber: 'baru', jenis: 'materi', materi: ['KUP', 'OP', 'PP', 'PPN', 'BM'], jumlahSoal: 30, jumlahPaket: 2 }));
-cek('sumber baru: semua soal dari model', baru.paket.every((p) => p.soal.every((s) => s.asal === 'model')));
+cek('sumber baru: model dan orisinal saja, orisinal ikut terpakai (R5)', baru.paket.every((p) => p.soal.every((s) => s.asal === 'model' || s.asal === 'orisinal')) && baru.paket.some((p) => p.soal.some((s) => s.asal === 'orisinal')));
 const tandaBaru = baru.paket.flatMap((p) => p.soal.map((s) => s.tanda));
 cek('sumber baru: tanpa kembar logika di 2 paket', new Set(tandaBaru).size === tandaBaru.length);
 const campur = buatPaket(data, P({ sumber: 'campuran', jumlahPaket: 3 }));

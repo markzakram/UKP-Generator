@@ -342,3 +342,185 @@ Permintaan user: lingkup yang memuat banyak deck harus punya pilihan unduh langs
 | verify 115, verify:quality 40, verify:materi 146; typecheck dan build | Lulus |
 
 Unduhan diuji di browser dengan dicegat di memori. Deck uji dihapus dari IndexedDB pratinjau.
+
+## R3 · Pengesahan tingkat terhadap dokumen BPPK (3 Nov 2026)
+
+Dokumen: *Cakupan Materi Uji Kompetensi Perpajakan* (BPPK, 14 Okt 2026), 12 halaman, 282 KB, diunduh dari KLC Kemenkeu (tautan resmi yang tercatat di data LatihUKP) ke `../Scrape UKP/output/bppk/` atas izin user.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `data/bppk-cakupan.json`: 69 subtema dipetakan ke butir dokumen (tingkat terendah, rujukan butir, keyakinan, catatan) | 69/69; 60 cocok dengan hasil impor, 9 berbeda |
+| 9 perbedaan diterapkan lewat `override` setelah disetujui user: Tata cara penyetoran B→A; Jasa konstruksi B→C; BTI Subjek badan dan Tarif PMA/BUT B→C; 5 subtema PBB-P5L B→C. `override` bertahan setelah `npm run import:data` | Lulus |
+| Cakupan efektif A 34, B 14, C 21; stok bank kumulatif A 1.173, A+B 1.731, A+B+C 2.387; deck materi A 34, A+B 48, A+B+C 69 | Lulus (`verify`, `verify:materi`) |
+| Cek baru: tingkat efektif sama dengan dokumen BPPK untuk 69 subtema; override hanya untuk subtema yang berbeda dari impor | Lulus |
+| `docs/Cakupan-Materi-UKP.xlsx` dibuat ulang dengan kolom Rujukan BPPK dan keterangan "Diubah sesuai BPPK"; dihitung ulang di Excel | 196 rumus, 0 galat |
+| Angka cakupan di README, PRD, PRD-Materi, ROADMAP, bantuan CLI `npm run materi`, dan `agent-office.json` | Diperbarui |
+| Rangkaian lengkap: verify 117, verify:quality 40, verify:models 114, verify:export 52, verify:materi 147 | 470 cek lulus |
+
+Temuan pada dokumen BPPK:
+
+- Baris Tingkat B no. 4 berlabel "PBB-P5L", tetapi 17 butirnya PPh Badan. PBB-P5L dengan butirnya sendiri hanya ada di Tingkat C, sehingga dipetakan ke C.
+- Pajak minimum global (GloBE) tidak disebut.
+- Topik yang sama bisa muncul di beberapa tingkat dengan subjek berbeda (orang pribadi, badan dalam negeri, transaksi internasional). Kemunculan terendah menjadi tingkat subtema; kemunculan di atasnya menjadi pendalaman (soal berlabel lebih tinggi).
+
+Risiko sisa: dua subtema PBB (pendaftaran/SPOP/SPPT, pembayaran dan denda) tidak disebut tersendiri di dokumen, sehingga keyakinannya rendah.
+
+## R1 · Alur telaah per slide dan lembar telaah (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Slide punya `telaah` (Sesuai / Perlu diubah, catatan, penelaah, waktu). `telaahSlide` tidak mengubah asal dan tidak menurunkan status deck; menyunting isi slide menghapus hasil telaahnya | Lulus (`verify:materi`) |
+| Slide teks acuan yang ditelaah Sesuai tidak lagi membuat deck Draf internal (KM2); catatan pembicara tanpa "DRAF INTERNAL" | Lulus |
+| Lembar telaah .xlsx (kolom Deck, ID slide, isi slide, Status, Catatan, Penelaah, plus lembar Petunjuk): tulis → isi → baca → terapkan; impor ulang tanpa perubahan melewati semua baris; lembar tanpa kolom wajib ditolak | Lulus |
+| Pembaca .xlsx: sharedStrings, teks kaya, entitas XML, kolom berlubang | Lulus (uji sintetis) |
+| Uji Excel sungguhan: lembar diisi dan disimpan ulang oleh Microsoft Excel (sharedStrings), lalu dibaca kembali: 6 baris, catatan "Tarif & dasar hukum dicek ulang <PMK>" utuh, 6 diterapkan | Lulus |
+| Tab Materi: kolom status di tabel slide, saringan Semua / Belum ditelaah / Perlu diubah, panel "Telaah slide ini" (status, catatan, nama penelaah tersimpan di browser), angka "x / y slide ditelaah", tombol Lembar telaah .xlsx dan Impor lembar telaah; "Tandai deck ditelaah" menampilkan progres | Lulus di browser |
+| typecheck, build, verify:materi 156 | Lulus |
+
+Catatan uji: di pane browser yang tidak aktif, `blur()` tidak memicu `focusout`, jadi penyimpanan catatan diuji dengan `focusout`. Pengguna sungguhan memicunya saat berpindah dari kotak catatan.
+
+## R2 · Lapisan tulis ulang dan contoh Bea Meterai (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `data/ukp-tulis.json`: 15 kartu aturan, 7 kartu hafalan/rumus, dan 8 kuis Bea Meterai ditulis ulang dengan kalimat sendiri; dimuat di Node dan browser (disalin ke `public/data`) | Lulus |
+| Angka, tanggal, dan nomor pasal sumber tetap ada di teks tulis ulang (diperiksa per item) | 0 hilang (3 rujukan yang sempat hilang dikembalikan: Pasal 3 ayat (2), masa transisi 1 tahun, Pasal 23) |
+| Setiap teks panjang berbeda dari sumber (bukan salinan); field fakta pendek (subjek, tarif, ambang, tenggat) boleh sama | Lulus |
+| Deck Bea Meterai 4 subtema × 3 kepadatan dan deck gabungan: tanpa slide teks acuan, bukan Draf internal; kuis memakai teks baru dengan kunci dari sumber; catatan pembicara menandai "teks ditulis ulang (belum ditelaah)"; materi lain tetap teks acuan | Lulus (`verify:materi`) |
+| CLI: `npm run materi -- --kode BM` tidak lagi meminta `--setuju-acuan`; penolakan KM2 diuji dengan subtema KUP | Lulus |
+| Uji render PowerPoint 13 deck BM (ringkas, standar, lengkap, gabungan) | 3.031 kotak teks, 0 meluap |
+| verify 117, quality 40, models 114, export 52, materi 164 | 487 cek lulus |
+
+Risiko sisa: teks tulis ulang belum ditelaah ahli pajak (K8); status telaahnya dicatat lewat alur R1.
+
+## R12 · Cadangan lengkap untuk tim (3 Nov 2026)
+
+Keputusan user: berkas cadangan lengkap tanpa server.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `lib/cadangan.ts`: buat dan baca cadangan lengkap (paket, deck materi beserta hasil telaah, sesi uji); setiap paket diperiksa seperti cadangan satu paket, setiap naskah lewat `bacaNaskah` | Lulus (`verify`) |
+| Cadangan rusak ditolak dengan pesan yang menyebut bagiannya (paket ke-n, deck materi id); cadangan satu paket dikenali bukan cadangan lengkap | Lulus |
+| Gabung: id baru ditambah, versi berkas lebih baru mengganti, versi browser lebih baru dibiarkan | Lulus |
+| Browser: menu Cadangan (paket ini / lengkap / impor keduanya); unduh `ukp-studio-cadangan-lengkap-2026-11-03.json` (1 paket, 3 deck, 914 KB); deck yang dihapus pulih setelah impor; tab Materi memuat ulang otomatis | Lulus (unduhan dicegat; data uji dihapus) |
+| Label status deck: "Draf internal" hanya bila masih ada teks acuan yang belum ditelaah; deck lain "Belum ditelaah" | Diperbaiki |
+| verify 121; typecheck; build | Lulus |
+
+## R6 · Kapasitas paket: pergeseran kesulitan yang tercatat (3 Nov 2026)
+
+Masalah: banyak paket tanpa soal kembar di Tingkat A/B bisa gagal dirakit karena kurang 1–4 soal pada satu kesulitan, padahal cek persediaan lulus.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Langkah 6 perakit: sel yang kosong diisi dari kesulitan terdekat pada materi yang sama (soal bank, lalu model bila sumbernya mengizinkan); setiap pergeseran dicatat sebagai "Paket n · KODE: x soal sulit diganti sedang (stok sulit habis)" | Lulus (`verify`) |
+| 10 paket bank Tingkat A: berhasil, jumlah soal per materi sesuai kuota, tanpa soal kembar, pergeseran hanya di paket 10 | Lulus |
+| 5 paket Tingkat A/B/C (bank dan campuran) dengan komposisi bawaan: tanpa pergeseran | Lulus |
+| Kapasitas tanpa kembar (tryout 100 soal) diukur ulang. Bank: A 9→10, B 7→14, C 10→19 paket. Campuran: A 14, B 15, C 20+. Pergeseran baru muncul mulai paket ke-10/11 | Diperbarui di README dan `agent-office.json` |
+| Pesan di aplikasi, RINGKASAN CLI, dan `validasi.json` (`geserKesulitan`) menyebut jumlah dan rincian pergeseran | Lulus (CLI A 10 paket: 5 soal) |
+| verify 124, verify:quality 40; typecheck | Lulus |
+
+## R4 · Empat model soal baru (3 Nov 2026)
+
+Subtema berbobot besar tanpa model: Pengkreditan Pajak Masukan (PPN, A), Rekonsiliasi fiskal (AKT, B), Pajak tangguhan PSAK 212 (AKT, B), dan Pembetulan, keberatan & pengurangan (KUP, A). Model ada di `lib/models/tambahan.ts`.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Parameter baru `sanksi.keberatan` (0,5 → 0,3 sejak 29 Okt 2021) dengan `dasar`; format berkas parameter dipertahankan; disalin ke `public/data` | Lulus |
+| Uji emas 13 cek: PM (13,2 jt − PM yang boleh dikreditkan), PKP dan PPh badan hasil rekonsiliasi, liabilitas dan beban pajak tangguhan, denda keberatan ditolak, dikabulkan sebagian, banding (Rp0), dan tarif 50% sebelum UU HPP | Lulus |
+| 240 seed per model: hitung ulang = kunci, 3 pengecoh berbeda dengan alasan dan penyebab yang dikenal, rujukan aturan valid, cek mutu tanpa gagal, deterministik; kapasitas 48 / 48 / 48 / 48 | Lulus |
+| Konteks PM hanya usaha yang penyerahannya objek PPN (hotel, restoran, rumah sakit, sekolah dikeluarkan) | Diperbaiki |
+| Posisi kunci: model baru awalnya condong ke A (D 3%); ditambah pengecoh bernilai di bawah kunci (tarif PPN lama, faktor 11/12 ganda, tarif Pasal 31E/UMKM, denda dari pajak yang dibayar). Seluruh model: A 23%, B 33%, C 33%, D 10,8% (batas ≥ 10%) | Diperbaiki |
+| Pengecoh "tarif × laba komersial" tidak lagi berakhiran ganjil (laba dibulatkan dulu) supaya tidak mudah ditebak | Diperbaiki |
+| Bahasa contoh soal tiap model dibaca ulang | Lulus |
+| verify:models 139 (6.000 soal model), verify 124, verify:quality 40, verify:materi 164; typecheck | Lulus |
+
+## R5 · Bank soal orisinal (3 Nov 2026)
+
+Sebelumnya bank orisinal berisi 10 soal, 45 subtema tidak punya soal non-acuan sama sekali, dan INT kosong. Ditambah 46 soal di `data/ukp-kasus/` (PPN 7, KUP 6, PP 3, BM 2, OP 3, AKT 4, BDN 3, BTI 5, PBB 2, INT 11). Faktanya dari kartu aturan; nama, angka, dan tanggal dibuat sendiri (tidak menyalin contoh kartu yang berasal dari LatihUKP). `keyakinan` tetap "Sedang" sampai ditelaah (K8).
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Penulis JSON mereproduksi keempat berkas lama byte demi byte, jadi gaya berkas tetap | Lulus |
+| Pemeriksaan mandiri: subtema ada di mapping, rujukan aturan ada, batang diakhiri "...", tanpa opsi kembar, rasio panjang opsi ≤ 3, kunci tidak lebih dari 1,2× opsi terpanjang berikutnya, penyebab salah dikenal | Lulus (2 soal diratakan panjang opsinya) |
+| `cekSoal` atas 56 soal orisinal setelah opsi diurutkan: tanpa gagal dan tanpa peringatan; kunci tetap | Lulus |
+| Kunci tersebar A 12, B 12, C 11, D 11; tingkat A 21, B 9, C 16; kesulitan mudah 15, sedang 21, sulit 10 | Lulus |
+| Subtema tanpa soal non-acuan: 45 → 4 (OP NPWP & pendaftaran, PP Tata cara penyetoran, PBB Pendaftaran/SPOP/SPPT, AKT Bank) | Dicatat di ROADMAP |
+| Perakit sumber "baru": bobot materi kini dari sebaran bank (sama dengan sumber bank/campuran), dibatasi stok; soal orisinal diambil lebih dulu, lalu model. Tryout Tingkat C 1 paket: jumlah per materi sama dengan tryout bank, INT 11 soal, 54 subtema (sebelumnya tanpa INT dan hampir semuanya model) | Lulus (`verify`) |
+| Batas soal per materi dihitung dari jumlah batas per kesulitan, bukan floor(total ÷ paket); 1–2 slot tidak lagi kosong di batas kapasitas | Diperbaiki |
+| Pembagian orisinal antarpaket (soal kembar dilarang): paket awal tidak mengambil lebih dari bagian adilnya. Pembulatan ke atas memihak paket pertama (31/21); pembulatan acak membuat kapasitas tidak monoton (C 7 gagal, 8 lulus). Pembulatan ke bawah dipilih: kapasitas naik bertahap, sisa jatuh ke paket akhir (2 paket C: 21/31) | Dipilih, dicek di `verify` |
+| Kapasitas tanpa kembar diukur ulang. Soal baru saja: A 6→7, B 8, C 9→10 (memenuhi target K4 5 paket tanpa soal acuan). Bank: A 10, B 14→15, C 19. Campuran: A 14→17, B 15→16, C 20+ | Diperbarui di README dan `agent-office.json` |
+| Bug lama terungkap: E2-AKT-07/08/09 dan E3-AKT-03 ditandai "posisi tetap" karena notasi jurnal "(D) … (K)" terbaca sebagai rujukan opsi D; E2-AKT-09 (opsi angka) lalu tetap diurutkan dan melanggar cek. Importir kini mengabaikan notasi jurnal; impor ulang hanya mengubah 4 tanda itu (dibandingkan per kolom dengan HEAD), 9 override BPPK utuh | Diperbaiki |
+| Cek lama yang mengandaikan stok lama diperbarui: jumlah orisinal 56, "sumber baru: semua soal dari model" → "model dan orisinal, orisinal ikut terpakai", contoh subtema tanpa orisinal di `verify:materi` dipindah ke PP Tata cara penyetoran | Diperbarui |
+| CLI `--tingkat C --sumber baru --paket 2`: 2 × 100 soal, valid, 0 catatan mutu | Lulus |
+| verify 129, verify:quality 40, verify:models 139, verify:export 52, verify:materi 164; typecheck | Lulus |
+
+## R7 · Silabus per tingkat (3 Nov 2026)
+
+`lib/materi/silabus.ts`: deck gabungan per materi untuk tingkat terpilih (deck gabungan yang sudah disunting di browser dipakai bila berisi semua subtema cakupan), durasi per pola slide setelah tata letak, lalu dibagi ke pertemuan. Tab Materi: bagian **Silabus** di bawah Ekspor (durasi 60/90/120/180 menit, unduh .xlsx). CLI: `npm run materi -- --silabus [--tingkat] [--hanya-baru] [--menit-pertemuan]`; `agent-office.json` job `buatsilabus`.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Silabus A: 5 materi, 34 subtema; slide = slide deck gabungan setelah tata letak (termasuk lanjutan); unit per subtema berurutan menutup semua slide | Lulus (`verify:materi`) |
+| Pembagian pertemuan: tidak melebihi durasi; setiap slide tepat sekali; subtema dilanjutkan ke pertemuan berikutnya bila sisa ≥ 30 menit (atau sepertiga pertemuan), selain itu mulai di pertemuan baru; subtema lebih panjang dari satu pertemuan dipecah di batas slide | Lulus (cek sintetis 60 + 40 menit dan sisa pendek) |
+| Pengisian awal (subtema utuh saja) hanya 73% waktu pertemuan; aturan pelanjutan menaikkannya: A 24 → 20 pertemuan, C 47 → 40 | Diperbaiki |
+| Hasil (kepadatan standar, 90 menit): A 775 slide ±1.574 menit (35 JP, 20 pertemuan); A+B 1.105 slide (50 JP, 27); B tambahan 14 subtema (15 JP, 8); A+B+C 1.567 slide ±3.175 menit (71 JP, 40); dihitung < 0,5 detik | Lulus |
+| Deck disunting (slide tersembunyi) ikut dihitung; deck gabungan yang hanya berisi sebagian subtema diabaikan | Lulus |
+| .xlsx tiga lembar (Silabus, Per materi, Ringkasan beserta asumsi menit per pola) terbaca `bacaXlsx` dan terbuka di Excel | Lulus |
+| Label cakupan Tingkat A tertulis "(A, B, C)" (daftar ujian, bukan cakupan) | Diperbaiki → "Subtema A (kumulatif)" |
+| CLI: `--silabus --menit-pertemuan 120` menulis satu .xlsx; `--silabus --kode` dan `--menit-pertemuan 45` ditolak; opsi job `buatsilabus` ada di `--help` | Lulus |
+| Browser (build produksi): bagian Silabus Tingkat C; unduh `silabus-tingkat-c-90-menit.xlsx` (69 subtema, 71 JP, 40 pertemuan, sama dengan CLI); ganti 120 menit → ringkasan direset, unduhan 29 pertemuan | Lulus (unduhan dicegat) |
+| Label pilihan durasi "1.3333333333333333 JP" | Diperbaiki → "1,3 JP" |
+| verify:materi 178 (14 baru); typecheck; build | Lulus |
+
+## R8 · Materi ↔ latihan dan remedial (3 Nov 2026)
+
+`lib/remedial.ts`: `saranRemedial` (statistik Uji peserta per subtema, p benar < 60%, minimal 5 respons) dan `rakitLatihan` (paket jenis subtema 20 → 15 → 10 → 5 soal). Studio: paket latihan menjadi workspace baru tanpa mengubah pengaturan Atur paket; tab Materi bisa dibuka langsung ke satu subtema (`fokus`, dipakai sekali).
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Latihan satu subtema: 20 soal jenis subtema, semuanya subtema itu, durasi 36 menit; pengaturan dasar tidak berubah | Lulus (`verify`) |
+| Stok kecil: PP Tata cara penyetoran Tingkat B (8 soal) → 5 soal; OP NPWP & pendaftaran (2 soal) ditolak dengan galat persediaan; tanpa subtema ditolak | Lulus |
+| Catatan: PP Tata cara penyetoran bertingkat A, tetapi 5 dari 8 soalnya berlabel B, jadi di Tingkat A hanya tersedia 2–3 soal (aturan tingkat soal = yang lebih tinggi) | Dicatat |
+| Latihan lintas materi (PPN + KUP): dua materi, semua soal dari dua subtema itu | Lulus |
+| Remedial sintetis: hanya subtema di bawah batas, dengan nomor soal; subtema dengan < 5 respons tidak disarankan | Lulus |
+| Browser (build produksi): *Buat latihan* di deck PP PPh 21 pemotong → paket latihan 15 soal (stok tidak cukup untuk 20) di Hasil paket; 6 sesi sintetis (semua salah) diimpor → tabel Saran remedial 15 soal, 90 respons, 0%, nomor 1–15; *Buka materi* → tab Materi Tingkat C, subtema tercentang, deck terbuka | Lulus (data uji dihapus; 2 deck materi pengguna tetap) |
+| Label durasi silabus "1,3 JP" setelah build ulang | Lulus |
+| verify 137 (8 baru); typecheck; build | Lulus |
+
+## R9 · Handout peserta dan PDF (3 Nov 2026)
+
+`lib/materi/handout.ts` (`naskahHandout`): sampul bertanda "Handout peserta", daftar isi, pembatas, ikhtisar, rumus, rangkuman, kuis Benar/Salah beserta jawabannya, penutup; tabel isi materi, konsep, dan contoh soal tidak ikut. `tulisPptx(..., { tanpaCatatan: true })` tidak menulis catatan pembicara. Tab Materi: pilihan *Isi .pptx* di Ekspor. CLI: `--handout`, `--pdf` (PowerPoint COM, `scripts/materi-pdf.ps1`).
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Handout hanya memuat pola ringkas; semua rangkuman dan kuis deck lengkap ikut; sampul dan judul bertanda Handout peserta; slide tersembunyi tidak ikut | Lulus (`verify:materi`) |
+| Handout .pptx tanpa `notesSlides`, paket sah, 0 teks meluap; deck lengkap tetap memuat catatan pembicara | Lulus |
+| CLI `--tingkat A --kode BM --gabung --handout --pdf`: 24 slide (dari 73), 0 Draf internal, PDF 24 halaman (sampul "Handout peserta"); uji render PowerPoint 267 kotak teks, 0 meluap | Lulus |
+| `--pdf` bersama `--zip`, `--pdf` dengan `--format json` ditolak; job `buatmateri` di `agent-office.json` memuat `handout` dan `pdf` | Lulus |
+| Regex pemisah baris di pembaca keluaran PDF rusak karena escape di skrip penyunting | Diperbaiki |
+| Browser (build produksi): deck PP PPh 21 pemotong diunduh *Deck lengkap* lalu *Handout peserta* → `…-handout.pptx`; dialog KM2 tetap muncul karena teks acuan | Lulus (unduhan dicegat) |
+| verify:materi 186; typecheck; build | Lulus |
+
+## R11 · CI GitHub dan R10 · catatan akses (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `.github/workflows/ci.yml`: push dan pull request → `npm ci`, typecheck, verify, verify:quality, verify:models, verify:export, verify:materi, build (Ubuntu, Node 22, cache npm, batal otomatis untuk run lama di ref yang sama, izin `contents: read`) | YAML valid |
+| Pemeriksa tidak memakai PowerShell atau path Windows; data dan aset yang dibutuhkan ter-track git (`public/data`, `assets/materi`). Berkas baru sejak commit terakhir (misalnya `data/ukp-tulis.json`, `public/data/ukp-tulis.json`, `data/ukp-kasus/*.json`) harus ikut di-commit | Dicek |
+| CI belum pernah berjalan di GitHub karena belum di-push | Belum diverifikasi |
+| README: bagian *Akses dan keamanan* (repositori private, `public/data` terbaca publik bila di-deploy, tanpa kata sandi situs sesuai keputusan, pilihan pembatasan tanpa kode, data browser dan cadangan); bagian *Batas* diperbarui dengan kapasitas terbaru | Selesai |
+
+## QC akhir lintas rekomendasi R1–R12 (3 Nov 2026)
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| typecheck | Lulus |
+| verify 137 · verify:quality 40 · verify:models 139 · verify:export 52 · verify:materi 186 (554 cek) | Lulus, 0 gagal |
+| `npm run build` (produksi) | Lulus |
+| `npm audit` | 0 kerentanan |
+| Render PowerPoint ke-69 deck × kepadatan (`materi-verify --semua`): 138 deck dibuka, 40.981 kotak teks, 0 meluap | Lulus (soal orisinal R5 ikut sebagai contoh soal) |
+| Browser (build produksi): Silabus (R7), Buat latihan dan Saran remedial (R8), handout (R9); data uji dihapus, 2 deck materi pengguna tetap | Lulus |
+| CI GitHub (R11) | Belum berjalan sampai di-push |
+
+Yang masih terbuka (dicatat di ROADMAP): telaah penelaah materi (K8) atas 25 model dan 56 soal orisinal; tulis ulang materi selain Bea Meterai; 4 subtema tanpa soal orisinal; repositori private dan pembatasan akses situs (pemilik repo).
+

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "O-BDN-01", "bank": "orisinal", "paketSumber": null, "kode": "BDN", "materi": "PPh Badan (dalam negeri)", "subtema": "Subjek, objek & pengecualian objek", "subtemaDasar": "manual",
+    "subtopik": "Dividen dalam negeri yang diterima badan", "tingkat": "B", "tipe": "Jebakan umum", "bloom": "understand", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "Pada 2026 PT Sinar Andalas (Wajib Pajak badan dalam negeri) menerima dividen Rp250.000.000 dari PT Kencana Agri (Wajib Pajak badan dalam negeri). Kepemilikan PT Sinar Andalas pada PT Kencana Agri 8%. Perlakuan PPh atas dividen tersebut bagi PT Sinar Andalas adalah ...",
+    "opsi": { "A": "Objek PPh tarif umum, karena kepemilikannya di bawah 25%", "B": "Bukan objek PPh; seluruhnya dikeluarkan dari penghitungan PKP", "C": "Dikenai PPh final 10% yang dipotong PT Kencana Agri", "D": "Bukan objek PPh hanya bila diinvestasikan kembali di Indonesia" },
+    "kunci": "B",
+    "inti": "Dividen dari dalam negeri yang diterima Wajib Pajak badan dalam negeri dikecualikan dari objek PPh tanpa syarat persentase kepemilikan (UU PPh Pasal 4 ayat (3) huruf f angka 1 s.t.d.d. UU HPP); dalam rekonsiliasi dikoreksi negatif.",
+    "langkah": ["Dividen dalam negeri yang diterima badan dalam negeri bukan objek PPh.", "Sejak UU HPP tidak ada syarat kepemilikan minimal atau asal laba ditahan.", "Rp250.000.000 dikeluarkan dari PKP (koreksi negatif bila sudah masuk laba komersial)."],
+    "kenapaSalah": { "A": "Syarat kepemilikan 25% adalah aturan lama; kini dividen dalam negeri bagi badan dikecualikan tanpa syarat kepemilikan.", "C": "PPh final 10% untuk dividen orang pribadi yang tidak diinvestasikan; dividen kepada badan dalam negeri bukan objek.", "D": "Syarat investasi untuk orang pribadi dan dividen luar negeri, bukan dividen dalam negeri yang diterima badan." },
+    "penyebabSalah": { "A": "salah_periode", "C": "tertukar_aturan", "D": "tertukar_aturan" },
+    "dasarHukum": ["UU PPh Pasal 4 ayat (3) huruf f angka 1 s.t.d.d. UU 7/2021 (HPP)"], "ruleIds": ["R-BDN-04"],
+    "catatanAturan": null, "poinIngat": "Dividen dalam negeri kepada badan dalam negeri: bukan objek, tanpa syarat kepemilikan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-BDN-02", "bank": "orisinal", "paketSumber": null, "kode": "BDN", "materi": "PPh Badan (dalam negeri)", "subtema": "Biaya boleh & tidak boleh dikurangkan", "subtemaDasar": "manual",
+    "subtopik": "Biaya entertainment tanpa daftar nominatif", "tingkat": "B", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Rekayasa Prima membebankan biaya jamuan relasi bisnis Rp60.000.000 pada 2025. Semua jamuan berkaitan dengan kegiatan mendapatkan, menagih, dan memelihara penghasilan, tetapi Rp20.000.000 di antaranya tidak dibuatkan daftar nominatif. Koreksi fiskal positif atas biaya jamuan tersebut adalah ...",
+    "opsi": { "A": "Rp60.000.000", "B": "Rp0", "C": "Rp20.000.000", "D": "Rp40.000.000" },
+    "kunci": "C",
+    "inti": "Biaya entertainment boleh dikurangkan bila terkait 3M dan didukung daftar nominatif yang dilampirkan pada SPT; bagian tanpa daftar nominatif Rp20.000.000 dikoreksi positif.",
+    "langkah": ["Entertainment terkait 3M boleh dibiayakan bila dibuat daftar nominatif dan dilampirkan pada SPT Tahunan.", "Bagian berdaftar nominatif Rp40.000.000 tetap biaya.", "Bagian tanpa daftar nominatif Rp20.000.000 dikoreksi positif."],
+    "kenapaSalah": { "A": "Entertainment yang terkait 3M dan didukung daftar nominatif tetap boleh dikurangkan.", "B": "Biaya tanpa daftar nominatif tidak boleh dikurangkan walaupun terkait 3M.", "D": "Yang dikoreksi bagian tanpa daftar nominatif, bukan bagian yang berdaftar." },
+    "penyebabSalah": { "A": "tertukar_aturan", "B": "lupa_syarat", "D": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 6 ayat (1) huruf a", "SE-27/PJ.22/1986"], "ruleIds": ["R-BDN-09"],
+    "catatanAturan": null, "poinIngat": "Entertainment dan promosi: terkait 3M + daftar nominatif dilampirkan SPT; tanpa daftar, dikoreksi.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-BDN-03", "bank": "orisinal", "paketSumber": null, "kode": "BDN", "materi": "PPh Badan (dalam negeri)", "subtema": "Kompensasi kerugian fiskal", "subtemaDasar": "manual",
+    "subtopik": "Urutan dan batas 5 tahun kompensasi kerugian", "tingkat": "B", "tipe": "Kasus singkat", "bloom": "analyze", "kesulitan": "sulit", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Bahari Sentosa mempunyai sisa rugi fiskal Tahun 2020 Rp150.000.000 dan rugi fiskal Tahun 2022 Rp100.000.000. Penghasilan neto fiskal Tahun 2025 Rp200.000.000, tanpa fasilitas Pasal 31A. PKP Tahun 2025 dan sisa kerugian yang masih dapat dikompensasikan ke Tahun 2026 adalah ...",
+    "opsi": { "A": "PKP Rp0; sisa rugi 2020 Rp50.000.000 dibawa ke 2026", "B": "PKP Rp100.000.000; tidak ada sisa rugi", "C": "PKP Rp0; sisa rugi Rp50.000.000 hangus", "D": "PKP Rp0; sisa rugi 2022 Rp50.000.000 dibawa ke 2026" },
+    "kunci": "D",
+    "inti": "Rugi 2020 dapat dikompensasikan 2021–2025 dan dipakai lebih dulu (Rp150.000.000), lalu rugi 2022 Rp50.000.000 sehingga PKP 2025 Rp0; sisa rugi 2022 Rp50.000.000 dibawa ke 2026 (batasnya 2027).",
+    "langkah": ["Kerugian dikompensasikan mulai tahun berikutnya sampai 5 tahun (UU PPh Pasal 6 ayat (2)); rugi terlama dipakai lebih dulu.", "Rp200.000.000 − rugi 2020 Rp150.000.000 = Rp50.000.000; dikurangi rugi 2022 Rp50.000.000 → PKP Rp0.", "Sisa rugi 2022 Rp50.000.000 masih dapat dipakai pada 2026–2027."],
+    "kenapaSalah": { "A": "Rugi terlama dipakai lebih dulu, dan rugi 2020 hanya dapat dikompensasikan sampai 2025.", "B": "Menganggap rugi 2020 hangus pada 2024; jangka 5 tahun dihitung mulai tahun berikutnya (2021–2025).", "C": "Rugi 2022 masih dapat dikompensasikan sampai 2027, jadi sisanya tidak hangus." },
+    "penyebabSalah": { "A": "tertukar_aturan", "B": "salah_periode", "C": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 6 ayat (2) s.t.d.d. UU 7/2021 (HPP) beserta Penjelasan"], "ruleIds": ["R-BDN-15"],
+    "catatanAturan": null, "poinIngat": "Kompensasi rugi: mulai tahun berikutnya, paling lama 5 tahun, rugi terlama lebih dulu; sisa yang lewat 5 tahun hangus.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  }
+]

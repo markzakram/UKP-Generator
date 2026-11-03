@@ -1,0 +1,33 @@
+# Pemeriksaan otomatis (R11): typecheck, kelima pemeriksa, dan build pada setiap push dan pull request.
+# Uji render PowerPoint (scripts/materi-render.ps1) dan PDF tidak ikut karena butuh Windows dengan PowerPoint.
+name: Pemeriksaan
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  periksa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run verify
+      - run: npm run verify:quality
+      - run: npm run verify:models
+      - run: npm run verify:export
+      - run: npm run verify:materi
+      - run: npm run build

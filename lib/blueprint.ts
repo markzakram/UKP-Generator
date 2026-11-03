@@ -46,6 +46,8 @@ export interface Stok {
   blok: Record<Kode, Sel>;
   kasus: Record<Kode, number>;
   model: Record<Kode, Sel>;
+  /** Semua soal bank di pool per materi (termasuk acuan), sebagai bobot sebaran materi ujian. */
+  sebaran: Record<Kode, number>;
 }
 
 export function hitungStok(data: DataUkp, peng: Pengaturan, ctx: KonteksModel): Stok {
@@ -54,6 +56,8 @@ export function hitungStok(data: DataUkp, peng: Pengaturan, ctx: KonteksModel): 
   const blok = Object.fromEntries(URUTAN_KODE.map((k) => [k, selKosong()])) as Record<Kode, Sel>;
   const kasus = Object.fromEntries(URUTAN_KODE.map((k) => [k, 0])) as Record<Kode, number>;
   const model = Object.fromEntries(URUTAN_KODE.map((k) => [k, selKosong()])) as Record<Kode, Sel>;
+  const sebaran = Object.fromEntries(URUTAN_KODE.map((k) => [k, 0])) as Record<Kode, number>;
+  for (const b of [...pool.tunggal, ...pool.blok.flatMap((bl) => bl.anggota)]) sebaran[b.kode]++;
   // Sumber "baru" = model + bank orisinal (bukan salinan LatihUKP).
   const boleh = (b: BankSoal) => peng.sumber !== 'baru' || b.bank === 'orisinal';
   for (const b of pool.tunggal) if (boleh(b)) bank[b.kode][b.kesulitan]++;
@@ -71,7 +75,7 @@ export function hitungStok(data: DataUkp, peng: Pengaturan, ctx: KonteksModel): 
       }
     }
   }
-  return { bank, blok, kasus, model };
+  return { bank, blok, kasus, model, sebaran };
 }
 
 /**
@@ -117,9 +121,11 @@ export function hitungKuota(data: DataUkp, peng: Pengaturan, ctx: KonteksModel):
     for (const d of KESULITAN) s[d] = stok.bank[k][d] + (peng.sumber === 'bank' ? 0 : stok.model[k][d]);
     return s;
   };
-  // Bobot materi memakai stok bank (bila ada) supaya komposisi tryout mengikuti sebaran materi sumber.
-  const bobot = kode.map((k) => (peng.sumber === 'baru' ? jumlahSel(stok.model[k]) : jumlahSel(stok.bank[k])));
-  const batasBaris = kode.map((k) => Math.floor(jumlahSel(tersedia(k)) / faktor));
+  // Bobot materi memakai sebaran bank supaya komposisi tryout mengikuti sebaran materi sumber; pada sumber "baru"
+  // batas stok (model + orisinal) memindahkan kelebihannya ke materi lain.
+  const bobot = kode.map((k) => stok.sebaran[k]);
+  // Batas per materi = jumlah batas per kesulitan; floor(total ÷ faktor) bisa melebihinya bila stok terbagi.
+  const batasBaris = kode.map((k) => KESULITAN.reduce((a, d) => a + Math.floor(tersedia(k)[d] / faktor), 0));
   const perKode = bagiSisaTerbesar(peng.jumlahSoal, bobot, batasBaris);
   const totalKomposisi = KESULITAN.reduce((a, d) => a + Math.max(0, peng.komposisi[d]), 0) || 1;
   return kode.map((k, i) => {

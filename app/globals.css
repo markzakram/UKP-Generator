@@ -198,6 +198,10 @@ details > summary { cursor: pointer; }
 /* Pilihan di panel Cakupan deck: satu baris selebar panel, tombol berbagi lebar. */
 .tata-materi .kiri .seg { display: flex; width: 100%; flex-wrap: nowrap; }
 .tata-materi .kiri .seg button { flex: 1 1 auto; padding: 7px 8px; white-space: nowrap; }
+.tag-salah { background: var(--merah-bg); border-color: #f2b8b5; color: var(--merah); }
+.telaah-slide { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--garis); border-radius: 6px; background: var(--panel); }
+.telaah-slide .seg { display: flex; width: 100%; }
+.telaah-slide .seg button { flex: 1 1 auto; }
 .ekspor-materi { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--garis); border-radius: 6px; background: var(--panel); }
 .tag-tulis { background: var(--hijau-bg); border-color: #acd8b6; color: var(--hijau); }
 .baris-tab { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--garis); }

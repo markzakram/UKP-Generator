@@ -1,0 +1,32 @@
+[
+  {
+    "id": "O-PBB-02", "bank": "orisinal", "paketSumber": null, "kode": "PBB", "materi": "PBB-P5L", "subtema": "Keberatan & upaya hukum non-keberatan", "subtemaDasar": "manual",
+    "subtopik": "Jangka waktu keberatan PBB dan kewajiban bayar", "tingkat": "C", "tipe": "Konsep & batas waktu", "bloom": "apply", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Sawit Makmur menerima SPPT PBB-P5L sektor perkebunan Tahun 2026 pada 10 Maret 2026. Perusahaan menilai NJOP bumi per meter persegi dalam SPPT terlalu tinggi. Pernyataan yang benar mengenai upaya yang dapat ditempuh adalah ...",
+    "opsi": { "A": "Keberatan paling lambat 10 Juni 2026; pembayaran PBB ditunda sampai keputusan terbit", "B": "Keberatan paling lambat 10 Juni 2026; pengajuannya tidak menunda kewajiban membayar PBB", "C": "Permohonan pembetulan, karena penilaian NJOP termasuk kesalahan tulis", "D": "Keberatan paling lambat 10 April 2026, satu bulan sejak SPPT diterima" },
+    "kunci": "B",
+    "inti": "Keberatan PBB atas materi penetapan diajukan paling lama 3 bulan sejak SPPT diterima (10 Juni 2026) dan tidak menunda kewajiban membayar pajak (UU PBB Pasal 15).",
+    "langkah": ["Penilaian NJOP adalah materi penetapan, sehingga upayanya keberatan, bukan pembetulan.", "Keberatan diajukan dalam 3 bulan sejak SPPT diterima: 10 Maret 2026 → 10 Juni 2026.", "Pengajuan keberatan tidak menunda kewajiban membayar PBB."],
+    "kenapaSalah": { "A": "Keberatan tidak menunda kewajiban membayar pajak (UU PBB Pasal 15).", "C": "Pembetulan untuk salah tulis, hitung, atau penerapan ketentuan; keberatan atas penilaian NJOP adalah materi penetapan.", "D": "Jangka keberatan PBB 3 bulan sejak SPPT diterima." },
+    "penyebabSalah": { "A": "lupa_syarat", "C": "tertukar_aturan", "D": "belum_tahu_aturan" },
+    "dasarHukum": ["UU PBB Pasal 15", "PMK 118/2024 Pasal 9"], "ruleIds": ["R-PBB-17"],
+    "catatanAturan": null, "poinIngat": "Keberatan PBB: materi penetapan, 3 bulan sejak SPPT/SKP diterima, tidak menunda pembayaran; salah tulis/hitung lewat pembetulan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-PBB-03", "bank": "orisinal", "paketSumber": null, "kode": "PBB", "materi": "PBB-P5L", "subtema": "Objek & subjek PBB-P5L", "subtemaDasar": "manual",
+    "subtopik": "Keadaan objek pada 1 Januari", "tingkat": "C", "tipe": "Konsep & batas waktu", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Di areal perkebunan PT Agro Lestari, bangunan pabrik pengolahan kelapa sawit selesai dibangun dan mulai dipakai pada September 2026. Bangunan pabrik tersebut dikenai PBB-P5L untuk pertama kali pada ...",
+    "opsi": { "A": "Tahun Pajak 2026, dihitung penuh sejak bangunan dipakai", "B": "Tahun Pajak 2026, proporsional untuk September–Desember", "C": "Tahun Pajak 2027, menurut keadaan objek pada 1 Januari 2027", "D": "Tahun Pajak 2027, menurut keadaan objek saat SPPT diterbitkan" },
+    "kunci": "C",
+    "inti": "Saat yang menentukan PBB terutang adalah keadaan objek pada 1 Januari tahun pajak (UU PBB Pasal 8 ayat (2)); bangunan mulai ada September 2026, sehingga dikenai PBB mulai Tahun Pajak 2027.",
+    "langkah": ["Subjek PBB adalah pihak yang nyata memiliki, menguasai, atau memanfaatkan bumi/bangunan (UU PBB Pasal 4 ayat (1)).", "PBB terutang menurut keadaan objek pada 1 Januari tahun pajak (Pasal 8 ayat (2)).", "Pada 1 Januari 2026 bangunan belum ada; pertama kali dinilai menurut keadaan 1 Januari 2027."],
+    "kenapaSalah": { "A": "PBB terutang menurut keadaan objek pada 1 Januari tahun pajak; pada 1 Januari 2026 bangunan belum ada.", "B": "PBB tidak dihitung proporsional per bulan; saat yang menentukan adalah 1 Januari.", "D": "Keadaan objek yang dipakai adalah 1 Januari, bukan tanggal terbit SPPT." },
+    "penyebabSalah": { "A": "salah_periode", "B": "belum_tahu_aturan", "D": "tertukar_aturan" },
+    "dasarHukum": ["UU PBB Pasal 4 ayat (1) dan Pasal 8 ayat (2)"], "ruleIds": ["R-PBB-02"],
+    "catatanAturan": null, "poinIngat": "PBB: keadaan objek 1 Januari menentukan; perubahan di tengah tahun berlaku untuk tahun pajak berikutnya.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  }
+]

@@ -154,7 +154,7 @@ data UKP ──► susunNaskah() ──► Naskah (JSON, bisa disunting/diimpor)
 | Kartu rumus | 28 | Slide rumus dan langkah hitung |
 | Kuis | 318 (B/S 92, PG 95, isian 74, jodoh 57) | Kuis cepat di akhir deck |
 | Topik (`topik`) | 11 | Slide pembuka materi dan info ujian |
-| Soal model dan orisinal | 21 model, 10 soal orisinal | Contoh soal dan pembahasan |
+| Soal model dan orisinal | 25 model, 56 soal orisinal | Contoh soal dan pembahasan |
 | Soal bank LatihUKP | 2.387 | Contoh soal hanya dengan konfirmasi (KM3) |
 | Jebakan aturan lama (`ukp-jebakan.json`) | 13 pola | Slide "kesalahan umum" dan pemeriksaan naskah |
 
@@ -229,11 +229,11 @@ Cakupan lain:
 ### F1. Pilih cakupan, P0
 Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tanggal acuan, sumber contoh soal, dan jumlah contoh soal/kuis.
 
-- **Tingkat** mengikuti tingkat subtema di `data/ukp-mapping.json` (PRD K3): A 33 subtema, A+B 56, A+B+C 69. Semua kartu aturan dalam subtema ikut tingkat subtemanya, jadi label kisi pada kartu tidak lagi menyaring isi deck. Sampul menulis tingkat subtema.
+- **Tingkat** mengikuti tingkat subtema di `data/ukp-mapping.json` (PRD K3, disahkan terhadap dokumen BPPK): A 34 subtema, A+B 48, A+B+C 69. Semua kartu aturan dalam subtema ikut tingkat subtemanya, jadi label kisi pada kartu tidak lagi menyaring isi deck. Sampul menulis tingkat subtema.
 - **Lingkup** (tambahan 3 November 2026), satu deck per subtema:
   - *Subtema*: centang subtema satu per satu dari satu materi.
   - *Materi* (kode): semua subtema satu materi langsung tercentang.
-  - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 23, C 13).
+  - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 14, C 21).
 - Unduhan beberapa deck menjadi satu .zip tanpa kompresi ulang. Lingkup tingkat memberi satu folder per kode, misalnya `materi-tingkat-b-tambahan-23-deck.zip`.
 - **Bentuk deck** (tambahan 3 November 2026, dipilih user: materi dibedakan per tingkat):
   - *Per subtema* (bawaan): satu deck per subtema.
@@ -368,7 +368,7 @@ Disetujui 3 November 2026: semua butir memakai usulan bawaan.
 | No | Pertanyaan | Keputusan |
 | --- | --- | --- |
 | KM1 | Generator khusus UKP, atau umum untuk topik lain (contoh template: Penalaran Verbal)? | Isi otomatis khusus UKP. Mesin dan format naskah dibuat umum, jadi topik lain bisa masuk lewat impor naskah (F8, P1) |
-| KM2 | Hak pakai teks LatihUKP di deck yang dibagikan | Tanda "Draf internal" + konfirmasi sampai bloknya ditulis ulang atau ditelaah (bagian 13) |
+| KM2 | Hak pakai teks LatihUKP di deck yang dibagikan (3 Nov 2026: telaah per slide R1 dan lapisan tulis ulang `data/ukp-tulis.json` R2; Bea Meterai selesai ditulis ulang) | Tanda "Draf internal" + konfirmasi sampai bloknya ditulis ulang atau ditelaah (bagian 13) |
 | KM3 | Sumber contoh soal | Model dan orisinal; bank LatihUKP dengan konfirmasi |
 | KM4 | Font | Poppins Regular/Bold saja, tertanam; Inter dan Arial Nova dibuang |
 | KM5 | Foto sampul dan stiker "all about cere" | Dipakai apa adanya sebagai identitas tim |

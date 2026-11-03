@@ -5,11 +5,12 @@ Generator paket soal Uji Kompetensi Perpajakan (UKP) Tingkat A, B, C, ditambah g
 ## Struktur singkat
 
 - `data/` hasil impor yang dibundel: `ukp-bank.json`, `ukp-rules.json`, `ukp-mapping.json`, `ukp-parameter.json`, `ukp-konteks.json`, `ukp-jebakan.json`. Disalin ke `public/data/` oleh `npm run import:data` supaya browser bisa memuatnya.
-- `lib/` logika murni tanpa React (bisa dipakai browser dan CLI): `generate.ts`, `blueprint.ts`, `replace.ts`, `quality.ts`, `models/`, `export/`, `storage.ts` (khusus browser).
-- `lib/materi/` mesin deck materi: `naskah.ts` (format naskah), `metrik.ts` (lebar huruf Poppins), `tata-letak/` (pola P1–P16 → kotak berposisi), `pptx.ts` (penulis .pptx), `cek.ts` (pemeriksaan).
+- `lib/` logika murni tanpa React (bisa dipakai browser dan CLI): `generate.ts`, `blueprint.ts`, `replace.ts`, `quality.ts`, `models/`, `export/`, `remedial.ts` (saran remedial dan paket latihan), `cadangan.ts`, `storage.ts` (khusus browser).
+- `lib/materi/` mesin deck materi: `naskah.ts` (format naskah), `metrik.ts` (lebar huruf Poppins), `tata-letak/` (pola P1–P16 → kotak berposisi), `pptx.ts` (penulis .pptx), `cek.ts` (pemeriksaan), `telaah.ts`, `silabus.ts` (silabus per tingkat), `handout.ts` (handout peserta).
 - `assets/materi/` template sumber, paket dasar `dasar.pptx` (dibuat `npm run materi:dasar`, juga disalin ke `public/materi/`), dan `metrik-poppins.json`.
 - `components/` dan `app/` tampilan desain B+ (PRD bagian 18; tab Materi: PRD-Materi bagian 19).
-- `scripts/` impor data, CLI (`generate.ts` untuk paket soal, `materi.ts` untuk deck materi), dan pemeriksa.
+- `data/ukp-kasus/` bank soal orisinal (ditulis tim, bukan acuan); `data/ukp-tulis.json` teks tulis ulang materi.
+- `scripts/` impor data, CLI (`generate.ts` untuk paket soal, `materi.ts` untuk deck materi, silabus, handout, dan PDF), dan pemeriksa. `.github/workflows/ci.yml` menjalankan typecheck, kelima pemeriksa, dan build pada setiap push.
 
 ## Cara memeriksa (wajib setelah mengubah kode atau data)
 
@@ -28,6 +29,7 @@ Generator paket soal Uji Kompetensi Perpajakan (UKP) Tingkat A, B, C, ditambah g
 - Tingkat UKP per subtema ada di `data/ukp-mapping.json` bagian `subtema` (ditulis impor) dan `override` (disunting tangan). Tingkat soal/model = yang lebih tinggi antara tingkat subtema dan labelnya; kartu aturan ikut tingkat subtema. Pakai `tingkatSoal`, `tingkatAturan`, atau `tingkatSubtema` dari `lib/data.ts`, jangan membaca `.tingkat` mentah.
 - Model tidak boleh menebak data resmi yang tidak ada (tabel TER, tarif bunga KMK bulanan). Angka seperti itu ditulis sebagai fakta di soal, atau model menolak generate.
 - Soal bank LatihUKP berstatus acuan internal (PRD K2). Ekspor SiAdu yang memuatnya harus meminta konfirmasi. Teks kartu aturan LatihUKP di deck materi juga acuan (PRD-Materi KM2).
+- Teks tulis ulang materi ada di `data/ukp-tulis.json` (per id aturan, kartu, kuis). Tulis dengan kalimat sendiri, jangan menyalin teks LatihUKP; angka, tanggal, dan nomor pasal harus sama dengan sumber (`verify:materi` memeriksanya).
 - Deck materi: ukuran dan posisi hanya dihitung lewat `lib/materi/metrik.ts` (lebar huruf hasil ukur PowerPoint). Teks isi tidak boleh dipotong; bila tidak muat, dipecah ke slide "(lanjutan)". Jangan menyunting `assets/materi/dasar.pptx` dengan tangan; ubah `scripts/materi-dasar.mjs` lalu jalankan `npm run materi:dasar`.
 - Jangan `git push` dan jangan commit kecuali diminta.
 - Kalau opsi CLI atau script `package.json` berubah, perbarui `agent-office.json` di perubahan yang sama.

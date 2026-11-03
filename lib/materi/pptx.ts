@@ -115,7 +115,7 @@ function waktuIso(s: string) {
 export interface HasilPptx { berkas: Uint8Array; slides: SlideJadi[]; drafInternal: boolean }
 
 /** Render naskah menjadi .pptx di atas paket dasar (assets/materi/dasar.pptx). */
-export function tulisPptx(naskah: Naskah, dasar: Uint8Array, opsi: { ditelaah?: boolean } = {}): HasilPptx {
+export function tulisPptx(naskah: Naskah, dasar: Uint8Array, opsi: { ditelaah?: boolean; tanpaCatatan?: boolean } = {}): HasilPptx {
   // Deck yang sudah ditelaah tidak lagi diberi tanda Draf internal (PRD-Materi KM2).
   const draf = adaTeksAcuan(naskah) && !opsi.ditelaah;
   const slides = tataLetak(naskah, { tandaDraf: draf });
@@ -132,7 +132,8 @@ export function tulisPptx(naskah: Naskah, dasar: Uint8Array, opsi: { ditelaah?: 
     for (const m of rels.matchAll(/Target="\.\.\/media\/([^"]+)"/g)) if (!z['ppt/media/' + m[1]]) throw new Error('Media tidak ada di paket dasar: ' + m[1]);
     out[`ppt/slides/slide${n}.xml`] = strToU8(xml);
     let relsSlide = rels;
-    if (s.catatan && adaCatatan) {
+    // Handout peserta (R9) tidak memuat catatan pembicara.
+    if (s.catatan && adaCatatan && !opsi.tanpaCatatan) {
       const c = xmlCatatan(s.catatan, n);
       out[`ppt/notesSlides/notesSlide${n}.xml`] = strToU8(c.xml);
       out[`ppt/notesSlides/_rels/notesSlide${n}.xml.rels`] = strToU8(c.rels);

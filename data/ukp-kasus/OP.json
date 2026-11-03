@@ -28,5 +28,50 @@
     "dasarHukum": ["PP 55/2022 Pasal 58 ayat (1) dan Pasal 61 s.t.d.d. PP 20/2026"], "ruleIds": ["R-OP-18", "R-OP-16"],
     "catatanAturan": null, "poinIngat": "Omzet melewati Rp4,8 M di tengah tahun: tetap 0,5% sampai akhir tahun, tarif umum mulai tahun berikutnya.", "keyakinan": "Sedang",
     "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-OP-03", "bank": "orisinal", "paketSumber": null, "kode": "OP", "materi": "PPh Orang Pribadi & SPT PPh OP", "subtema": "Kredit pajak, PPh 25/29 & SPT Tahunan OP", "subtemaDasar": "manual",
+    "subtopik": "Angsuran PPh 25 orang pribadi", "tingkat": "A", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Menurut SPT Tahunan 2025, PPh terutang Sdr. Hendra (bukan OP pengusaha tertentu) Rp48.000.000. Kredit pajaknya: PPh 21 Rp6.000.000, PPh 23 Rp6.000.000, dan angsuran PPh 25 yang dibayar selama 2025 Rp24.000.000. Angsuran PPh Pasal 25 per bulan untuk 2026 setelah SPT disampaikan adalah ...",
+    "opsi": { "A": "Rp1.000.000", "B": "Rp4.000.000", "C": "Rp3.000.000", "D": "Rp3.500.000" },
+    "kunci": "C",
+    "inti": "Angsuran PPh 25 = (PPh terutang − PPh 21 − PPh 23) ÷ 12 = (Rp48.000.000 − Rp12.000.000) ÷ 12 = Rp3.000.000; PPh 25 tahun lalu tidak dikurangkan.",
+    "langkah": ["Dasar angsuran: PPh terutang SPT tahun lalu dikurangi PPh 21, 22, 23, dan 24 (UU PPh Pasal 25 ayat (1)).", "PPh 25 yang dibayar tahun lalu tidak ikut dikurangkan.", "(Rp48.000.000 − Rp6.000.000 − Rp6.000.000) ÷ 12 = Rp3.000.000."],
+    "kenapaSalah": { "A": "Ikut mengurangkan PPh 25 tahun lalu; rumus angsuran hanya mengurangkan PPh 21, 22, 23, dan 24.", "B": "Tidak mengurangkan kredit PPh 21 dan PPh 23.", "D": "Hanya mengurangkan PPh 21; PPh 23 juga dikurangkan." },
+    "penyebabSalah": { "A": "tertukar_aturan", "B": "lupa_syarat", "D": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 25 ayat (1) s.t.d.d. UU 36/2008", "PMK 81/2024 Pasal 226"], "ruleIds": ["R-OP-21"],
+    "catatanAturan": null, "poinIngat": "PPh 25 = (terutang tahun lalu − PPh 21/22/23/24) ÷ 12; PPh 25 tahun lalu tidak dikurangkan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-OP-04", "bank": "orisinal", "paketSumber": null, "kode": "OP", "materi": "PPh Orang Pribadi & SPT PPh OP", "subtema": "Subjek pajak & kewajiban subjektif", "subtemaDasar": "manual",
+    "subtopik": "Uji 183 hari dalam 12 bulan", "tingkat": "A", "tipe": "Kasus singkat", "bloom": "apply", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Mr. Lars, warga negara Swedia, tiba di Indonesia pada 1 Maret 2026 untuk bekerja di Jakarta dan kembali ke Swedia pada 30 September 2026 (214 hari). Ia tidak berniat menetap. Status subjek pajak Mr. Lars untuk Tahun Pajak 2026 adalah ...",
+    "opsi": { "A": "Subjek pajak luar negeri, karena ia warga negara asing", "B": "Subjek pajak luar negeri, karena tidak berada di Indonesia 12 bulan penuh", "C": "Subjek pajak dalam negeri, hanya bila ia sudah memiliki NPWP", "D": "Subjek pajak dalam negeri, karena lebih dari 183 hari dalam 12 bulan" },
+    "kunci": "D",
+    "inti": "Orang pribadi yang berada di Indonesia lebih dari 183 hari dalam jangka waktu 12 bulan adalah subjek pajak dalam negeri, tanpa melihat kewarganegaraan; 214 hari > 183 hari.",
+    "langkah": ["Kriteria subjek pajak dalam negeri orang pribadi bersifat alternatif: bertempat tinggal, lebih dari 183 hari dalam 12 bulan, atau berniat bertempat tinggal (UU PPh Pasal 2 ayat (3) huruf a).", "1 Maret–30 September 2026 = 214 hari, lebih dari 183 hari.", "Mr. Lars subjek pajak dalam negeri; gajinya dipotong PPh 21, bukan PPh 26."],
+    "kenapaSalah": { "A": "Kewarganegaraan tidak menentukan; yang diuji tempat tinggal, lebih dari 183 hari, atau niat.", "B": "Ujinya lebih dari 183 hari dalam jangka waktu 12 bulan, bukan 12 bulan penuh.", "C": "Status subjek pajak ditentukan fakta keberadaan, bukan NPWP." },
+    "penyebabSalah": { "A": "tertukar_aturan", "B": "lupa_syarat", "C": "belum_tahu_aturan" },
+    "dasarHukum": ["UU PPh Pasal 2 ayat (3) huruf a s.t.d.d. UU 36/2008"], "ruleIds": ["R-OP-01"],
+    "catatanAturan": null, "poinIngat": "Subjek dalam negeri OP: tempat tinggal, lebih dari 183 hari dalam 12 bulan, atau niat; kewarganegaraan tidak menentukan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-OP-05", "bank": "orisinal", "paketSumber": null, "kode": "OP", "materi": "PPh Orang Pribadi & SPT PPh OP", "subtema": "Pemajakan penghasilan keluarga", "subtemaDasar": "manual",
+    "subtopik": "Penghasilan istri pegawai yang juga berusaha", "tingkat": "A", "tipe": "Jebakan umum", "bloom": "understand", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "Ny. Rina menikah dengan Tn. Darma sejak 2020, tanpa perjanjian pisah harta dan tidak hidup berpisah. Pada 2026 Ny. Rina bekerja sebagai pegawai tetap pada satu pemberi kerja yang memotong PPh 21, dan juga mengelola butik sendiri. Perlakuan penghasilan Ny. Rina dalam SPT Tahunan 2026 adalah ...",
+    "opsi": { "A": "Gaji dan penghasilan butik seluruhnya digabung dengan Tn. Darma", "B": "Hanya penghasilan butik yang digabung; gajinya tidak digabung", "C": "Tidak digabung, karena gajinya sudah dipotong PPh Pasal 21", "D": "Dilaporkan sendiri oleh Ny. Rina karena ia menjalankan usaha" },
+    "kunci": "A",
+    "inti": "Penghasilan istri dianggap penghasilan suami, kecuali semata-mata diterima dari satu pemberi kerja yang telah dipotong PPh 21; karena Ny. Rina juga punya butik, seluruh penghasilannya, termasuk gaji, digabung dengan Tn. Darma (UU PPh Pasal 8 ayat (1)).",
+    "langkah": ["Penghasilan istri pada dasarnya digabung dengan suami (UU PPh Pasal 8 ayat (1)).", "Pengecualian: penghasilan semata-mata dari satu pemberi kerja yang telah dipotong PPh 21.", "Ny. Rina juga punya butik → syarat \"semata-mata\" tidak terpenuhi → gaji dan butik digabung."],
+    "kenapaSalah": { "B": "Pengecualian hanya bila penghasilan istri semata-mata dari satu pemberi kerja; karena ada butik, seluruhnya digabung.", "C": "Pemotongan PPh 21 tidak cukup bila istri juga punya penghasilan lain.", "D": "Pelaporan terpisah untuk hidup berpisah, pisah harta, atau istri yang memilih menjalankan hak dan kewajiban sendiri." },
+    "penyebabSalah": { "B": "lupa_syarat", "C": "lupa_syarat", "D": "belum_tahu_aturan" },
+    "dasarHukum": ["UU PPh Pasal 8 ayat (1) beserta Penjelasan s.t.d.t.d. UU 6/2023"], "ruleIds": ["R-OP-11"],
+    "catatanAturan": null, "poinIngat": "Gaji istri dari satu pemberi kerja tidak digabung hanya bila itu satu-satunya penghasilannya; ada usaha → semua digabung.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
   }
 ]

@@ -55,6 +55,8 @@ const nilaiAngka = (s) => Number(s.replace(/[^\d,-]/g, '').replace(/\./g, '').re
 // Rujukan huruf opsi di teks pembahasan. Generator memetakannya ulang saat opsi diacak.
 // "(A)" dalam kurung tidak bisa dibedakan dari butir peraturan, jadi soal semacam itu dikunci urutannya.
 const RE_RUJUKAN_KURUNG = /(?<![\w(])\(([A-D])\)(?![\w])/;
+// Notasi jurnal "Akun (D) / Akun (K)" berarti Debit/Kredit, bukan rujukan opsi D.
+const tanpaJurnal = (teks) => teks.replace(/\(D\)([^()]{0,80})\(K\)/g, '$1');
 
 const STOP = new Set('yang dan atau atas dari untuk dengan pada di ke dalam adalah sebagai oleh ini itu tidak wajib serta bagi jika maka akan telah sudah belum harus dapat tersebut setelah sebelum paling lambat tahun bulan hari secara antara karena berapa besarnya berikut kecuali termasuk masing hal tetapi juga lain sama bila apabila tanpa per tiap setiap the of pt cv rp'.split(' '));
 const token = (s) => bersih(s).toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(' ').filter((w) => w.length > 2 && !STOP.has(w));
@@ -131,7 +133,7 @@ function main() {
       else { subtema = 'Lainnya'; subtemaDasar = 'lainnya'; hitung.subtemaLainnya++; }
     }
     const teksBahas = [x.inti, ...(x.langkah ?? []), ...Object.values(x.kenapa_salah ?? {}), x.catatan_aturan ?? '', x.poin_ingat ?? ''].join(' ');
-    const posisiTetap = RE_RUJUKAN_KURUNG.test(teksBahas);
+    const posisiTetap = RE_RUJUKAN_KURUNG.test(tanpaJurnal(teksBahas));
     if (posisiTetap) hitung.posisiTetap++;
     const opsiAngka = HURUF.every((h) => RE_ANGKA.test(opsi[h]) && Number.isFinite(nilaiAngka(opsi[h])));
     if (opsiAngka) hitung.opsiAngka++;
@@ -220,7 +222,7 @@ function main() {
     }
   }
   const mapping = {
-    _keterangan: 'Pemetaan tingkat UKP. "subtema" = tingkat tiap subtema (cakupan materi), dihitung dari label tingkat_kisi soal bank: tingkat terendah dengan minimal 5 soal dan minimal 15% soal subtema itu. Tingkat soal dan model = yang lebih tinggi antara tingkat subtema dan labelnya sendiri; kartu aturan ikut tingkat subtema. Cakupan kumulatif (A, A+B, A+B+C). Isi "override" untuk mengganti tingkat subtema per materi atau per materi::subtema, misalnya {"KUP::Sanksi administrasi": "C"}. Disahkan terhadap Cakupan Materi UKP BPPK (PRD K3). Bagian selain override ditulis ulang oleh npm run import:data.',
+    _keterangan: 'Pemetaan tingkat UKP. "subtema" = tingkat tiap subtema (cakupan materi), dihitung dari label tingkat_kisi soal bank: tingkat terendah dengan minimal 5 soal dan minimal 15% soal subtema itu. Tingkat soal dan model = yang lebih tinggi antara tingkat subtema dan labelnya sendiri; kartu aturan ikut tingkat subtema. Cakupan kumulatif (A, A+B, A+B+C). "override" berisi hasil pengesahan terhadap Cakupan Materi UKP BPPK 14 Okt 2026 (data/bppk-cakupan.json, PRD K3) dan menang atas "subtema"; formatnya per materi atau per materi::subtema, misalnya {"KUP::Sanksi administrasi": "C"}. Bagian selain override ditulis ulang oleh npm run import:data.',
     tingkat: TINGKAT.map((k, i) => ({ kode: k, nama: 'Tingkat ' + k, cakupan: TINGKAT.slice(0, i + 1) })),
     materi: MATERI.map(([kode, nama]) => ({ kode, nama, subtema: subtemaPerKode[kode] ?? [], stok: stok[kode] ?? { A: 0, B: 0, C: 0 } })),
     subtema: tingkatSubtema,

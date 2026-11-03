@@ -1,6 +1,8 @@
 // npm run materi -- [opsi]: susun deck materi .pptx tanpa browser lalu tulis berkasnya.
 // Contoh: npm run materi -- --tingkat A --kode PPN --setuju-acuan --out output/materi-ppn
 //         npm run materi -- --tingkat B --gabung --setuju-acuan   (satu deck per materi Tingkat B)
+//         npm run materi -- --tingkat A --silabus --menit-pertemuan 90   (silabus .xlsx per tingkat)
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { hariIni, TINGKAT, URUTAN_KODE } from '../lib/config';
@@ -8,16 +10,18 @@ import { muatDataNode } from '../lib/data-node';
 import { slug } from '../lib/export/common';
 import { zip } from '../lib/export/unduh';
 import { periksaPaket, periksaTataLetak } from '../lib/materi/cek';
+import { naskahHandout } from '../lib/materi/handout';
 import { adaTeksAcuan } from '../lib/materi/naskah';
 import { tulisPptx } from '../lib/materi/pptx';
+import { lembarSilabus, namaBerkasSilabus, PILIHAN_MENIT_PERTEMUAN, ringkasSilabus, susunSilabus } from '../lib/materi/silabus';
 import { daftarSubtema, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, type Kepadatan, type PengaturanMateri, type SumberSoalMateri } from '../lib/materi/susun';
 import type { Kode, Tingkat } from '../lib/types';
 
 const BANTUAN = `Pemakaian: npm run materi -- [opsi]
-  --tingkat A|B|C            cakupan kumulatif (bawaan C): A 33 subtema, A+B 56, A+B+C 69
+  --tingkat A|B|C            cakupan kumulatif (bawaan C): A 34 subtema, A+B 48, A+B+C 69
   --kode PPN,KUP             per materi: semua subtema kode ini dalam cakupan tingkat
   --subtema "PPN::DPP & tarif PPN;KUP::Sanksi administrasi"   per subtema (pisahkan dengan ;)
-  --hanya-baru               per tingkat: hanya subtema yang mulai di tingkat itu (B 23, C 13)
+  --hanya-baru               per tingkat: hanya subtema yang mulai di tingkat itu (B 14, C 21)
                              tanpa --kode dan --subtema: semua subtema dalam cakupan tingkat
   --gabung                   satu deck per materi berisi subtema dalam lingkup (daftar isi, pembatas per subtema)
   --kepadatan ringkas|standar|lengkap  (bawaan standar)
@@ -28,8 +32,13 @@ const BANTUAN = `Pemakaian: npm run materi -- [opsi]
   --seed TEKS                bawaan MATERI-01
   --format pptx,json         pptx (deck) dan/atau json (naskah); bawaan pptx
   --zip                      bungkus semua berkas menjadi satu .zip
+  --handout                  .pptx versi peserta: rangkuman, rumus, dan kuis tanpa catatan pembicara (nama berkas -handout)
+  --pdf                      simpan juga PDF setiap .pptx lewat PowerPoint (Windows dengan PowerPoint; tidak bersama --zip)
   --setuju-acuan             izinkan .pptx yang memuat teks acuan LatihUKP, diberi tanda Draf internal (PRD-Materi KM2)
   --daftar                   tampilkan subtema dalam lingkup tanpa menulis berkas
+  --silabus                  silabus per tingkat (.xlsx): deck gabungan per materi, durasi dari jumlah slide, dibagi ke pertemuan
+                             (pakai --tingkat, --hanya-baru, --kepadatan, --contoh-soal, --kuis; tanpa --kode/--subtema)
+  --menit-pertemuan 60|90|120|180   durasi satu pertemuan untuk --silabus (bawaan 90)
   --out FOLDER               bawaan output/materi-<lingkup>`;
 
 const args = process.argv.slice(2);
@@ -57,8 +66,16 @@ for (const k of kode) if (!URUTAN_KODE.includes(k)) gagal('kode materi tidak dik
 const subtemaDiminta = (ambil('--subtema') ?? '').split(';').map((s) => s.trim()).filter(Boolean);
 const hanyaBaru = args.includes('--hanya-baru');
 const gabung = args.includes('--gabung');
+const handout = args.includes('--handout');
+const pdf = args.includes('--pdf');
+if (pdf && args.includes('--zip')) gagal('--pdf tidak bisa bersama --zip; PDF ditulis di sebelah .pptx');
+if (pdf && !format.includes('pptx')) gagal('--pdf membutuhkan --format pptx');
+if (pdf && process.platform !== 'win32') gagal('--pdf hanya di Windows dengan PowerPoint terpasang');
 if (hanyaBaru && (kode.length || subtemaDiminta.length)) gagal('--hanya-baru hanya untuk lingkup tingkat (tanpa --kode dan --subtema)');
 const lingkup = subtemaDiminta.length ? 'subtema' : kode.length ? 'materi' : 'tingkat';
+const silabus = args.includes('--silabus');
+if (silabus && lingkup !== 'tingkat') gagal('--silabus hanya untuk lingkup tingkat (tanpa --kode dan --subtema)');
+const menitPertemuan = Number(pilihan('--menit-pertemuan', PILIHAN_MENIT_PERTEMUAN.map(String), '90'));
 
 function main() {
   const data = muatDataNode();
@@ -87,6 +104,16 @@ function main() {
   }
 
   const dibuat = new Date().toISOString();
+  if (silabus) {
+    const s = susunSilabus(data, { tingkat, hanyaBaru, menitPertemuan, deck: { ...PENGATURAN_MATERI_AWAL, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat, seed: ambil('--seed') ?? PENGATURAN_MATERI_AWAL.seed } });
+    const out = path.resolve(ambil('--out') ?? path.join('output', namaBerkasSilabus(s).replace(/\.xlsx$/, '')));
+    mkdirSync(out, { recursive: true });
+    const f = path.join(out, namaBerkasSilabus(s));
+    writeFileSync(f, lembarSilabus(s));
+    console.log('RINGKASAN -> silabus ' + ringkasSilabus(s) + ' (kepadatan ' + kepadatan + ', aturan per ' + tanggalAcuan + ')');
+    console.log('BERKAS -> ' + f);
+    return;
+  }
   const dasar = new Uint8Array(readFileSync(path.join('assets', 'materi', 'dasar.pptx')));
   // --gabung: satu deck per materi berisi subtema dalam lingkup; tanpa itu satu deck per subtema (folder per kode).
   const perFolder = !gabung && new Set(pilih.map((s) => s.kode)).size > 1;
@@ -102,13 +129,13 @@ function main() {
     const peng: PengaturanMateri = { ...PENGATURAN_MATERI_AWAL, kode: g.kode, subtema: gabung ? '' : nama1[0], gabung: gabung ? nama1 : undefined, tingkat, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat, seed: ambil('--seed') ?? PENGATURAN_MATERI_AWAL.seed };
     try {
       const naskah = gabung ? susunNaskahMateri(data, peng, nama1) : susunNaskah(data, peng);
-      const hasil = tulisPptx(naskah, dasar);
+      const hasil = handout ? tulisPptx(naskahHandout(naskah), dasar, { tanpaCatatan: true }) : tulisPptx(naskah, dasar);
       const tata = periksaTataLetak(hasil.slides);
       const paket = periksaPaket(hasil.berkas);
       const nama = gabung
         ? 'materi-' + slug(g.kode) + '-tingkat-' + tingkat.toLowerCase() + (tambahan ? '-tambahan' : '')
         : (perFolder ? g.kode + '/' : '') + 'materi-' + slug(g.kode) + '-' + slug(nama1[0]);
-      if (format.includes('pptx')) isiBerkas[nama + '.pptx'] = hasil.berkas;
+      if (format.includes('pptx')) isiBerkas[nama + (handout ? '-handout' : '') + '.pptx'] = hasil.berkas;
       if (format.includes('json')) isiBerkas[nama.replace(/materi-(?=[^/]*$)/, 'naskah-') + '.json'] = new TextEncoder().encode(JSON.stringify(naskah, null, 2));
       slide += hasil.slides.length;
       meluap += tata.length;
@@ -133,6 +160,7 @@ function main() {
   };
   tulis('laporan.json', JSON.stringify({ pengaturan: { tingkat, lingkup: label, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat, format }, deck: laporan, gagal: galat }, null, 2));
   const jumlahDeck = laporan.length;
+  let jumlahPdf = 0;
   if (args.includes('--zip')) {
     // .pptx sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
     zip(isiBerkas, 0).then((z) => {
@@ -141,12 +169,22 @@ function main() {
     }).catch((e: Error) => gagal(e.message));
   } else {
     for (const [nama, isi] of Object.entries(isiBerkas)) tulis(nama, isi);
+    if (pdf) buatPdf();
     selesai();
   }
 
+  // PDF lewat PowerPoint (scripts/materi-pdf.ps1); berkas PDF ditulis di sebelah setiap .pptx.
+  function buatPdf() {
+    let keluaran = '';
+    try { keluaran = execFileSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join('scripts', 'materi-pdf.ps1'), out], { encoding: 'utf8' }); }
+    catch (e) { gagal('PDF gagal dibuat lewat PowerPoint: ' + ((e as { stdout?: string }).stdout ?? (e as Error).message).trim()); }
+    for (const b of keluaran.split(/\r?\n/)) { const m = b.match(/^BERKAS -> (.+)$/); if (m) ditulis.push(m[1].trim()); }
+    jumlahPdf = (keluaran.match(/^BERKAS -> /gm) ?? []).length;
+  }
+
   function selesai() {
-    console.log('RINGKASAN -> ' + jumlahDeck + ' deck (' + label + ', cakupan Tingkat ' + tingkat + ', ' + kepadatan + (gabung ? ', satu deck per materi' : '') + '), ' + slide + ' slide, '
-      + (meluap ? meluap + ' teks meluap (lihat laporan.json)' : '0 teks meluap') + ', ' + draf + ' Draf internal' + (galat.length ? ', ' + galat.length + ' subtema gagal disusun (lihat laporan.json)' : ''));
+    console.log('RINGKASAN -> ' + jumlahDeck + ' deck (' + label + ', cakupan Tingkat ' + tingkat + ', ' + kepadatan + (gabung ? ', satu deck per materi' : '') + (handout ? ', handout peserta' : '') + '), ' + slide + ' slide, '
+      + (meluap ? meluap + ' teks meluap (lihat laporan.json)' : '0 teks meluap') + ', ' + draf + ' Draf internal' + (jumlahPdf ? ', ' + jumlahPdf + ' PDF' : '') + (galat.length ? ', ' + galat.length + ' subtema gagal disusun (lihat laporan.json)' : ''));
     // Banyak deck: cukup tampilkan folder dan laporan supaya hasil tidak berderet puluhan baris.
     const tampil = ditulis.length > 12 ? [path.join(out, 'laporan.json'), out] : ditulis;
     for (const f of tampil) console.log('BERKAS -> ' + f);

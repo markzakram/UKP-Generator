@@ -68,5 +68,8 @@
   "pesangon.lapisan": { "nama": "PPh 21 final uang pesangon: [batas atas, tarif]", "riwayat": [
     { "nilai": [[50000000, 0], [100000000, 0.05], [500000000, 0.15], [null, 0.25]], "mulai": "2009-11-16", "sampai": null, "dasar": "PP 68/2009 Pasal 3" } ] },
   "penyusutan.kelompok": { "nama": "Masa manfaat dan tarif penyusutan fiskal: [tahun, garis lurus, saldo menurun]", "riwayat": [
-    { "nilai": { "1": [4, 0.25, 0.5], "2": [8, 0.125, 0.25], "3": [16, 0.0625, 0.125], "4": [20, 0.05, 0.1], "bangunanPermanen": [20, 0.05, null], "bangunanTidakPermanen": [10, 0.1, null] }, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 11 ayat (6) dan (11) s.t.d.d. UU 7/2021 (HPP); PMK 72/2023" } ] }
+    { "nilai": { "1": [4, 0.25, 0.5], "2": [8, 0.125, 0.25], "3": [16, 0.0625, 0.125], "4": [20, 0.05, 0.1], "bangunanPermanen": [20, 0.05, null], "bangunanTidakPermanen": [10, 0.1, null] }, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 11 ayat (6) dan (11) s.t.d.d. UU 7/2021 (HPP); PMK 72/2023" } ] },
+  "sanksi.keberatan": { "nama": "Denda keberatan ditolak/dikabulkan sebagian dan tidak banding: proporsi × (pajak menurut SK Keberatan − pajak dibayar sebelum keberatan)", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.5, "mulai": "2008-01-01", "sampai": "2021-10-28", "dasar": "UU KUP Pasal 25 ayat (9) (UU 28/2007)" },
+    { "nilai": 0.3, "mulai": "2021-10-29", "sampai": null, "dasar": "UU KUP Pasal 25 ayat (9) s.t.d.t.d. UU 7/2021 (HPP), berlaku sejak diundangkan 29 Oktober 2021" } ] }
 }

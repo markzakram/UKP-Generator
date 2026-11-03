@@ -141,6 +141,14 @@ export interface Konteks {
   namaOrang: string[];
 }
 
+/** Teks tulis ulang (R2) pengganti teks acuan LatihUKP, per id kartu aturan, kartu hafalan/rumus, dan kuis. */
+export interface TulisUlang {
+  materi?: Record<string, { penulis?: string; tanggal?: string; status?: string }>;
+  aturan: Record<string, Partial<Pick<Aturan, 'judul' | 'konsep' | 'pokok' | 'subjek' | 'syarat' | 'pengecualian' | 'tarifDpp' | 'ambang' | 'tenggat' | 'hakKewajiban' | 'konsekuensi' | 'contoh' | 'jebakan'>>>;
+  kartu: Record<string, Partial<Pick<Kartu, 'judul' | 'isi' | 'rumus' | 'rumusKet' | 'contoh'>>>;
+  kuis: Record<string, { teks?: string; jelas?: string }>;
+}
+
 export interface DataUkp {
   bank: BankSoal[];
   orisinal: BankSoal[];
@@ -150,6 +158,7 @@ export interface DataUkp {
   parameter: ParameterData;
   konteks: Konteks;
   jebakan: Jebakan[];
+  tulis: TulisUlang;
 }
 
 /** Soal yang sudah masuk paket. Opsi bisa sudah diacak; `urutanAsal[i]` = huruf asli opsi pada posisi ke-i. */

@@ -1,5 +1,5 @@
 {
-  "_keterangan": "Pemetaan tingkat UKP. \"subtema\" = tingkat tiap subtema (cakupan materi), dihitung dari label tingkat_kisi soal bank: tingkat terendah dengan minimal 5 soal dan minimal 15% soal subtema itu. Tingkat soal dan model = yang lebih tinggi antara tingkat subtema dan labelnya sendiri; kartu aturan ikut tingkat subtema. Cakupan kumulatif (A, A+B, A+B+C). Isi \"override\" untuk mengganti tingkat subtema per materi atau per materi::subtema, misalnya {\"KUP::Sanksi administrasi\": \"C\"}. Disahkan terhadap Cakupan Materi UKP BPPK (PRD K3). Bagian selain override ditulis ulang oleh npm run import:data.",
+  "_keterangan": "Pemetaan tingkat UKP. \"subtema\" = tingkat tiap subtema (cakupan materi), dihitung dari label tingkat_kisi soal bank: tingkat terendah dengan minimal 5 soal dan minimal 15% soal subtema itu. Tingkat soal dan model = yang lebih tinggi antara tingkat subtema dan labelnya sendiri; kartu aturan ikut tingkat subtema. Cakupan kumulatif (A, A+B, A+B+C). \"override\" berisi hasil pengesahan terhadap Cakupan Materi UKP BPPK 14 Okt 2026 (data/bppk-cakupan.json, PRD K3) dan menang atas \"subtema\"; formatnya per materi atau per materi::subtema, misalnya {\"KUP::Sanksi administrasi\": \"C\"}. Bagian selain override ditulis ulang oleh npm run import:data.",
   "tingkat": [
     {
       "kode": "A",
@@ -283,5 +283,15 @@
     "lesson": "{materi}",
     "chapter": "{subtema}"
   },
-  "override": {}
+  "override": {
+    "PP::Tata cara penyetoran & pelaporan": "A",
+    "PBB::Objek & subjek PBB-P5L": "C",
+    "PBB::Pengenaan PBB: NJOP, NJOPTKP, NJKP, tarif": "C",
+    "PBB::Pendaftaran, SPOP & SPPT": "C",
+    "PBB::Pembayaran, jatuh tempo & denda": "C",
+    "PBB::Keberatan & upaya hukum non-keberatan": "C",
+    "AKT::Jasa konstruksi": "C",
+    "BTI::Subjek pajak badan & kewajiban subjektif": "C",
+    "BTI::Tarif PPh badan (PMA/BUT), Pasal 31E & branch profit tax": "C"
+  }
 }

@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { strFromU8, unzipSync } from 'fflate';
+import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import { periksaPaket, periksaTataLetak, TEKS_TERLARANG } from '../lib/materi/cek';
 import { bungkusParagraf, lebarTeks, pasUkuran, TINGGI_BARIS } from '../lib/materi/metrik';
 import type { Naskah, SlideNaskah } from '../lib/materi/naskah';
@@ -15,10 +15,14 @@ import { tataLetak } from '../lib/materi/tata-letak';
 import { bagian, cek, selesai } from './harness';
 import { muatAturan, naskahUji } from './materi-fixture';
 import { muatDataNode } from '../lib/data-node';
-import { tingkatSoal } from '../lib/data';
+import { tingkatSoal, tingkatSubtema } from '../lib/data';
 import { MODELS } from '../lib/models';
 import { adaTeksAcuan } from '../lib/materi/naskah';
-import { aturSlide, bacaNaskah, buatDeck, kembalikanSlide, suntingSlide, tandaiTelaah, urungkan } from '../lib/materi/deck';
+import { aturSlide, bacaNaskah, buatDeck, kembalikanSlide, suntingSlide, tandaiTelaah, telaahSlide, terapkanLembarTelaah, urungkan } from '../lib/materi/deck';
+import { bacaLembarTelaah, bacaXlsx, lembarTelaah, ringkasTelaah } from '../lib/materi/telaah';
+import { bagiPertemuan, lembarSilabus, MENIT_POLA, susunSilabus, type UnitSilabus } from '../lib/materi/silabus';
+import { naskahHandout, POLA_HANDOUT } from '../lib/materi/handout';
+import { xlsx } from '../lib/export/siadu';
 import { berlakuPada, daftarSubtema, labelPendek, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, type Kepadatan, type PengaturanMateri } from '../lib/materi/susun';
 import type { Kode } from '../lib/types';
 
@@ -271,7 +275,7 @@ const PENG = (kode: Kode, subtema: string, o: Partial<PengaturanMateri> = {}): P
 }
 {
   // Subtema tanpa model/orisinal: sumber bank memakai soal acuan (Draf internal), sumber baru tidak.
-  const tanpaModel = PENG('PP', 'PPh 21: pemotong, penerima & objek');
+  const tanpaModel = PENG('PP', 'Tata cara penyetoran & pelaporan');
   const baru = susunNaskah(data, tanpaModel);
   cek('tanpa model/orisinal: tidak ada contoh soal dan dicatat untuk penelaah', !baru.slides.some((x) => x.pola === 'P12') && (baru.catatan ?? []).some((c) => /Contoh soal hanya 0/.test(c)));
   const bank = susunNaskah(data, { ...tanpaModel, sumberSoal: 'bank' });
@@ -281,7 +285,7 @@ const PENG = (kode: Kode, subtema: string, o: Partial<PengaturanMateri> = {}): P
   const hTulis = tulisPptx(ditulis, dasar);
   cek('naskah yang seluruhnya ditulis ulang tidak bertanda Draf internal', !hTulis.drafInternal && !/Draf internal/.test(strFromU8(unzipSync(hTulis.berkas)['docProps/core.xml'])));
   const catatanAcuan = tulisPptx(baru, dasar).slides.find((j) => j.pola === 'P3')?.catatan ?? '';
-  cek('catatan pembicara slide acuan memuat DRAF INTERNAL, ID aturan, dan dasar hukum', /^DRAF INTERNAL/.test(catatanAcuan) && /R-PP-0\d/.test(catatanAcuan) && /Dasar hukum:/.test(catatanAcuan), catatanAcuan.slice(0, 200));
+  cek('catatan pembicara slide acuan memuat DRAF INTERNAL, ID aturan, dan dasar hukum', /^DRAF INTERNAL/.test(catatanAcuan) && /R-PP-\d+/.test(catatanAcuan) && /Dasar hukum:/.test(catatanAcuan), catatanAcuan.slice(0, 200));
 }
 {
   // Tanggal acuan dan tingkat menyaring aturan.
@@ -289,8 +293,8 @@ const PENG = (kode: Kode, subtema: string, o: Partial<PengaturanMateri> = {}): P
   cek('aturan yang belum berlaku pada tanggal acuan dikeluarkan dan dicatat', !lama.slides.some((x) => x.sumber?.includes('R-KUP-01')) && (lama.catatan ?? []).some((c) => c.startsWith('R-KUP-01 tidak dipakai')), lama.catatan);
   // Tingkat mengikuti cakupan materi per subtema (data/ukp-mapping.json bagian subtema), kumulatif.
   const jumlah = (['A', 'B', 'C'] as const).map((t) => daftarSubtema(data, t, '2026-11-03').length);
-  cek('daftarSubtema per tingkat: A=33, A+B=56, A+B+C=69', jumlah.join() === '33,56,69', jumlah);
-  cek('daftarSubtema membawa tingkat subtema', daftarSubtema(data, 'C', '2026-11-03').every((s) => s.tingkat === data.mapping.subtema[s.kode + '::' + s.subtema]));
+  cek('daftarSubtema per tingkat (pengesahan BPPK): A=34, A+B=48, A+B+C=69', jumlah.join() === '34,48,69', jumlah);
+  cek('daftarSubtema membawa tingkat subtema efektif', daftarSubtema(data, 'C', '2026-11-03').every((s) => s.tingkat === tingkatSubtema(s.kode, s.subtema, data.mapping)));
   const tingkatA = susunNaskah(data, PENG('PPN', 'Objek PPN & saat terutang', { tingkat: 'A' }));
   const tingkatC = susunNaskah(data, PENG('PPN', 'Objek PPN & saat terutang', { tingkat: 'C' }));
   const dipakaiA = new Set(tingkatA.slides.flatMap((x) => x.sumber ?? []));
@@ -375,17 +379,104 @@ bagian('Kasus tepi pola baru (P8, P9, P11–P14)');
   writeFileSync(`${KELUAR}/tepi-pola-baru.pptx`, h2.berkas);
 }
 
+bagian('Teks tulis ulang (R2): lapisan pengganti teks acuan, contoh Bea Meterai');
+{
+  const tulis = data.tulis;
+  const aturanId = new Map(data.aturan.map((a) => [a.id, a]));
+  const kartuId = new Map(data.materi.kartu.map((k) => [k.id, k]));
+  const kuisId = new Map((data.materi.kuis as { id: string; jawab?: boolean }[]).map((q) => [q.id, q]));
+  cek('ukp-tulis.json: semua id ada di sumber (15 aturan, 7 kartu, 8 kuis Bea Meterai)', Object.keys(tulis.aturan).length === 15 && Object.keys(tulis.aturan).every((id) => aturanId.get(id)?.kode === 'BM')
+    && Object.keys(tulis.kartu).length === 7 && Object.keys(tulis.kartu).every((id) => kartuId.get(id)?.kode === 'BM') && Object.keys(tulis.kuis).length === 8 && Object.keys(tulis.kuis).every((id) => kuisId.has(id)));
+  const angka = (s: unknown) => new Set([...String(s ?? '').matchAll(/\d+(?:[.,]\d+)*/g)].map((m) => m[0]));
+  const gabung = (o: Record<string, unknown>, f: string[]) => f.map((x) => ([] as unknown[]).concat(o[x] ?? '').join(' ')).join(' ');
+  const hilang: string[] = [], sama: string[] = [];
+  const periksa = (id: string, asli: Record<string, unknown>, baru: Record<string, unknown>) => {
+    const f = Object.keys(baru);
+    const b = angka(gabung(baru, f));
+    for (const x of angka(gabung(asli, f))) if (!b.has(x) && x !== '1' && x !== '04') hilang.push(id + ':' + x);
+    // Field pendek yang murni fakta (subjek, tarif, ambang, tenggat) boleh sama dengan sumber.
+    for (const x of f) if (!['subjek', 'tarifDpp', 'ambang', 'tenggat'].includes(x) && JSON.stringify(asli[x]) === JSON.stringify(baru[x])) sama.push(id + '.' + x);
+  };
+  for (const [id, o] of Object.entries(tulis.aturan)) periksa(id, aturanId.get(id) as unknown as Record<string, unknown>, o as Record<string, unknown>);
+  for (const [id, o] of Object.entries(tulis.kartu)) periksa(id, kartuId.get(id) as unknown as Record<string, unknown>, o as Record<string, unknown>);
+  for (const [id, o] of Object.entries(tulis.kuis)) periksa(id, kuisId.get(id) as unknown as Record<string, unknown>, o as Record<string, unknown>);
+  cek('angka, tanggal, dan nomor pasal sumber tetap ada di teks tulis ulang', hilang.length === 0, hilang);
+  cek('setiap teks tulis ulang (selain field fakta pendek) berbeda dari teks sumber, bukan salinan', sama.length === 0, sama);
+  let bersih = 0, total = 0;
+  for (const kp of ['ringkas', 'standar', 'lengkap'] as Kepadatan[]) {
+    for (const st of data.mapping.materi.find((m) => m.kode === 'BM')!.subtema) {
+      const n = susunNaskah(data, PENG('BM', st, { kepadatan: kp }));
+      const h = tulisPptx(n, dasar);
+      total++;
+      if (!n.slides.some((s) => s.asal === 'acuan') && !adaTeksAcuan(n) && !h.drafInternal && !periksaTataLetak(h.slides).length && !periksaPaket(h.berkas).length) bersih++;
+    }
+  }
+  cek('deck Bea Meterai (4 subtema × 3 kepadatan): tanpa slide teks acuan, bukan Draf internal, tata letak dan berkas bersih', bersih === total && total === 12, { bersih, total });
+  const g = susunNaskahMateri(data, PENG('BM', '', { tingkat: 'A' }));
+  cek('deck gabungan Bea Meterai Tingkat A tanpa teks acuan', !adaTeksAcuan(g) && !tulisPptx(g, dasar).drafInternal);
+  const nb = susunNaskah(data, PENG('BM', 'Tarif, saat & pihak terutang', { kepadatan: 'lengkap' }));
+  const kuisBm = nb.slides.find((s) => s.pola === 'P11') as Extract<SlideNaskah, { pola: 'P11' }> | undefined;
+  cek('kuis tulis ulang: teks dan penjelasan baru, kunci jawaban tetap dari sumber', !!kuisBm && kuisBm.asal === 'tulis' && kuisBm.butir.every((b) => b.id && tulis.kuis[b.id]?.teks === b.teks && kuisId.get(b.id)?.jawab === b.jawab));
+  cek('catatan pembicara menandai teks ditulis ulang yang belum ditelaah', nb.slides.some((s) => /teks ditulis ulang \(belum ditelaah\)/.test(s.catatanPembicara ?? '')));
+  cek('materi lain tetap memakai teks acuan sampai ditulis ulang (KUP)', adaTeksAcuan(susunNaskah(data, PENG('KUP', 'Sanksi administrasi'))));
+}
+
+bagian('Telaah per slide dan lembar telaah (R1)');
+{
+  const n = susunNaskah(data, PENG('KUP', 'Banding, gugatan & PK', { kepadatan: 'ringkas' }));
+  let d = buatDeck(n, null, '2026-11-03T10:00:00Z');
+  const acuan = d.naskah.slides.filter((s) => s.asal === 'acuan' && !s.sembunyi);
+  const r0 = ringkasTelaah(d.naskah);
+  cek('ringkasTelaah: slide otomatis tidak dihitung, awalnya belum ada yang ditelaah', r0.perlu === d.naskah.slides.filter((s) => s.asal !== 'otomatis').length && r0.sesuai === 0 && !r0.lengkap, r0);
+  d = telaahSlide(d, acuan[0].id, { status: 'ubah', catatan: 'Cek tarif', oleh: 'Uji', waktu: '2026-11-03T10:01:00Z' }, '2026-11-03T10:01:00Z');
+  cek('telaahSlide mencatat status tanpa mengubah asal dan menambah riwayat', d.naskah.slides.find((s) => s.id === acuan[0].id)?.telaah?.status === 'ubah' && d.naskah.slides.find((s) => s.id === acuan[0].id)?.asal === 'acuan' && d.riwayat.length === 1);
+  for (const s of d.naskah.slides) if (s.asal !== 'otomatis') d = telaahSlide(d, s.id, { status: 'sesuai', waktu: '2026-11-03T10:02:00Z' }, '2026-11-03T10:02:00Z');
+  const h = tulisPptx(d.naskah, dasar);
+  cek('semua slide acuan sesuai → bukan Draf internal; catatan pembicara tanpa DRAF INTERNAL', !adaTeksAcuan(d.naskah) && !h.drafInternal && h.slides.every((j) => !/DRAF INTERNAL/.test(j.catatan)) && ringkasTelaah(d.naskah).lengkap);
+  const disunting = suntingSlide(d, acuan[0].id, (s) => ({ ...s, judul: s.judul + ' (revisi)' }), '2026-11-03T10:03:00Z');
+  cek('menyunting isi slide menghapus hasil telaahnya (perlu ditelaah ulang)', !disunting.naskah.slides.find((s) => s.id === acuan[0].id)?.telaah && disunting.naskah.slides.find((s) => s.id === acuan[0].id)?.asal === 'tulis');
+  // Lembar telaah: tulis → baca (inlineStr) → terapkan.
+  const awal = buatDeck(n, null, '2026-11-03T10:00:00Z');
+  const lembar = lembarTelaah([awal]);
+  const baca = bacaXlsx(lembar);
+  cek('lembar telaah: kepala kolom dan satu baris per slide yang perlu ditelaah', baca[0][0] === 'Deck' && baca[0][8].startsWith('Status') && baca.length - 1 === ringkasTelaah(awal.naskah).perlu, baca[0]);
+  const isian = baca.map((b, i) => (i === 0 ? b : [...Array.from({ length: 8 }, (_, j) => b[j] ?? ''), i === 1 ? 'Perlu diubah' : 'Sesuai', i === 1 ? 'Dasar hukum perlu dicek' : '', 'Penelaah Uji']));
+  const terisi = bacaLembarTelaah(xlsx([{ nama: 'Telaah', baris: isian }]));
+  const terap = terapkanLembarTelaah({ [awal.id]: awal }, terisi, '2026-11-03T11:00:00Z');
+  const hasil = terap.decks[0];
+  cek('impor lembar telaah: semua baris diterapkan, satu slide Perlu diubah dengan catatan dan penelaah', terap.diterapkan === terisi.length && terap.dilewati === 0 && ringkasTelaah(hasil.naskah).ubah === 1
+    && hasil.naskah.slides.find((s) => s.telaah?.status === 'ubah')?.telaah?.catatan === 'Dasar hukum perlu dicek' && hasil.naskah.slides.every((s) => s.asal === 'otomatis' || s.telaah?.oleh === 'Penelaah Uji'), terap);
+  const ulang = terapkanLembarTelaah({ [hasil.id]: hasil }, terisi, '2026-11-03T12:00:00Z');
+  cek('impor ulang lembar yang sama tidak mengubah apa pun', ulang.diterapkan === 0 && ulang.dilewati === terisi.length);
+  let galatLembar = '';
+  try { bacaLembarTelaah(xlsx([{ nama: 'X', baris: [['A', 'B'], ['1', '2']] }])); } catch (e) { galatLembar = String(e); }
+  cek('lembar tanpa kolom Deck/ID slide/Status ditolak dengan pesan', /Kolom Deck, ID slide, atau Status/.test(galatLembar));
+  // Pembaca sharedStrings (format yang ditulis Excel saat menyimpan ulang).
+  const ss = zipSync({
+    '[Content_Types].xml': strToU8('<Types/>'),
+    'xl/workbook.xml': strToU8('<workbook xmlns:r="r"><sheets><sheet name="Telaah" sheetId="1" r:id="rId1"/></sheets></workbook>'),
+    'xl/_rels/workbook.xml.rels': strToU8('<Relationships><Relationship Id="rId1" Type="ws" Target="worksheets/sheet1.xml"/></Relationships>'),
+    'xl/sharedStrings.xml': strToU8('<sst><si><t>Deck</t></si><si><t>ID slide</t></si><si><t>Status (Sesuai / Perlu diubah)</t></si><si><r><t>BM|Pemungut</t></r><r><t xml:space="preserve"> &amp; pembayaran</t></r></si><si><t>ikhtisar</t></si><si><t>Sesuai</t></si></sst>'),
+    'xl/worksheets/sheet1.xml': strToU8('<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="I1" t="s"><v>2</v></c></row><row r="2"><c r="A2" t="s"><v>3</v></c><c r="B2" t="s"><v>4</v></c><c r="I2" t="s"><v>5</v></c></row></sheetData></worksheet>'),
+  });
+  const bss = bacaLembarTelaah(ss);
+  cek('pembaca .xlsx: sharedStrings, teks kaya, entitas, dan kolom berlubang', bss.length === 1 && bss[0].deck === 'BM|Pemungut & pembayaran' && bss[0].slide === 'ikhtisar' && bss[0].status === 'sesuai', bss);
+}
+
 bagian('Deck gabungan per materi per tingkat');
 {
   type P1 = Extract<SlideNaskah, { pola: 'P1' }>;
   type P6 = Extract<SlideNaskah, { pola: 'P6' }>;
   type P16 = Extract<SlideNaskah, { pola: 'P16' }>;
   const pembatas = (n: Naskah) => n.slides.filter((s): s is P16 => s.pola === 'P16');
-  const ppA = susunNaskahMateri(data, PENG('PP', '', { tingkat: 'A' }));
   const ppB = susunNaskahMateri(data, PENG('PP', '', { tingkat: 'B' }));
-  const daftarB = (ppB.slides[1] as P6).baris;
-  cek('PP: Tingkat A 7 bagian, Tingkat B · A+B 8 bagian; subtema baru ditandai di daftar isi dan pembatas', pembatas(ppA).length === 7 && pembatas(ppB).length === 8
-    && daftarB[7][1] === 'Tata cara penyetoran & pelaporan' && daftarB[7][3] === 'Tingkat B (baru)' && daftarB[0][3] === 'Tingkat A' && /baru di Tingkat B/.test(pembatas(ppB)[7].subjudul ?? ''), daftarB.map((b) => b[3]));
+  const aktB = susunNaskahMateri(data, PENG('AKT', '', { tingkat: 'B' }));
+  const aktC = susunNaskahMateri(data, PENG('AKT', '', { tingkat: 'C' }));
+  const daftarC = (aktC.slides[1] as P6).baris;
+  cek('AKT: Tingkat B · A+B 5 bagian, Tingkat C 8 bagian; 3 subtema baru di C ditandai di daftar isi dan pembatas', pembatas(aktB).length === 5 && pembatas(aktC).length === 8
+    && daftarC.filter((b) => b[3] === 'Tingkat C (baru)').map((b) => b[1]).join() === 'Jasa konstruksi,Bank & lembaga pembiayaan,Merger & likuidasi' && daftarC[0][3] === 'Tingkat B'
+    && pembatas(aktC).filter((s) => /baru di Tingkat C/.test(s.subjudul ?? '')).length === 3, daftarC.map((b) => b[3]));
+  cek('PP: 8 bagian di Tingkat A dan B (Tata cara penyetoran ikut A menurut BPPK), tanpa tanda baru di B', pembatas(susunNaskahMateri(data, PENG('PP', '', { tingkat: 'A' }))).length === 8 && pembatas(ppB).length === 8 && pembatas(ppB).every((s) => !/baru/.test(s.subjudul ?? '')));
   cek('sampul gabungan menulis materi dan tingkat ujian', ppB.slides[0].pola === 'P1' && ppB.slides[0].judul === 'PPh Pemotongan / Pemungutan' && (ppB.slides[0] as P1).pil[0] === 'Tingkat B · A+B' && ppB.subtema === undefined);
   const sub = susunNaskah(data, PENG('PP', 'PPh 21 pegawai tetap', { tingkat: 'B' }));
   const bagian2 = ppB.slides.filter((s) => s.id.startsWith('2-') && s.pola !== 'P16');
@@ -408,7 +499,7 @@ bagian('Deck gabungan per materi per tingkat');
     if (!periksaTataLetak(h.slides).length && !periksaPaket(h.berkas).length && new Set(n.slides.map((s) => s.id)).size === n.slides.length && n.slides.every((s) => (s.nav ?? n.nav).length <= 6)
       && h.slides.filter((j) => j.asal === 'daftar-isi').length === 1) bersih++;
   }
-  cek('semua deck gabungan (A 5, A+B 9, A+B+C 10 materi; ringkas): tata letak, berkas, id unik, navigasi bersih, daftar isi satu slide', deck === 24 && bersih === 24, { deck, bersih });
+  cek('semua deck gabungan (A 5, A+B 8, A+B+C 10 materi; ringkas): tata letak, berkas, id unik, navigasi bersih, daftar isi satu slide', deck === 23 && bersih === 23, { deck, bersih });
   // Contoh soal mengutamakan soal berlabel tingkat deck (soal pendalaman).
   const tingkatContoh = (t: 'A' | 'B') => {
     const n = susunNaskah(data, PENG('PP', 'PPh Pasal 22 & PPh Pasal 23', { tingkat: t, sumberSoal: 'bank', jumlahSoal: 2 }));
@@ -422,6 +513,56 @@ bagian('Deck gabungan per materi per tingkat');
   cek('contoh soal: deck Tingkat A memakai soal A, deck Tingkat B mendahulukan soal pendalaman B', cA.length === 2 && cA.every((x) => x === 'A') && cB.length === 2 && cB.every((x) => x === 'B'), { cA, cB });
 }
 
+bagian('Silabus per tingkat (R7)');
+{
+  const data = muatDataNode();
+  const deck = { ...PENGATURAN_MATERI_AWAL, tanggalAcuan: '2026-11-03', dibuat: '2026-11-03T00:00:00Z' };
+  const a = susunSilabus(data, { tingkat: 'A', hanyaBaru: false, menitPertemuan: 90, deck });
+  cek('silabus A: 5 materi, 34 subtema (cakupan A), urut materi', a.total.materi === 5 && a.total.subtema === 34 && a.materi.map((m) => m.kode).join() === 'KUP,OP,PP,PPN,BM', a.total);
+  const ppn = a.materi.find((m) => m.kode === 'PPN')!;
+  const naskahPpn = susunNaskahMateri(data, { ...deck, kode: 'PPN', subtema: '', tingkat: 'A' }, ppn.unit.map((u) => u.subtema));
+  const jadiPpn = tataLetak(naskahPpn);
+  cek('slide silabus = slide deck gabungan setelah tata letak (termasuk lanjutan), menit = jumlah menit per pola', ppn.slide === jadiPpn.length && Math.abs(ppn.menit - jadiPpn.reduce((x, j) => x + MENIT_POLA[j.pola], 0)) < 0.01, [ppn.slide, jadiPpn.length]);
+  cek('unit per subtema berurutan dan menutup semua slide deck', ppn.unit.every((u, i) => u.slideAwal === (i ? ppn.unit[i - 1].slideAkhir + 1 : 1)) && ppn.unit[ppn.unit.length - 1].slideAkhir === jadiPpn.length);
+  const isi = a.pertemuan.flatMap((p) => p.isi);
+  cek('pertemuan: tidak ada yang melebihi 90 menit, semua slide terbagi tepat sekali', a.pertemuan.every((p) => p.menit <= 90) && isi.reduce((x, u) => x + u.slide, 0) === a.total.slide);
+  cek('pertemuan selain yang terakhir terisi ≥ 60 menit (subtema boleh dilanjutkan di pertemuan berikutnya)', a.pertemuan.slice(0, -1).every((p) => p.menit >= 60), a.pertemuan.map((p) => p.menit));
+  const unit = (menit: number[]): UnitSilabus => ({ kode: 'KUP', materi: 'KUP', subtema: 'x', tingkat: 'A', slideAwal: 1, slideAkhir: menit.length, slide: menit.length, menit: menit.reduce((x, y) => x + y, 0), kuis: 0, contohSoal: 0, soalBank: 0, soalOrisinal: 0, model: 0, menitSlide: menit });
+  const panjang = bagiPertemuan([unit(Array(50).fill(2))], 60);
+  cek('subtema 100 menit pada pertemuan 60 menit dipecah di batas slide: 60 + 40, bertanda bagian 1/2 dan 2/2', panjang.length === 2 && panjang[0].menit === 60 && panjang[1].isi[0].bagian === '2/2' && panjang[1].isi[0].slideAwal === 31, panjang.map((p) => p.menit));
+  const sisaPendek = bagiPertemuan([unit(Array(40).fill(2)), unit(Array(10).fill(2))], 90);
+  cek('sisa pertemuan < 30 menit: subtema berikutnya mulai di pertemuan baru', sisaPendek.length === 2 && sisaPendek[1].isi.length === 1 && !sisaPendek[1].isi[0].bagian, sisaPendek.map((p) => p.menit));
+  const bBaru = susunSilabus(data, { tingkat: 'B', hanyaBaru: true, menitPertemuan: 120, deck });
+  cek('silabus B hanya subtema baru: 14 subtema (AKT, BDN, BTI), berkas deck -tambahan', bBaru.total.subtema === 14 && bBaru.materi.map((m) => m.kode).join() === 'AKT,BDN,BTI' && bBaru.materi.every((m) => m.berkas.endsWith('-tingkat-b-tambahan.pptx')));
+  const sunting = { ...naskahPpn, slides: naskahPpn.slides.map((s) => (s.pola === 'P12' ? { ...s, sembunyi: true } : s)) };
+  const pakai = susunSilabus(data, { tingkat: 'A', hanyaBaru: false, menitPertemuan: 90, deck }, (k) => (k === 'PPN' ? sunting : undefined));
+  const pPpn = pakai.materi.find((m) => m.kode === 'PPN')!;
+  cek('deck gabungan yang disunting di browser dipakai (slide tersembunyi tidak dihitung)', pPpn.disunting && pPpn.slide === tataLetak(sunting).length && pPpn.slide < ppn.slide);
+  const sebagian = { ...naskahPpn, slides: naskahPpn.slides.filter((s) => !(s.pola === 'P16' && s.id.startsWith('2-'))) };
+  cek('deck gabungan berisi sebagian subtema saja tidak dipakai', !susunSilabus(data, { tingkat: 'A', hanyaBaru: false, menitPertemuan: 90, deck }, () => sebagian).materi.some((m) => m.disunting));
+  const lembar = bacaXlsx(lembarSilabus(a));
+  cek('lembar silabus .xlsx terbaca: baris pertemuan + kepala, kolom Pertemuan sampai Soal latihan', lembar.length === isi.length + 1 && lembar[0][0] === 'Pertemuan' && lembar[0][11] === 'Soal latihan tersedia' && lembar[1][0] === '1', lembar[0]);
+}
+
+bagian('Handout peserta (R9)');
+{
+  const data = muatDataNode();
+  const deck = { ...PENGATURAN_MATERI_AWAL, tanggalAcuan: '2026-11-03', dibuat: '2026-11-03T00:00:00Z' };
+  const lengkap = susunNaskahMateri(data, { ...deck, kode: 'BM', subtema: '', tingkat: 'A' });
+  const h = naskahHandout(lengkap);
+  cek('handout: hanya pola ringkas (sampul, ikhtisar, daftar isi, rumus, kuis, rangkuman, penutup, pembatas), tanpa tabel isi', h.slides.every((s) => POLA_HANDOUT.includes(s.pola) && (s.pola !== 'P6' || s.id === 'daftar-isi')) && h.slides.length < lengkap.slides.length, [h.slides.length, lengkap.slides.length]);
+  cek('handout: setiap rangkuman dan kuis deck lengkap ikut, sampul bertanda Handout peserta', ['P11', 'P14'].every((pola) => h.slides.filter((s) => s.pola === pola).length === lengkap.slides.filter((s) => s.pola === pola).length)
+    && h.slides[0].pola === 'P1' && (h.slides[0] as { pil: string[] }).pil.includes('Handout peserta') && /Handout peserta$/.test(h.judul));
+  const dasarH = new Uint8Array(readFileSync(path.join('assets', 'materi', 'dasar.pptx')));
+  const tH = tulisPptx(h, dasarH, { tanpaCatatan: true });
+  const isiH = unzipSync(tH.berkas);
+  cek('handout .pptx: tanpa catatan pembicara, berkas sah, 0 teks meluap', !Object.keys(isiH).some((f) => f.startsWith('ppt/notesSlides/notesSlide')) && periksaPaket(tH.berkas).length === 0 && periksaTataLetak(tH.slides).length === 0);
+  const tL = unzipSync(tulisPptx(lengkap, dasarH).berkas);
+  cek('deck lengkap tetap memuat catatan pembicara', Object.keys(tL).some((f) => f.startsWith('ppt/notesSlides/notesSlide')));
+  const sembunyi = naskahHandout({ ...lengkap, slides: lengkap.slides.map((s) => (s.pola === 'P14' ? { ...s, sembunyi: true } : s)) });
+  cek('slide tersembunyi tidak masuk handout', !sembunyi.slides.some((s) => s.pola === 'P14'));
+}
+
 bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
 {
   const tmp = mkdtempSync(path.join(os.tmpdir(), 'ukp-materi-cli-'));
@@ -432,17 +573,18 @@ bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
   };
   const daftarA = jalan(['--tingkat', 'A', '--daftar']);
   const daftarB = jalan(['--tingkat', 'B', '--hanya-baru', '--daftar']);
-  cek('--daftar per tingkat: A 33 subtema, tambahan B 23', /^RINGKASAN -> 33 subtema/m.test(daftarA.out) && /^RINGKASAN -> 23 subtema/m.test(daftarB.out) && (daftarB.out.match(/^DAFTAR -> /gm) ?? []).length === 23, daftarA.out.slice(-200));
-  const tanpaSetuju = jalan(['--tingkat', 'A', '--kode', 'BM', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'x')]);
+  cek('--daftar per tingkat: A 34 subtema, tambahan B 14', /^RINGKASAN -> 34 subtema/m.test(daftarA.out) && /^RINGKASAN -> 14 subtema/m.test(daftarB.out) && (daftarB.out.match(/^DAFTAR -> /gm) ?? []).length === 14, daftarA.out.slice(-200));
+  const tanpaSetuju = jalan(['--tingkat', 'A', '--subtema', 'KUP::Banding, gugatan & PK', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'x')]);
   cek('.pptx bertek acuan tanpa --setuju-acuan ditolak (KM2), kode keluar 1', tanpaSetuju.kode === 1 && /Error: .*teks acuan LatihUKP.*--setuju-acuan/.test(tanpaSetuju.out), tanpaSetuju.out);
   const naskahSaja = jalan(['--tingkat', 'A', '--kode', 'BM', '--format', 'json', '--out', path.join(tmp, 'json')]);
   cek('--format json (naskah saja) tidak butuh --setuju-acuan', naskahSaja.kode === 0 && readdirSync(path.join(tmp, 'json')).filter((f) => f.startsWith('naskah-bm-')).length === 4, naskahSaja.out);
-  const perKode = jalan(['--tingkat', 'A', '--kode', 'BM', '--kepadatan', 'ringkas', '--setuju-acuan', '--out', path.join(tmp, 'bm')]);
+  // Bea Meterai sudah ditulis ulang (R2): tidak bertanda Draf internal, jadi tidak perlu --setuju-acuan.
+  const perKode = jalan(['--tingkat', 'A', '--kode', 'BM', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'bm')]);
   const pptxBm = readdirSync(path.join(tmp, 'bm')).filter((f) => f.endsWith('.pptx'));
-  cek('per kode: 4 deck BM, RINGKASAN 0 teks meluap, berkas .pptx sah', perKode.kode === 0 && /^RINGKASAN -> 4 deck \(materi BM, cakupan Tingkat A, ringkas\), \d+ slide, 0 teks meluap, 4 Draf internal/m.test(perKode.out)
+  cek('per kode: 4 deck BM tanpa --setuju-acuan (sudah ditulis ulang), 0 teks meluap, 0 Draf internal, berkas .pptx sah', perKode.kode === 0 && /^RINGKASAN -> 4 deck \(materi BM, cakupan Tingkat A, ringkas\), \d+ slide, 0 teks meluap, 0 Draf internal/m.test(perKode.out)
     && pptxBm.length === 4 && pptxBm.every((f) => periksaPaket(new Uint8Array(readFileSync(path.join(tmp, 'bm', f)))).length === 0), perKode.out);
   const lap = JSON.parse(readFileSync(path.join(tmp, 'bm', 'laporan.json'), 'utf8'));
-  cek('laporan.json memuat tiap deck dengan tingkat subtema dan tanda Draf internal', lap.deck.length === 4 && lap.deck.every((d: { tingkatSubtema: string; drafInternal: boolean }) => d.tingkatSubtema === 'A' && d.drafInternal));
+  cek('laporan.json memuat tiap deck dengan tingkat subtema dan tanda Draf internal (BM: bukan draf)', lap.deck.length === 4 && lap.deck.every((d: { tingkatSubtema: string; drafInternal: boolean }) => d.tingkatSubtema === 'A' && !d.drafInternal));
   const perSub = jalan(['--tingkat', 'C', '--subtema', 'PPN::DPP & tarif PPN;KUP::Sanksi administrasi', '--kepadatan', 'ringkas', '--setuju-acuan', '--zip', '--out', path.join(tmp, 'sub')]);
   const isiZip = existsSync(path.join(tmp, 'sub', 'materi-subtema-2-deck.zip')) ? Object.keys(unzipSync(new Uint8Array(readFileSync(path.join(tmp, 'sub', 'materi-subtema-2-deck.zip'))))) : [];
   cek('per subtema + --zip: satu .zip berisi folder per kode', perSub.kode === 0 && isiZip.sort().join() === 'KUP/materi-kup-sanksi-administrasi.pptx,PPN/materi-ppn-dpp-tarif-ppn.pptx', { out: perSub.out, isiZip });
@@ -459,6 +601,23 @@ bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
   const job = office.pekerjaan.find((p: { id: string }) => p.id === 'buatmateri');
   const opsi = JSON.stringify(job?.perintah ?? []).match(/--[a-z-]+/g) ?? [];
   cek('job buatmateri di agent-office.json memakai opsi yang ada di --help', !!job && job.perintah[2] === 'materi' && opsi.length >= 8 && opsi.every((o: string) => bantuan.includes(o)), opsi.filter((o: string) => !bantuan.includes(o)));
+  const jobSilabus = office.pekerjaan.find((p: { id: string }) => p.id === 'buatsilabus');
+  const opsiSilabus: string[] = JSON.stringify(jobSilabus?.perintah ?? []).match(/--[a-z-]+/g) ?? [];
+  cek('job buatsilabus di agent-office.json memakai opsi yang ada di --help', !!jobSilabus && opsiSilabus.includes('--silabus') && opsiSilabus.every((o: string) => bantuan.includes(o)), opsiSilabus.filter((o: string) => !bantuan.includes(o)));
+  const sil = jalan(['--tingkat', 'A', '--silabus', '--menit-pertemuan', '120', '--out', path.join(tmp, 'silabus')]);
+  const fSil = path.join(tmp, 'silabus', 'silabus-tingkat-a-120-menit.xlsx');
+  cek('--silabus: satu .xlsx tiga lembar, RINGKASAN menyebut materi, subtema, JP, dan pertemuan', sil.kode === 0 && /^RINGKASAN -> silabus Tingkat A: 5 materi, 34 subtema, \d+ slide, ±\d+ menit \(\d+ JP\), \d+ pertemuan × 120 menit/m.test(sil.out)
+    && existsSync(fSil) && Object.keys(unzipSync(new Uint8Array(readFileSync(fSil)))).filter((f) => f.startsWith('xl/worksheets/')).length === 3, sil.out);
+  const ho = jalan(['--tingkat', 'A', '--kode', 'BM', '--gabung', '--handout', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'handout')]);
+  const fHo = path.join(tmp, 'handout', 'materi-bm-tingkat-a-handout.pptx');
+  cek('--handout: berkas -handout.pptx sah tanpa catatan pembicara, RINGKASAN menyebut handout', ho.kode === 0 && /handout peserta\)/.test(ho.out) && existsSync(fHo) && periksaPaket(new Uint8Array(readFileSync(fHo))).length === 0
+    && !Object.keys(unzipSync(new Uint8Array(readFileSync(fHo)))).some((f) => f.startsWith('ppt/notesSlides/notesSlide')), ho.out);
+  const pdfZip = jalan(['--kode', 'BM', '--pdf', '--zip']);
+  cek('--pdf bersama --zip ditolak', pdfZip.kode === 1 && /--pdf tidak bisa bersama --zip/.test(pdfZip.out));
+  const jobMateri = office.pekerjaan.find((p: { id: string }) => p.id === 'buatmateri');
+  cek('job buatmateri memuat parameter handout dan pdf', !!jobMateri.parameter.handout && !!jobMateri.parameter.pdf && JSON.stringify(jobMateri.perintah).includes('--handout') && JSON.stringify(jobMateri.perintah).includes('--pdf'));
+  const silSalah = jalan(['--kode', 'PPN', '--silabus']);
+  cek('--silabus dengan --kode ditolak', silSalah.kode === 1 && /--silabus hanya untuk lingkup tingkat/.test(silSalah.out));
 }
 
 console.log('\nBERKAS -> ' + KELUAR + ' (PP-pph21-pemotong, PPN-objek, INT-hak-pemajakan, tepi, tepi-pola-baru, naskah-PP-pph21-final-*)');

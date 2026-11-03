@@ -44,10 +44,22 @@
 - [x] QC Tahap 5
 
 ## Berikutnya (di luar Tahap 0–5)
-- [ ] Telaah penelaah materi (K8) atas parameter, 21 model, dan 10 soal orisinal; ubah `keyakinan` ke "Tinggi" setelah disahkan
-- [ ] Sahkan pemetaan tingkat terhadap Cakupan Materi UKP BPPK (K3) di `data/ukp-mapping.json` bagian `override`
-- [ ] Model PPh 21 TER (butuh tabel lampiran PP 58/2023 sebagai data), pemajakan keluarga PH/MT, rekonsiliasi fiskal & pajak tangguhan, PPh 21 harian, CFC, PPN besaran tertentu
-- [ ] Tambah bank orisinal per materi sampai target stok tanpa soal acuan
+- [ ] Telaah penelaah materi (K8) atas parameter, 25 model, dan 56 soal orisinal; ubah `keyakinan` ke "Tinggi" setelah disahkan
+- [x] Sahkan pemetaan tingkat terhadap Cakupan Materi UKP BPPK (K3): `data/bppk-cakupan.json`, 9 override (3 Nov 2026)
+- [x] 4 model tambahan: pengkreditan PM, rekonsiliasi fiskal, pajak tangguhan PSAK 212, denda keberatan (R4, 3 Nov 2026)
+- [ ] Model PPh 21 TER (butuh tabel lampiran PP 58/2023 sebagai data), pemajakan keluarga PH/MT, PPh 21 harian, CFC, PPN besaran tertentu
+- [x] Alur telaah per slide dan lembar telaah .xlsx (R1, 3 Nov 2026)
+- [x] Lapisan tulis ulang `data/ukp-tulis.json`; Bea Meterai selesai (R2, 3 Nov 2026)
+- [x] Silabus per tingkat .xlsx di tab Materi dan CLI `--silabus` (R7, 3 Nov 2026)
+- [x] Materi ↔ latihan: tombol Buat latihan di deck, saran remedial di Uji peserta (R8, 3 Nov 2026)
+- [x] Handout peserta (.pptx tanpa catatan pembicara) dan PDF lewat PowerPoint dari CLI (R9, 3 Nov 2026)
+- [x] CI GitHub: typecheck, 5 pemeriksa, build pada setiap push (R11, 3 Nov 2026); berjalan setelah di-push
+- [x] Catatan akses dan keamanan di README; tanpa kata sandi situs (R10, 3 Nov 2026)
+- [ ] Jadikan repositori private dan putuskan pembatasan akses situs bila di-deploy publik (dikerjakan pemilik repo)
+- [x] QC akhir R1–R12: 554 cek, build, audit 0, render 138 deck 0 meluap (3 Nov 2026)
+- [ ] Tulis ulang materi lain (KUP, OP, PP, PPN, PBB, AKT, BDN, BTI, INT) di `data/ukp-tulis.json`
+- [x] Bank orisinal 56 soal di 10 materi; tryout tanpa soal acuan memenuhi target K4 (A 7, B 8, C 10 paket) (R5, 3 Nov 2026)
+- [ ] Soal orisinal untuk 4 subtema yang masih kosong: OP NPWP & pendaftaran, PP Tata cara penyetoran & pelaporan, PBB Pendaftaran/SPOP/SPPT, AKT Bank & lembaga pembiayaan
 - [ ] Uji importir SiAdu di akun SiAdu sungguhan ("Isi 1 Soal Tanpa Simpan")
 - [ ] Keputusan merek dan nama aplikasi (K1)
 

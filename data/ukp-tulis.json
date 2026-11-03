@@ -1,0 +1,200 @@
+{
+  "_keterangan": "Teks tulis ulang (R2, PRD-Materi KM2): pengganti teks acuan LatihUKP per kartu aturan, kartu hafalan/rumus, dan kuis, dengan kalimat sendiri. Angka, pasal, dan dasar hukum dipertahankan sama dengan sumber. Field yang diisi menggantikan field asli; yang tidak diisi tetap dari sumber. Slide yang seluruh isinya dari teks ini berasal \"Ditulis ulang\", tetapi tetap perlu ditelaah (R1). Disunting tangan; jalankan npm run import:data (atau --salin-saja) lalu npm run verify:materi.",
+  "versi": 1,
+  "materi": {
+    "BM": { "penulis": "UKP Studio (draf tulis ulang)", "tanggal": "2026-11-03", "status": "belum ditelaah" }
+  },
+  "aturan": {
+    "R-BM-01": {
+      "judul": "Objek Bea Meterai: dokumen perdata menurut Pasal 3 ayat (2) serta dokumen yang menjadi alat bukti di pengadilan",
+      "konsep": "Yang dikenai Bea Meterai adalah dokumennya, bukan transaksi di baliknya.",
+      "pokok": "Ada dua kelompok dokumen yang menjadi objek: dokumen untuk menerangkan suatu kejadian perdata, dan dokumen yang diajukan sebagai alat bukti di pengadilan. Dokumen perdata itu adalah: (a) surat perjanjian, surat keterangan, surat pernyataan, dan surat sejenis, termasuk rangkapnya; (b) akta notaris serta grosse, salinan, dan kutipannya; (c) akta PPAT serta salinan dan kutipannya; (d) surat berharga; (e) dokumen transaksi surat berharga, termasuk kontrak berjangka; (f) dokumen lelang; (g) dokumen yang menyatakan jumlah uang di atas Rp5.000.000; dan (h) dokumen lain yang ditetapkan dengan PP. Untuk huruf a sampai f, nilai dokumen tidak berpengaruh.",
+      "subjek": "Dokumen dalam bentuk kertas maupun elektronik",
+      "syarat": ["Dokumen elektronik ikut menjadi objek (Pasal 1 angka 2)", "Surat kuasa, surat hibah, dan surat wasiat termasuk 'surat sejenis' surat pernyataan (Penjelasan Pasal 3 ayat (2) huruf a)"],
+      "ambang": "Batas nilai hanya berlaku untuk dokumen yang menyatakan jumlah uang (huruf g)",
+      "contoh": ["Perjanjian sewa genset Rp3.000.000 tetap terutang Bea Meterai karena termasuk huruf a. Kuitansi Rp3.000.000 tidak terutang karena belum melewati batas huruf g."],
+      "jebakan": ["Menerapkan batas 'di atas Rp5 juta' pada surat perjanjian atau surat pernyataan, padahal batas itu hanya untuk dokumen yang menyatakan jumlah uang."]
+    },
+    "R-BM-02": {
+      "judul": "Dokumen jumlah uang: objek bila nilainya di atas Rp5.000.000 (valas memakai kurs Menteri saat dokumen dibuat)",
+      "konsep": "Kuitansi dan dokumen sejenis baru terutang Bea Meterai setelah nilainya melewati ambang.",
+      "pokok": "Dokumen yang menyebut penerimaan uang, atau yang mengakui bahwa utang sudah dilunasi atau diperhitungkan sebagian maupun seluruhnya, menjadi objek Bea Meterai bila nilai nominalnya lebih dari Rp5.000.000. Bila nilainya dalam mata uang asing, jumlahnya dikonversi dengan kurs yang ditetapkan Menteri pada saat dokumen dibuat.",
+      "subjek": "Kuitansi, tanda terima uang, bukti pelunasan, dan dokumen sejenis",
+      "syarat": ["Isinya menyebut penerimaan uang atau mengakui pelunasan atau perhitungan utang", "Nilai nominal di atas Rp5.000.000"],
+      "pengecualian": ["Dokumen Pasal 7 (antara lain kuitansi pajak, tanda terima gaji, tanda terima intern) tetap tidak dikenai walaupun nilainya di atas Rp5 juta"],
+      "ambang": "Di atas Rp5.000.000; dokumen tepat Rp5.000.000 belum menjadi objek",
+      "konsekuensi": "Batas nilai ini dapat diubah dengan PP setelah berkonsultasi dengan DPR (Pasal 6 ayat (4)).",
+      "contoh": ["Kuitansi pelunasan USD350 dengan kurs Menteri Rp16.300 bernilai Rp5.705.000, jadi terutang Bea Meterai. Kuitansi Rp5.000.000 tidak terutang."],
+      "jebakan": ["Membaca batasnya sebagai 'Rp5 juta atau lebih'; yang benar 'lebih dari Rp5 juta'. Tarif berjenjang Rp3.000/Rp6.000 berasal dari UU 13/1985 yang sudah dicabut."]
+    },
+    "R-BM-03": {
+      "judul": "Dokumen bukan objek Bea Meterai (Pasal 7), berbeda dengan fasilitas pembebasan (Pasal 22)",
+      "konsep": "Beberapa jenis dokumen dikeluarkan dari pengenaan Bea Meterai, berapa pun nilainya.",
+      "pokok": "Pasal 7 menyebut dokumen yang tidak dikenai Bea Meterai: (a) dokumen lalu lintas orang dan barang, seperti konosemen, surat angkutan penumpang dan barang, surat penyimpanan barang, serta bukti pengiriman dan penerimaan barang; (b) ijazah dalam bentuk apa pun; (c) tanda terima gaji, uang tunggu, pensiun, tunjangan, dan pembayaran lain yang berkaitan dengan hubungan kerja; (d) tanda bukti penerimaan uang negara dari kas negara, kas daerah, bank, atau lembaga yang ditunjuk; (e) kuitansi semua jenis pajak dan penerimaan sejenis; (f) tanda penerimaan uang untuk keperluan intern organisasi; (g) dokumen penyimpanan uang atau surat berharga dan pembayaran simpanan oleh bank atau koperasi, serta pengeluaran surat berharga oleh kustodian; (h) surat gadai; (i) tanda pembagian keuntungan, bunga, atau imbal hasil surat berharga; (j) dokumen Bank Indonesia untuk kebijakan moneter.",
+      "subjek": "Jenis dokumen tertentu",
+      "syarat": ["Berlaku berapa pun nilai dokumennya"],
+      "konsekuensi": "Fasilitas pembebasan Pasal 22 berbeda: dokumennya tetap objek, tetapi dibebaskan berdasarkan PP, misalnya untuk penanganan bencana alam, kegiatan keagamaan atau sosial yang tidak komersial, program pemerintah dan kebijakan moneter, atau pelaksanaan perjanjian internasional.",
+      "contoh": ["Konosemen ekspor, tanda terima gaji Rp18.000.000, dan bon kas kecil intern Rp9.000.000 tidak dikenai Bea Meterai. Kuitansi uang muka Rp9.000.000 kepada pihak luar dikenai."],
+      "jebakan": ["Menganggap dokumen Pasal 7 menjadi objek karena nilainya di atas Rp5 juta. Bukti setoran tabungan di bank pun termasuk dokumen yang dikecualikan (huruf g)."]
+    },
+    "R-BM-04": {
+      "judul": "Tarif: tetap Rp10.000 per dokumen, satu kali per dokumen; setiap rangkap dihitung sebagai dokumen",
+      "konsep": "Besar Bea Meterai tidak mengikuti nilai transaksi.",
+      "pokok": "Setiap dokumen yang menjadi objek dikenai tarif tetap Rp10.000, sekali untuk setiap dokumen. Rangkap dihitung sebagai dokumen tersendiri: perjanjian dua pihak yang dibuat dalam 2 rangkap berarti 2 dokumen, dan masing-masing terutang. Grosse, salinan, dan kutipan akta notaris dikenai Bea Meterai sebesar yang dikenakan pada aslinya.",
+      "subjek": "Semua dokumen yang menjadi objek Bea Meterai",
+      "pengecualian": ["PP dapat menetapkan tarif tetap yang berbeda untuk program pemerintah atau kebijakan moneter (Pasal 6 ayat (3))"],
+      "tarifDpp": "Rp10.000 per dokumen (tarif tetap)",
+      "konsekuensi": "Perubahan tarif dan batas nilai hanya melalui PP setelah berkonsultasi dengan DPR (Pasal 6 ayat (4)).",
+      "contoh": ["Kontrak Rp18,5 miliar yang ditandatangani dalam 2 rangkap asli terutang 2 × Rp10.000 = Rp20.000. Dari empat kuitansi Rp6 juta, Rp7 juta, Rp450 juta, dan Rp2 juta, tiga yang terutang, jadi 3 × Rp10.000 = Rp30.000."],
+      "jebakan": ["Memakai tarif lama UU 13/1985 (Rp3.000 dan Rp6.000 menurut nilai), atau menaikkan tarif karena nilai kontraknya besar. Setiap rangkap tetap Rp10.000."]
+    },
+    "R-BM-05": {
+      "judul": "Saat terutang: tanda tangan untuk perjanjian dan akta; selesai dibuat untuk surat berharga; diserahkan untuk kuitansi dan surat pernyataan; diajukan untuk alat bukti",
+      "konsep": "Saat terutang menentukan kapan Bea Meterai harus lunas dan dari kapan masa kedaluwarsa dihitung.",
+      "pokok": "Saat terutang dibedakan menurut jenis dokumen: (a) saat dibubuhi tanda tangan, untuk surat perjanjian beserta rangkapnya, akta notaris, dan akta PPAT; (b) saat selesai dibuat, untuk surat berharga serta dokumen transaksi surat berharga dan kontrak berjangka; (c) saat diserahkan kepada pihak untuk siapa dokumen itu dibuat, untuk surat keterangan, surat pernyataan, dokumen lelang, dan dokumen yang menyatakan jumlah uang; (d) saat diajukan ke pengadilan, untuk dokumen alat bukti; (e) saat digunakan di Indonesia, untuk dokumen yang dibuat di luar negeri. Menteri dapat menetapkan saat terutang lain.",
+      "subjek": "Semua dokumen yang menjadi objek Bea Meterai",
+      "hakKewajiban": "Bea Meterai harus dibayar lunas pada saat terutang (PMK 81/2024 Pasal 96; PMK 78/2024 Pasal 6 ayat (1)).",
+      "contoh": ["Kuitansi Rp12.000.000 yang ditandatangani 3 Maret 2026 lalu diserahkan 6 Maret 2026 terutang pada 6 Maret 2026. Perjanjian yang ditandatangani 3 Maret 2026 terutang pada 3 Maret 2026."],
+      "jebakan": ["Menetapkan saat terutang kuitansi pada tanggal tanda tangan, tanggal transfer, atau tanggal pencatatan. Saat tanda tangan hanya berlaku untuk perjanjian dan akta."]
+    },
+    "R-BM-06": {
+      "judul": "Pihak terutang: penerima untuk dokumen sepihak; masing-masing pihak untuk dokumen bersama; penerbit untuk surat berharga; pengaju untuk alat bukti",
+      "konsep": "Pihak terutang adalah pihak yang wajib menanggung Bea Meterai, kecuali para pihak menyepakati lain.",
+      "pokok": "Untuk dokumen yang dibuat sepihak, seperti kuitansi atau surat pernyataan, yang terutang adalah pihak penerima dokumen. Untuk dokumen yang dibuat dua pihak atau lebih, setiap pihak terutang atas dokumen yang diterimanya. Surat berharga terutang oleh penerbitnya, dokumen alat bukti di pengadilan oleh pihak yang mengajukannya, dan dokumen luar negeri yang digunakan di Indonesia oleh pihak yang menerima manfaatnya. Para pihak tetap boleh menyepakati siapa yang membayar.",
+      "subjek": "Pihak yang dibebani dan wajib membayar Bea Meterai",
+      "syarat": ["Berlaku sepanjang para pihak tidak menyepakati lain (Pasal 9 ayat (6))"],
+      "konsekuensi": "Bila pihak terutang tidak membayar atau kurang membayar, ia wajib melakukan Pemeteraian Kemudian atau diterbitkan SKP (Pasal 17 ayat (2), Pasal 19).",
+      "contoh": ["CV A membuat kuitansi pelunasan lalu menyerahkannya kepada PT B yang membayar, sehingga PT B yang terutang. Pada perjanjian dua rangkap antara SLM dan BKC, masing-masing terutang atas rangkap yang diterimanya."],
+      "jebakan": ["Menganggap pembuat atau penanda tangan kuitansi sebagai pihak terutang. Pemungut Bea Meterai juga bukan pihak terutang; ia hanya memungut dari pihak terutang."]
+    },
+    "R-BM-07": {
+      "judul": "Dokumen dari luar negeri: terutang saat digunakan di Indonesia, oleh pihak penerima manfaat",
+      "konsep": "Dokumen yang dibuat di luar negeri baru terkait Bea Meterai Indonesia saat dipakai untuk urusan di Indonesia.",
+      "pokok": "Dokumen objek Bea Meterai yang dibuat di luar negeri terutang pada saat digunakan di Indonesia, yakni ketika dimanfaatkan atau dijadikan pelengkap atau penyerta urusan di wilayah hukum Indonesia, misalnya sebagai dasar penagihan, dasar pencatatan atau pembukuan, atau lampiran laporan. Yang terutang adalah pihak yang menerima manfaat atas dokumen itu.",
+      "subjek": "Dokumen objek yang dibuat di luar negeri",
+      "syarat": ["Dokumen dipakai di Indonesia"],
+      "tarifDpp": "Rp10.000 per dokumen",
+      "tenggat": "Kedaluwarsa 5 tahun sejak saat terutang, yaitu saat dokumen digunakan",
+      "contoh": ["Perjanjian pinjaman yang ditandatangani di Singapura pada 10 Desember 2025 dan dipakai sebagai dasar pembukuan di Indonesia pada 5 Februari 2026 terutang Rp10.000 pada 5 Februari 2026 oleh penerima manfaat di Indonesia."],
+      "jebakan": ["Menganggap dokumen tidak terutang karena dibuat di luar negeri, atau menghitung saat terutang dari tanggal tanda tangan di luar negeri."]
+    },
+    "R-BM-08": {
+      "judul": "Cara pembayaran: meterai tempel, meterai elektronik, meterai bentuk lain, atau SSP, lunas pada saat terutang",
+      "konsep": "Bea Meterai dilunasi dengan meterai atau dengan setoran pajak.",
+      "pokok": "Pihak terutang membayar Bea Meterai pada saat terutang, dengan meterai atau dengan Surat Setoran Pajak (SSP). Bentuk meterai: meterai tempel, meterai elektronik, dan meterai dalam bentuk lain (teraan, komputerisasi, percetakan, dan teraan digital). Meterai elektronik dibubuhkan pada dokumen elektronik melalui Sistem Meterai Elektronik. Meterai tempel dipakai untuk dokumen kertas, ditempel utuh di tempat tanda tangan, dan sebagian tanda tangan berada di atas meterai disertai tanggal. SSP hanya boleh dipakai bila Pemeteraian Kemudian mencakup lebih dari 50 dokumen, meterai tempel tidak tersedia atau tidak dapat dipakai, atau Sistem Meterai Elektronik tidak dapat diakses atau tidak merespons. Pembuatan meterai dalam bentuk lain memerlukan izin, yang kewenangannya dilimpahkan kepada DJP.",
+      "subjek": "Pihak terutang Bea Meterai",
+      "syarat": ["Meterai tempel harus sah, masih berlaku, dan belum pernah dipakai", "SSP hanya dalam keadaan yang disebut PMK 78/2024 Pasal 42: Pemeteraian Kemudian lebih dari 50 dokumen, meterai tempel tidak tersedia, atau Sistem Meterai Elektronik tidak dapat diakses"],
+      "tenggat": "Pada saat terutang",
+      "konsekuensi": "Bila tidak atau kurang dibayar: Pemeteraian Kemudian dengan sanksi, atau diterbitkan SKP.",
+      "contoh": ["Kontrak elektronik dilunasi dengan meterai elektronik Rp10.000; perjanjian kertas dilunasi dengan meterai tempel Rp10.000."],
+      "jebakan": ["Menganggap SSP bebas dipakai kapan saja (PMK 78/2024 Pasal 42 membatasinya). Meterai tempel desain lama UU 13/1985 hanya boleh dipakai selama masa transisi 1 tahun, sampai akhir 2021, dengan nilai total paling sedikit Rp9.000 (UU 10/2020 Pasal 28), dan masa itu sudah berakhir."]
+    },
+    "R-BM-09": {
+      "judul": "Pemungut Bea Meterai: memungut atas dokumen tertentu, setor dan lapor SPT Masa BM paling lambat tanggal 15 bulan berikutnya",
+      "konsep": "Pihak yang menerbitkan atau memfasilitasi dokumen dalam jumlah besar dapat ditunjuk sebagai pemungut.",
+      "pokok": "KPP dapat menetapkan Pemungut Bea Meterai secara jabatan atau atas permohonan. Pemungut wajib memungut Bea Meterai dari pihak terutang atas dokumen tertentu, menyetorkannya ke kas negara, dan melaporkannya. Dokumen tertentu itu adalah cek dan bilyet giro; dokumen transaksi surat berharga termasuk kontrak berjangka; surat keterangan, surat pernyataan, atau surat sejenis beserta rangkapnya; serta dokumen yang menyatakan jumlah uang di atas Rp5.000.000. Setoran dan SPT Masa Bea Meterai paling lambat tanggal 15 bulan berikutnya, dan SPT tetap disampaikan walaupun nihil.",
+      "subjek": "Wajib Pajak yang ditetapkan sebagai Pemungut Bea Meterai",
+      "syarat": ["Kriteria penetapan: memfasilitasi penerbitan cek atau bilyet giro; menerbitkan atau memfasilitasi dokumen transaksi surat berharga; atau menerbitkan atau memfasilitasi surat keterangan/pernyataan dan dokumen jumlah uang dalam jumlah tertentu (PMK 78/2024 Pasal 56 ayat (3))", "Penetapan berlaku mulai awal bulan berikutnya setelah tanggal surat penetapan (Pasal 59 ayat (4))"],
+      "pengecualian": ["Dokumen yang memperoleh fasilitas pembebasan tidak dipungut, tetapi penerbitannya tetap dilaporkan"],
+      "tarifDpp": "Rp10.000 per dokumen yang dipungut",
+      "tenggat": "Setor dan lapor paling lambat tanggal 15 bulan berikutnya; bila jatuh pada hari libur, hari kerja berikutnya",
+      "hakKewajiban": "Pemungutan dilakukan dengan membubuhkan meterai elektronik atau meterai teraan digital, atau tanda 'BEA METERAI LUNAS' bila sistem gagal.",
+      "konsekuensi": "Tidak memungut atau tidak menyetor: SKP ditambah sanksi 100%. Terlambat menyetor, atau tidak atau terlambat melapor: STP (Pasal 11 ayat (2)–(4)).",
+      "contoh": ["Platform yang ditetapkan sebagai pemungut pada 20 Januari 2026 mulai memungut pada 1 Februari 2026. Bea Meterai Masa Maret 2026 disetor dan dilaporkan paling lambat 15 April 2026."],
+      "jebakan": ["Memakai tanggal 20 seperti SPT Masa PPh; batas pemungut Bea Meterai adalah tanggal 15. Pemungut juga bukan pihak terutang."]
+    },
+    "R-BM-10": {
+      "judul": "Sanksi pemungut: SKP ditambah 100% atas BM yang tidak dipungut atau tidak disetor; STP bila terlambat setor atau lapor",
+      "konsep": "Pemungut yang lalai menanggung kekurangan Bea Meterai beserta sanksi 100%.",
+      "pokok": "Bila pemungut tidak memungut dan/atau tidak menyetor, diterbitkan SKP sebesar Bea Meterai yang tidak atau kurang dipungut dan/atau tidak atau kurang disetor, ditambah sanksi administratif 100%. Bila pemungut terlambat menyetor, atau tidak atau terlambat melapor, diterbitkan STP menurut UU KUP.",
+      "subjek": "Pemungut Bea Meterai",
+      "pengecualian": ["Dokumen yang tidak dipungut tetapi Bea Meterainya tetap disetor tidak dikenai sanksi (contoh dalam Penjelasan Pasal 11 ayat (3))"],
+      "tarifDpp": "Sanksi 100% dari Bea Meterai yang tidak atau kurang dipungut dan/atau disetor",
+      "contoh": ["Contoh Penjelasan Pasal 11 ayat (3), 15 dokumen: 1 dipungut dan disetor, 2 tidak dipungut dan tidak disetor, 7 dipungut tetapi tidak disetor, dan 5 tidak dipungut tetapi disetor. BM terutang Rp150.000 dikurangi yang disetor Rp60.000 = kurang Rp90.000; sanksi 100% × 9 dokumen × Rp10.000 = Rp90.000; jadi SKPKB Rp180.000."],
+      "jebakan": ["Memakai sanksi 200% untuk pemungut. Sanksi pemungut 100%; 200% hanya untuk Pemeteraian Kemudian atas dokumen yang terutang sebelum 2021. Dokumen yang Bea Meterainya sudah disetor tidak dikenai sanksi meskipun tidak dipungut."]
+    },
+    "R-BM-11": {
+      "judul": "Pemeteraian Kemudian: BM terutang + sanksi 100% (terutang sejak 1 Januari 2021) atau 200% (sebelumnya); alat bukti di pengadilan tanpa sanksi",
+      "konsep": "Pemeteraian Kemudian adalah cara melunasi Bea Meterai yang belum atau kurang dibayar, dengan pengesahan pejabat.",
+      "pokok": "Pemeteraian Kemudian dilakukan atas dokumen yang Bea Meterainya tidak atau kurang dibayar, dan atas dokumen yang akan diajukan sebagai alat bukti di pengadilan; yang wajib membayar adalah pihak terutang. Besarnya: Bea Meterai menurut ketentuan saat terutang ditambah sanksi 100% untuk dokumen yang terutang sejak 1 Januari 2021, atau sanksi 200% untuk dokumen yang terutang sebelum tanggal itu. Untuk dokumen alat bukti di pengadilan cukup dibayar Bea Meterai menurut ketentuan saat Pemeteraian Kemudian dilakukan, tanpa sanksi. Bea Meterainya dibayar dengan meterai tempel, meterai elektronik, atau SSP, sanksinya dengan SSP, dan pembayarannya disahkan Pejabat Pos atau Pejabat DJP. Pihak terutang yang tidak atau kurang membayar juga dapat diterbitkan SKP sebesar kekurangan ditambah sanksi 100%.",
+      "subjek": "Pihak terutang Bea Meterai",
+      "pengecualian": ["Dokumen yang hanya dipakai sebagai alat bukti di pengadilan: tanpa sanksi (UU 10/2020 Pasal 18 ayat (1) huruf b; PMK 78/2024 Pasal 49 huruf c)"],
+      "tarifDpp": "Sanksi 100% (terutang sejak 1 Januari 2021) atau 200% (terutang sebelum 1 Januari 2021) dari Bea Meterai terutang",
+      "contoh": ["Tiga kuitansi di atas Rp5 juta dan satu surat pernyataan yang diterima pada 2025 belum bermeterai: 4 × (Rp10.000 + Rp10.000) = Rp80.000."],
+      "jebakan": ["Lupa menambahkan sanksi 100%, memakai 200% untuk dokumen tahun 2021 ke atas, atau ikut menghitung kuitansi yang nilainya tepat Rp5 juta."]
+    },
+    "R-BM-12": {
+      "judul": "Kedaluwarsa: 5 tahun sejak saat terutang",
+      "konsep": "Kewajiban Bea Meterai memiliki batas waktu.",
+      "pokok": "Bea Meterai yang terutang kedaluwarsa setelah 5 tahun sejak saat terutang. Namun, dokumen yang Bea Meterainya belum lunas dan sudah kedaluwarsa tetap harus dimeteraikan kemudian lebih dulu bila akan diajukan sebagai alat bukti di pengadilan.",
+      "subjek": "Semua dokumen yang menjadi objek Bea Meterai",
+      "tenggat": "5 tahun sejak saat terutang, bukan sejak dokumen dibuat atau sejak akhir tahun",
+      "contoh": ["Kuitansi yang diserahkan, dan karena itu terutang, pada 6 Maret 2026 kedaluwarsa setelah 6 Maret 2031."],
+      "jebakan": ["Menghitung dari tanggal dokumen dibuat atau dari akhir tahun pajak. Hitungannya dari saat terutang, yang berbeda menurut jenis dokumen."]
+    },
+    "R-BM-13": {
+      "judul": "Pidana Bea Meterai setelah UU 1/2026: pemalsuan maks 7 tahun dan/atau denda kategori V; meterai bekas maks 3 tahun atau denda kategori III",
+      "konsep": "Ketentuan pidana Bea Meterai ditujukan pada pemalsuan dan penyalahgunaan meterai, bukan pada kelalaian membayar.",
+      "pokok": "Meniru atau memalsukan meterai, atau membuat meterai tanpa hak, termasuk meterai elektronik dan meterai bentuk lain, serta memakai, menjual, menawarkan, menyerahkan, menyimpan untuk dijual, atau memasukkan meterai palsu atau barang bermeterai palsu, diancam penjara paling lama 7 tahun dan/atau denda paling banyak kategori V (Rp500 juta menurut KUHP Pasal 79). Menghilangkan tanda pemakaian pada meterai yang sudah dipakai, atau memakai atau menjual meterai yang tandanya dihilangkan seolah-olah belum pernah dipakai, diancam penjara paling lama 3 tahun atau denda paling banyak kategori III (Rp50 juta menurut KUHP Pasal 79).",
+      "subjek": "Setiap orang",
+      "syarat": ["Pasal 24 dan 25: dilakukan dengan maksud memakai meterai itu seolah-olah asli"],
+      "konsekuensi": "Pejabat yang menerima, melekatkan, atau membuat salinan dokumen yang Bea Meterainya kurang dibayar dikenai sanksi administratif (Pasal 21), bukan pidana.",
+      "contoh": ["Menjual meterai tempel bekas yang tanda tangannya dihapus termasuk Pasal 26: penjara paling lama 3 tahun atau denda paling banyak kategori III."],
+      "jebakan": ["Menganggap tidak membayar Bea Meterai sebagai tindak pidana; akibatnya Pemeteraian Kemudian atau SKP dengan sanksi 100%. Rumusan lama sebelum 2 Januari 2026: Pasal 24–25 penjara dan denda Rp500 juta, Pasal 26 denda Rp200 juta."]
+    },
+    "R-BM-14": {
+      "judul": "Meterai bentuk lain (teraan, komputerisasi, percetakan, teraan digital): izin Kepala KPP; teraan dan komputerisasi memakai Deposit lebih dulu (teraan Rp15 juta atau kelipatannya)",
+      "konsep": "Wajib Pajak berizin dapat membuat meterai sendiri, dengan pembayaran di muka ke kas negara untuk jenis tertentu.",
+      "pokok": "Meterai dalam bentuk lain terdiri atas meterai teraan, meterai komputerisasi, meterai percetakan, dan meterai teraan digital. Meterai percetakan dan teraan digital hanya dipakai dalam pemungutan oleh Pemungut Bea Meterai (PMK 78/2024 Pasal 25). Izin pembuatannya diberikan Kepala KPP tempat Wajib Pajak terdaftar atas permohonan, dengan keputusan paling lama 5 hari kerja sejak Bukti Penerimaan; izin meterai teraan digital otomatis diberikan kepada Wajib Pajak yang ditetapkan sebagai Pemungut (Pasal 28–29). Pemohonnya: pemilik mesin teraan meterai digital (teraan); penerbit dokumen surat berharga selain cek dan bilyet giro lebih dari 1.000 dokumen sebulan yang memiliki komputer (komputerisasi); dan perusahaan percetakan berizin dokumen sekuriti dari Botasupal (percetakan). Meterai teraan memerlukan Deposit ke kas negara sebelum dibuat, sebesar Rp15.000.000 atau kelipatannya; setiap pembubuhan mengurangi saldo dan tidak boleh melebihi saldo (Pasal 31). Meterai komputerisasi juga memerlukan Deposit lebih dulu, tidak boleh melebihi Deposit, dan pembuatannya dilaporkan paling lambat tanggal 10 bulan berikutnya walaupun nihil (Pasal 33). Meterai percetakan (untuk cek dan bilyet giro) dan teraan digital dibubuhkan tanpa Deposit; Pemungut menyetor sebesar nilai yang dibubuhkan dan melaporkannya dalam SPT Masa Bea Meterai (Pasal 34–35).",
+      "subjek": "Pemegang izin pembuatan meterai dalam bentuk lain; Pemungut Bea Meterai (percetakan dan teraan digital)",
+      "syarat": ["Memiliki izin Kepala KPP (teraan digital otomatis bagi Pemungut)", "Teraan dan komputerisasi: Deposit dilakukan sebelum meterai dibuat"],
+      "pengecualian": ["Meterai percetakan dan meterai teraan digital tanpa Deposit, karena dipakai dalam pemungutan yang disetor dan dilaporkan Pemungut"],
+      "tarifDpp": "Nilai yang dibubuhkan sama dengan tarif per dokumen (Rp10.000)",
+      "ambang": "Komputerisasi: penerbit lebih dari 1.000 dokumen surat berharga (selain cek dan bilyet giro) per bulan",
+      "tenggat": "Keputusan izin 5 hari kerja; laporan pembuatan meterai komputerisasi dan percetakan tanggal 10 bulan berikutnya",
+      "hakKewajiban": "Bila dokumen lebih dari 1 lembar, meterai dibubuhkan pada lembar pertama (Pasal 26 ayat (3)).",
+      "konsekuensi": "Membuat meterai teraan atau komputerisasi melebihi saldo Deposit mewajibkan Pemeteraian Kemudian atas dokumen yang Bea Meterainya tidak atau kurang dibayar (Pasal 31 ayat (7), Pasal 33 ayat (5)).",
+      "contoh": ["PT Arunika memegang izin meterai teraan dan menyetor Deposit Rp30.000.000 (2 × Rp15.000.000), cukup untuk 3.000 pembubuhan Rp10.000. Bila membubuhkan 3.200 meterai, 200 dokumen harus dilunasi melalui Pemeteraian Kemudian."],
+      "jebakan": ["Menganggap semua meterai bentuk lain memerlukan Deposit (percetakan dan teraan digital tidak), atau menganggap izinnya diberikan DJP pusat (yang memberi Kepala KPP tempat Wajib Pajak terdaftar)."]
+    },
+    "R-BM-15": {
+      "judul": "Pemungut BM: saat pemungutan per jenis dokumen, sarana pembubuhan, setor dan lapor tanggal 15, pembetulan SPT Masa BM",
+      "konsep": "Untuk dokumen tertentu yang jumlahnya besar, Bea Meterai dipungut oleh penerbit atau fasilitatornya, bukan dibayar sendiri oleh pihak terutang.",
+      "pokok": "Dokumen yang wajib dipungut: (a) cek dan bilyet giro; (b) dokumen transaksi surat berharga, termasuk kontrak berjangka; (c) surat keterangan, surat pernyataan, atau surat sejenis beserta rangkapnya; (d) dokumen yang menyebut penerimaan uang atau pengakuan pelunasan utang bernilai di atas Rp5.000.000 (PMK 78/2024 Pasal 55). Saat pemungutan: untuk huruf a ketika dokumen diterima dari pemegang izin meterai percetakan; untuk huruf b ketika dokumen selesai dibuat; untuk huruf c dan d ketika dokumen diserahkan kepada pihak terutang (Pasal 61). Sarananya: meterai percetakan untuk huruf a; meterai elektronik untuk dokumen elektronik huruf b–d; meterai teraan digital untuk dokumen tulisan tangan atau cetak huruf b–d; bila sistem gagal atau infrastruktur belum siap, dibubuhkan tanda 'BEA METERAI LUNAS' (Pasal 62). Setoran paling lambat tanggal 15 bulan berikutnya (Pasal 63); SPT Masa Bea Meterai elektronik paling lambat tanggal 15 bulan berikutnya dan tetap disampaikan walaupun nihil (Pasal 64); bila jatuh pada hari libur, hari kerja berikutnya (Pasal 65). Pembetulan SPT Masa atas kemauan sendiri dapat dilakukan bila ada salah tulis atau salah hitung, atau ada cek dan bilyet giro yang Bea Meterainya sudah dipungut tetapi tidak jadi digunakan (Pasal 66).",
+      "subjek": "Wajib Pajak yang ditetapkan sebagai Pemungut Bea Meterai (Pasal 56)",
+      "syarat": ["Ditetapkan sebagai Pemungut secara jabatan atau atas permohonan; berlaku mulai awal bulan berikutnya setelah tanggal surat penetapan (Pasal 59 ayat (4))"],
+      "pengecualian": ["Dokumen tertentu yang mendapat fasilitas pembebasan tidak dipungut (Pasal 55 ayat (3)) tetapi tetap dilaporkan"],
+      "tarifDpp": "Rp10.000 per dokumen",
+      "ambang": "Dokumen penerimaan uang atau pelunasan: nilai di atas Rp5.000.000",
+      "tenggat": "Setor dan SPT Masa Bea Meterai paling lambat tanggal 15 bulan berikutnya",
+      "hakKewajiban": "Memungut dari pihak terutang, menyetor, dan melaporkan, termasuk dokumen yang dibebaskan (Pasal 60).",
+      "konsekuensi": "Tidak memungut atau tidak menyetor: SKP sebesar BM yang kurang dipungut atau disetor ditambah sanksi 100% (Pasal 67).",
+      "contoh": ["Perusahaan efek yang menjadi Pemungut menerbitkan konfirmasi transaksi saham elektronik pada 12 Maret 2026. Bea Meterai dipungut saat dokumen selesai dibuat dengan meterai elektronik, disetor paling lambat 15 April 2026, dan dilaporkan dalam SPT Masa Bea Meterai Maret paling lambat 15 April 2026."],
+      "jebakan": ["Memakai satu saat pemungutan untuk semua dokumen (padahal berbeda per huruf), atau mengira SPT Masa Bea Meterai tidak wajib disampaikan bila tidak ada pemungutan."]
+    }
+  },
+  "kartu": {
+    "BM-01": { "judul": "Tarif dan cara bayar Bea Meterai", "isi": ["Tarif tetap Rp10.000 untuk setiap dokumen", "Dokumen yang menyatakan jumlah uang baru terutang bila nilainya di atas Rp5.000.000", "Dilunasi dengan meterai (tempel, elektronik, atau bentuk lain yang ditetapkan Menteri: teraan digital, komputerisasi, percetakan) atau dengan surat setoran pajak (Pasal 12, 15)"] },
+    "BM-02": { "judul": "Objek Bea Meterai", "isi": ["Dokumen perdata: surat perjanjian, surat keterangan, surat pernyataan, dan sejenisnya beserta rangkapnya", "Akta notaris beserta grosse, salinan, dan kutipannya; akta PPAT beserta salinan dan kutipannya", "Surat berharga dalam nama dan bentuk apa pun; dokumen transaksi surat berharga dan kontrak berjangka", "Dokumen lelang: risalah lelang beserta kutipan dan salinannya", "Dokumen jumlah uang di atas Rp5 juta yang menyebut penerimaan uang atau mengakui pelunasan atau perhitungan utang", "Dokumen yang diajukan sebagai alat bukti di pengadilan"] },
+    "BM-03": { "judul": "Dokumen yang tidak dikenai Bea Meterai", "isi": ["Dokumen lalu lintas orang dan barang, seperti konosemen, surat angkutan, dan bukti pengiriman", "Ijazah dalam bentuk apa pun", "Tanda terima gaji, uang tunggu, pensiun, dan tunjangan", "Tanda bukti penerimaan uang negara dari kas negara, kas daerah, atau bank", "Kuitansi semua jenis pajak", "Tanda penerimaan uang untuk keperluan intern organisasi", "Dokumen simpanan uang atau surat berharga yang diberikan bank kepada penyimpan", "Surat gadai", "Tanda pembagian keuntungan, bunga, atau imbal hasil surat berharga", "Dokumen Bank Indonesia untuk kebijakan moneter"] },
+    "BM-04": { "judul": "Saat terutang Bea Meterai", "isi": ["Surat perjanjian, akta notaris, dan akta PPAT: saat ditandatangani (Pasal 8 ayat (1) huruf a)", "Surat berharga dan dokumen transaksi surat berharga: saat selesai dibuat", "Surat keterangan, surat pernyataan, dan sejenisnya, dokumen jumlah uang, serta dokumen lelang: saat diserahkan kepada pihak untuk siapa dokumen dibuat (Pasal 8 ayat (1) huruf c)", "Alat bukti di pengadilan: saat diajukan ke pengadilan", "Dokumen yang dibuat di luar negeri: saat digunakan di Indonesia"] },
+    "BM-05": { "judul": "Pihak terutang Bea Meterai", "isi": ["Dokumen sepihak: pihak yang menerima dokumen", "Dokumen yang dibuat dua pihak atau lebih: tiap pihak atas dokumen yang diterimanya", "Surat berharga: pihak penerbit", "Alat bukti di pengadilan: pihak yang mengajukan", "Dokumen dari luar negeri: pihak yang menerima manfaat", "Para pihak boleh menyepakati siapa yang MEMBAYAR (Pasal 9 ayat (6)), tetapi status pihak terutang tidak berpindah; Pemeteraian Kemudian tetap dibebankan kepada pihak terutang (Pasal 17 ayat (2))"] },
+    "BM-06": {
+      "judul": "Pemeteraian Kemudian dan sanksi",
+      "rumus": ["Bea Meterai tidak atau kurang dibayar: bayar Bea Meterai terutang + sanksi administratif 100%", "Dokumen untuk alat bukti di pengadilan: Pemeteraian Kemudian sebesar Bea Meterai terutang, tanpa sanksi (Pasal 17 ayat (1) huruf b, Pasal 18 ayat (1) huruf b)", "Kedaluwarsa: 5 tahun sejak saat terutang", "Dokumen yang dibuat di luar negeri terutang saat digunakan di Indonesia (Pasal 8 ayat (1) huruf e); bila tidak atau kurang dibayar: Pemeteraian Kemudian + sanksi 100%"],
+      "rumusKet": "Dasar: Pasal 17 ayat (1) huruf a, Pasal 18 ayat (1) huruf a dan ayat (2); kekurangan juga dapat ditagih dengan SKP sebesar kekurangan + 100% (Pasal 19). Untuk dokumen yang terutang sebelum 1 Januari 2021, sanksinya 200% (PMK 78/2024 Pasal 49). Untuk alat bukti di pengadilan, cukup Bea Meterai menurut ketentuan saat Pemeteraian Kemudian (PMK 78/2024 Pasal 49 huruf c). Dokumen yang dahulu sudah lunas tidak perlu dimeteraikan lagi (Penjelasan Pasal 3 ayat (1) huruf b). Kedaluwarsa (Pasal 23) dihitung dari saat terutang, bukan dari tanggal dokumen atau akhir tahun.",
+      "contoh": ["Kuitansi Rp20 juta tanpa meterai: Rp10.000 + 100% × Rp10.000 = Rp20.000."]
+    },
+    "BM-07": { "judul": "Pemungut Bea Meterai", "isi": ["Pemungut adalah pihak yang memfasilitasi penerbitan dokumen tertentu, misalnya surat berharga, dokumen transaksi efek, dan dokumen penerimaan uang tertentu", "Setor dan lapor SPT Masa Bea Meterai paling lambat tanggal 15 bulan berikutnya (PMK 78/2024; sebelumnya setor tanggal 10 dan lapor tanggal 20)", "PENG-58/PJ.09/2026 (6 Okt 2026): pendaftaran penyedia printer meterai teraan digital"] }
+  },
+  "kuis": {
+    "Q-BM01-2": { "teks": "Bea Meterai atas kontrak konstruksi Rp18,5 miliar yang dibuat dalam 1 rangkap lebih besar dari Rp10.000 karena nilai kontraknya tinggi.", "jelas": "Salah. Tarifnya tetap Rp10.000 per dokumen, tidak tergantung nilai kontrak (UU 10/2020 Pasal 5)." },
+    "Q-BM02-2": { "teks": "Kuitansi pelunasan USD350 bebas Bea Meterai karena nilainya tertulis dalam mata uang asing.", "jelas": "Salah. Nilai valas dikonversi dengan kurs Menteri saat dokumen dibuat (Penjelasan Pasal 3 ayat (2) huruf g). Dengan kurs Rp16.300, 350 × Rp16.300 = Rp5.705.000, di atas Rp5.000.000, sehingga menjadi objek." },
+    "Q-BM03-2": { "teks": "Tanda terima pensiun Rp25.000.000 terutang Bea Meterai karena nilainya melewati Rp5.000.000.", "jelas": "Salah. Tanda terima pensiun termasuk Pasal 7 huruf c, jadi tidak dikenai Bea Meterai berapa pun nilainya." },
+    "Q-BM04-2": { "teks": "Perjanjian utang piutang yang dibuat dan ditandatangani di Singapura tidak akan pernah terutang Bea Meterai Indonesia.", "jelas": "Salah. Dokumen objek yang dibuat di luar negeri terutang saat digunakan di Indonesia (Pasal 8 ayat (1) huruf e), misalnya saat dipakai sebagai dasar penagihan atau pembukuan." },
+    "Q-BM05-2": { "teks": "Bea Meterai atas penerbitan surat saham ditanggung pemegang saham yang menerima surat itu.", "jelas": "Salah. Bea Meterai surat berharga terutang oleh penerbitnya (Pasal 9 ayat (3))." },
+    "Q-BM06-2": { "teks": "Dokumen yang Bea Meterainya terutang pada 2025 dan baru dimeteraikan kemudian dikenai sanksi 200%.", "jelas": "Salah. Sanksinya 100% untuk dokumen yang terutang sejak 1 Januari 2021; 200% hanya untuk dokumen yang terutang sebelum tanggal itu (PMK 78/2024 Pasal 49 huruf a dan b)." },
+    "Q-BM06-5": { "teks": "Setelah UU 1/2026 berlaku, pemalsuan meterai tetap diancam penjara paling lama 7 tahun DAN denda paling banyak Rp500.000.000 sekaligus.", "jelas": "Salah. UU 1/2026 Lampiran I nomor 134 mengubah Pasal 24 dan 25 menjadi penjara paling lama 7 tahun dan/atau denda paling banyak kategori V (Pasal II ayat (5) huruf a mengubah rumusan kumulatif menjadi kumulatif-alternatif). Rumusan 'dan Rp500.000.000' adalah teks lama UU 10/2020." },
+    "Q-BM07-2": { "teks": "Pemungut yang tidak memungut tetapi tetap menyetorkan Bea Meterai atas suatu dokumen tidak dikenai sanksi 100% atas dokumen itu.", "jelas": "Benar. Menurut Penjelasan Pasal 11 ayat (3) UU 10/2020, dokumen yang tidak dipungut tetapi Bea Meterainya disetor ke kas negara tidak dikenai sanksi administratif." }
+  }
+}

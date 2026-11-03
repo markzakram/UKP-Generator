@@ -251,6 +251,17 @@ Model diturunkan dari 28 kartu rumus di `cards.json`. Setiap model menyimpan par
 
 **Tahap berikutnya (P1):** PPh 21 pegawai tetap dengan TER (butuh tabel lampiran PP 58/2023 sebagai data), PPh 21 tidak tetap/harian, pesangon final, PPh 4(2) jasa konstruksi, PPh 15, PPN besaran tertentu, sanksi bunga (butuh tabel KMK bulanan), PBB-P5L terutang, NPPN, pemajakan keluarga, penyusutan fiskal, rekonsiliasi fiskal dan pajak tangguhan, fasilitas Pasal 31E, angsuran PPh 25, kredit PPh 24, branch profit tax, thin capitalization (DER 4:1), dan CFC.
 
+**Tambahan R4 (4 model, 3 Nov 2026):** subtema berbobot besar di bank yang belum punya model.
+
+| # | Model | Materi · tingkat | Pengecoh khas |
+| --- | --- | --- | --- |
+| 22 | PPN kurang bayar: PK − PM yang dapat dikreditkan | PPN · A | PM tidak berhubungan dengan usaha atau Faktur Pajak cacat ikut dikreditkan, PM sedan dianggap terlarang (huruf c sudah dihapus UU HPP), PM masa lain ditolak padahal ≤ 3 masa, PK dari harga jual penuh |
+| 23 | Rekonsiliasi fiskal: laba komersial ke PKP dan PPh badan | AKT · B | bunga deposito final tidak dikeluarkan, arah koreksi penyusutan terbalik, sumbangan biasa dan sanksi pajak dibiayakan, tarif lama 25% |
+| 24 | Aset, liabilitas, dan beban pajak tangguhan (PSAK 212) | AKT · B | saldo akhir dipakai untuk beban, beda temporer tanpa tarif, tarif lama, tarif fasilitas Pasal 31E atau PPh final UMKM |
+| 25 | Denda keberatan Pasal 25 ayat (9) UU KUP | KUP · A | tarif lama 50%, pajak yang sudah dibayar tidak dikurangkan, dasar SKPKB, denda dikenakan padahal WP banding |
+
+Tarif denda keberatan ditambahkan sebagai parameter `sanksi.keberatan` (50% sampai 28 Oktober 2021, 30% sejak UU HPP).
+
 Kapasitas tiap model (jumlah kombinasi konteks × kondisi yang benar-benar mengubah jawaban) dihitung dan dilaporkan. Variasi angka saja tidak dihitung sebagai soal berbeda kalau logikanya sama.
 
 ## 10. Standar konten soal UKP (draf)
@@ -362,10 +373,11 @@ Setiap tahap ditutup dengan satu QA gabungan, mengikuti aturan hemat token di CL
 - **K1:** nama "UKP Studio" dan aksen amber `#B45309`, diatur di `lib/config.ts`.
 - **K2:** bank LatihUKP berstatus acuan internal. Ekspor Word/Excel SiAdu yang memuat soal *Acuan sumber* meminta konfirmasi.
 - **K3:** dokumen BPPK belum ada. Cakupan kumulatif A ⊂ A+B ⊂ A+B+C. Revisi 3 November 2026, dipilih user:
-  - **Tingkat subtema** (`data/ukp-mapping.json` bagian `subtema`, ditulis `npm run import:data`) = tingkat terendah yang punya minimal 5 soal bank dan minimal 15% soal subtema itu. Hasilnya A 33, B 23, C 13 subtema (tabel di `docs/Cakupan-Materi-UKP.xlsx`). Kisi-kisi situs dan label kartu aturan tidak dipakai, karena keduanya menaruh STP/SKP, sanksi, keberatan, PTKP & tarif OP, serta objek, DPP, dan faktur PPN di C.
+  - **Tingkat subtema** (`data/ukp-mapping.json` bagian `subtema`, ditulis `npm run import:data`) = tingkat terendah yang punya minimal 5 soal bank dan minimal 15% soal subtema itu. Hasil impor A 33, B 23, C 13 subtema. Kisi-kisi situs dan label kartu aturan tidak dipakai, karena keduanya menaruh STP/SKP, sanksi, keberatan, PTKP & tarif OP, serta objek, DPP, dan faktur PPN di C.
   - **Tingkat soal dan model** = yang lebih tinggi antara tingkat subtema dan label soal/model. Soal pendalaman (misalnya 81 soal PPh 22/23 berlabel B, 24 soal PPh 26 berlabel C) baru masuk paket tingkat labelnya. Stok kumulatif: A 1.170, A+B 1.884, A+B+C 2.387 soal bank.
-  - **Kartu aturan** ikut tingkat subtemanya (deck materi Tingkat A memuat 33 subtema, A+B 56, A+B+C 69).
+  - **Kartu aturan** ikut tingkat subtemanya (deck materi Tingkat A memuat 34 subtema, A+B 48, A+B+C 69 setelah pengesahan).
   - **`override`** mengganti tingkat subtema per materi atau per materi::subtema.
+  - **Pengesahan BPPK (3 Nov 2026):** dokumen resmi *Cakupan Materi Uji Kompetensi Perpajakan* (BPPK, 14 Okt 2026) diunduh dari KLC Kemenkeu dan dicocokkan per butir di `data/bppk-cakupan.json`. 60 subtema sudah cocok. Atas persetujuan user, 9 subtema diubah lewat `override`: Tata cara penyetoran & pelaporan B→A; Jasa konstruksi B→C; BTI Subjek pajak badan dan Tarif PMA/BUT, 31E & branch profit tax B→C; 5 subtema PBB-P5L B→C. Cakupan efektif menjadi A 34, B 14, C 21 (stok bank kumulatif A 1.173, A+B 1.731, A+B+C 2.387). Catatan: baris Tingkat B berlabel "PBB-P5L" di dokumen BPPK berisi butir PPh Badan, sehingga PBB-P5L dipetakan ke C.
   - Label tiga model disamakan dengan soal bank topiknya: `sanksi-bunga`, `nppn`, dan `jasa-konstruksi` menjadi A.
 - **K4:** tryout 100 soal / 180 menit, kuota proporsional terhadap stok, target 5 paket per tingkat tanpa soal kembar. Sebaran kesulitan bawaan per tingkat (3 Nov 2026): A 40/45/15, B 30/50/20, C 20/50/30 (`KOMPOSISI_TINGKAT` di `lib/config.ts`; CLI `--kesulitan` ikut tingkat bila tidak diisi).
 - **K5:** Category = `UKP Tingkat <tingkat soal>`, Lesson = nama materi, Chapter = subtema.

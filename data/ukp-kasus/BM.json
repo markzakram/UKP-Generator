@@ -1,0 +1,32 @@
+[
+  {
+    "id": "O-BM-02", "bank": "orisinal", "paketSumber": null, "kode": "BM", "materi": "Bea Meterai", "subtema": "Tarif, saat & pihak terutang", "subtemaDasar": "manual",
+    "subtopik": "Pihak terutang Bea Meterai atas kuitansi", "tingkat": "A", "tipe": "Jebakan umum", "bloom": "understand", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "CV Sentosa menerima pelunasan piutang Rp8.000.000 dari PT Cahaya Abadi. CV Sentosa membuat dan menandatangani kuitansi, lalu menyerahkannya kepada PT Cahaya Abadi. Para pihak tidak membuat kesepakatan lain. Pihak yang terutang Bea Meterai atas kuitansi tersebut adalah ...",
+    "opsi": { "A": "PT Cahaya Abadi, sebagai pihak yang menerima dokumen", "B": "CV Sentosa, sebagai pihak yang membuat dan menandatangani dokumen", "C": "CV Sentosa dan PT Cahaya Abadi, masing-masing separuh tarif", "D": "Tidak ada, karena kuitansi pelunasan piutang bukan objek Bea Meterai" },
+    "kunci": "A",
+    "inti": "Kuitansi adalah dokumen yang dibuat sepihak, sehingga Bea Meterai terutang oleh pihak yang menerima dokumen, yaitu PT Cahaya Abadi (UU 10/2020 Pasal 9); nilainya Rp8.000.000 > Rp5.000.000 sehingga merupakan objek.",
+    "langkah": ["Kuitansi yang menyebut penerimaan uang lebih dari Rp5.000.000 adalah objek Bea Meterai (UU 10/2020 Pasal 3 ayat (2)).", "Dokumen sepihak terutang oleh pihak yang menerima dokumen (Pasal 9), bila tidak ada kesepakatan lain.", "Kuitansi diserahkan kepada PT Cahaya Abadi → PT Cahaya Abadi terutang Bea Meterai Rp10.000."],
+    "kenapaSalah": { "B": "Dokumen sepihak terutang oleh penerima dokumen, bukan pembuatnya (UU 10/2020 Pasal 9).", "C": "Bea Meterai tidak dibagi; kuitansi adalah dokumen sepihak yang terutang oleh penerimanya.", "D": "Dokumen yang menyebut penerimaan uang lebih dari Rp5.000.000 merupakan objek Bea Meterai." },
+    "penyebabSalah": { "B": "tertukar_aturan", "C": "belum_tahu_aturan", "D": "lupa_syarat" },
+    "dasarHukum": ["UU 10/2020 Pasal 3 ayat (2) dan Pasal 9"], "ruleIds": ["R-BM-06"],
+    "catatanAturan": null, "poinIngat": "Dokumen sepihak (kuitansi, surat pernyataan) terutang oleh penerima dokumen; dokumen dua pihak oleh masing-masing atas dokumen yang diterimanya.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-BM-03", "bank": "orisinal", "paketSumber": null, "kode": "BM", "materi": "Bea Meterai", "subtema": "Pemungut & pembayaran", "subtemaDasar": "manual",
+    "subtopik": "Batas setor dan lapor pemungut Bea Meterai", "tingkat": "A", "tipe": "Konsep & batas waktu", "bloom": "remember", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "penguasaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Bank Arta Sejahtera ditetapkan sebagai Pemungut Bea Meterai atas dokumen cek dan bilyet giro. Bea Meterai yang dipungut atas dokumen Masa Pajak Maret 2026 wajib disetor dan SPT Masa Bea Meterainya dilaporkan paling lambat ...",
+    "opsi": { "A": "20 April 2026", "B": "15 April 2026", "C": "30 April 2026", "D": "10 April 2026" },
+    "kunci": "B",
+    "inti": "Pemungut Bea Meterai menyetor dan melaporkan SPT Masa Bea Meterai paling lambat tanggal 15 bulan berikutnya: Masa Maret 2026 → 15 April 2026 (hari Rabu).",
+    "langkah": ["Pemungut Bea Meterai memungut Bea Meterai atas dokumen tertentu dari pihak terutang (UU 10/2020 Pasal 10).", "Setoran dan SPT Masa Bea Meterai paling lambat tanggal 15 bulan berikutnya (PMK 78/2024).", "Masa Maret 2026 → 15 April 2026; tanggal itu hari kerja, jadi tidak bergeser."],
+    "kenapaSalah": { "A": "Tanggal 20 adalah batas lapor SPT Masa PPh; pemungut Bea Meterai menyetor dan melapor paling lambat tanggal 15.", "C": "Akhir bulan berikutnya adalah batas SPT Masa PPN.", "D": "Tanggal 10 adalah batas setor PPh Masa sebelum 2024, bukan batas pemungut Bea Meterai." },
+    "penyebabSalah": { "A": "tertukar_aturan", "C": "tertukar_aturan", "D": "salah_periode" },
+    "dasarHukum": ["UU 10/2020 Pasal 10 dan Pasal 11", "PMK 78/2024 Pasal 55–65"], "ruleIds": ["R-BM-09"],
+    "catatanAturan": null, "poinIngat": "Pemungut Bea Meterai: setor dan lapor tanggal 15 bulan berikutnya (bukan 20 seperti SPT Masa PPh); pemungut bukan pihak terutang.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  }
+]

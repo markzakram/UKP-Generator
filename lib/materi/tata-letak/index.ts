@@ -1,6 +1,6 @@
 // Tata letak naskah: setiap SlideNaskah menjadi satu atau lebih slide jadi (kotak berposisi mutlak).
 import type { SlideJadi } from '../kotak';
-import type { Naskah, SlideNaskah } from '../naskah';
+import { acuanBelumTelaah, type Naskah, type SlideNaskah } from '../naskah';
 import { tataIkhtisar } from './ikhtisar';
 import { tataDefinisi, tataKesalahan, tataKonsep, tataKontras } from './isi';
 import { tataLangkah } from './langkah';
@@ -33,7 +33,7 @@ export function tataSlide(a: SlideNaskah, naskah: Naskah): SlideJadi[] {
 /** Catatan pembicara slide jadi: tanda Draf internal (teks acuan), catatan naskah, dan sumber. */
 export function catatanSlide(a: SlideNaskah, lanjutan: number, tandaDraf = true): string {
   const baris: string[] = [];
-  if (tandaDraf && a.asal === 'acuan') baris.push('DRAF INTERNAL: slide ini memuat teks acuan LatihUKP yang belum ditulis ulang atau ditelaah (PRD-Materi KM2).');
+  if (tandaDraf && acuanBelumTelaah(a)) baris.push('DRAF INTERNAL: slide ini memuat teks acuan LatihUKP yang belum ditulis ulang atau ditelaah (PRD-Materi KM2).');
   if (lanjutan > 0) baris.push(`(lanjutan ${lanjutan})`);
   if (a.catatanPembicara) baris.push(a.catatanPembicara);
   if (a.sumber?.length) baris.push('Sumber: ' + a.sumber.join(', '));

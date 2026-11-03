@@ -12,12 +12,17 @@ export const NAMA_POLA: Record<Pola, string> = {
   P13: 'Pembahasan', P14: 'Rangkuman', P15: 'Penutup', P16: 'Pembatas bagian'
 };
 
+export type StatusTelaah = 'sesuai' | 'ubah';
+export interface TelaahSlide { status: StatusTelaah; catatan?: string; oleh?: string; waktu: string }
+
 interface SlideDasar {
   id: string;
   /** Label bagian di bilah navigasi yang ditampilkan aktif. Kosong = semua label tampil biasa. */
   bagian?: string;
   /** Bilah navigasi khusus slide ini (deck gabungan per materi: navigasi subtemanya); kosong = `nav` naskah. */
   nav?: string[];
+  /** Hasil telaah slide (R1). Hilang saat isi slide disunting, supaya ditelaah ulang. */
+  telaah?: TelaahSlide;
   /** Teks chip judul bagian di kiri atas (slide isi). */
   chip?: string;
   ikon?: Ikon;
@@ -34,7 +39,7 @@ export interface Definisi { label: string; isi: string }
 export interface SisiKontras { judul: string; poin: string[] }
 export interface SisiKesalahan { judul: string; isi: string }
 export interface AngkaBesar { nilai: string; label: string }
-export interface ButirKuis { teks: string; jawab: boolean; jelas?: string }
+export interface ButirKuis { teks: string; jawab: boolean; jelas?: string; /** id kuis sumber (untuk tulis ulang) */ id?: string }
 export type HurufOpsi = 'A' | 'B' | 'C' | 'D';
 export interface PoinRangkuman { judul: string; isi: string }
 
@@ -78,5 +83,7 @@ export interface Naskah {
   catatan?: string[];
 }
 
-/** Deck memuat teks acuan LatihUKP yang belum ditulis ulang (PRD-Materi KM2). */
-export const adaTeksAcuan = (n: Naskah) => n.slides.some((s) => !s.sembunyi && s.asal === 'acuan');
+/** Slide berasal teks acuan LatihUKP yang belum ditulis ulang dan belum ditelaah sesuai (PRD-Materi KM2). */
+export const acuanBelumTelaah = (s: SlideNaskah) => !s.sembunyi && s.asal === 'acuan' && s.telaah?.status !== 'sesuai';
+/** Deck memuat teks acuan LatihUKP yang belum ditulis ulang atau ditelaah (PRD-Materi KM2). */
+export const adaTeksAcuan = (n: Naskah) => n.slides.some(acuanBelumTelaah);

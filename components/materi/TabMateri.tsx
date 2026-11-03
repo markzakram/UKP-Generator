@@ -3,13 +3,16 @@
 // pratinjau yang sama dengan .pptx, isian per pola, pemeriksaan, dan unduhan dengan konfirmasi Draf internal.
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { periksaTataLetak } from '@/lib/materi/cek';
-import { aturSlide, bacaNaskah, buatDeck, idDeck, idGabungan, kembalikanSlide, suntingSlide, tandaiTelaah, urungkan, type DeckMateri } from '@/lib/materi/deck';
+import { aturSlide, bacaNaskah, buatDeck, idDeck, idGabungan, kembalikanSlide, suntingSlide, tandaiTelaah, telaahSlide, terapkanLembarTelaah, urungkan, type DeckMateri } from '@/lib/materi/deck';
+import { bacaLembarTelaah, LABEL_TELAAH, lembarTelaah, perluTelaah, ringkasTelaah } from '@/lib/materi/telaah';
 import type { SlideJadi } from '@/lib/materi/kotak';
 import { adaTeksAcuan, NAMA_POLA, type AsalBlok, type SlideNaskah } from '@/lib/materi/naskah';
 import { tulisPptx } from '@/lib/materi/pptx';
+import { naskahHandout } from '@/lib/materi/handout';
 import { diujiDi, labelTingkat, singkatTingkat, TINGKAT } from '@/lib/config';
 import { berlakuPada, daftarSubtema, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, teksSlide, type Kepadatan, type SumberSoalMateri } from '@/lib/materi/susun';
 import { tataLetak } from '@/lib/materi/tata-letak';
+import { lembarSilabus, namaBerkasSilabus, PILIHAN_MENIT_PERTEMUAN, ringkasSilabus, susunSilabus, type Silabus } from '@/lib/materi/silabus';
 import { cariJebakan } from '@/lib/quality';
 import { daftarDeckMateri, hapusDeckMateri, simpanDeckMateri } from '@/lib/storage';
 import type { CekMutu, DataUkp, Kode, Tingkat } from '@/lib/types';
@@ -37,6 +40,8 @@ const ASAL: Record<AsalBlok, { teks: string; kelas: string }> = {
   otomatis: { teks: 'Otomatis', kelas: 'tag' }
 };
 const STATUS = { belum: { teks: 'Belum disusun', kelas: 'tag' }, draf: { teks: 'Draf internal', kelas: 'tag tag-acuan' }, telaah: { teks: 'Ditelaah', kelas: 'tag tag-tulis' } };
+/** Label status deck: Draf internal hanya bila masih ada teks acuan yang belum ditelaah (KM2); selain itu Belum ditelaah. */
+const statusDeck = (d?: DeckMateri) => (!d ? STATUS.belum : d.status === 'telaah' ? STATUS.telaah : adaTeksAcuan(d.naskah) ? STATUS.draf : { teks: 'Belum ditelaah', kelas: 'tag' });
 
 let dasarCache: Promise<Uint8Array> | null = null;
 const muatDasar = () => (dasarCache ??= fetch('/materi/dasar.pptx').then((r) => {
@@ -51,7 +56,15 @@ const namaBerkas = (d: DeckMateri, ext: string) => d.id.startsWith('gabung:')
   ? `materi-${slug(d.naskah.kode ?? 'impor')}-tingkat-${(d.naskah.tingkat ?? '').toLowerCase()}${d.id.endsWith('+baru') ? '-tambahan' : ''}.${ext}`
   : `materi-${slug(d.naskah.kode ?? 'impor')}-${slug(d.naskah.subtema ?? d.judul)}.${ext}`;
 const namaNaskah = (d: DeckMateri) => namaBerkas(d, 'json').replace(/^materi-/, 'naskah-');
+type IsiEkspor = 'lengkap' | 'handout';
 const sekarang = () => new Date().toISOString();
+/** Subtema deck (KODE::Subtema) untuk paket latihan: deck subtema satu, deck gabungan semua yang digabung. */
+const subtemaDeck = (d: DeckMateri) => {
+  const k = d.pengaturan?.kode ?? d.naskah.kode;
+  const sub = d.pengaturan?.gabung ?? (d.pengaturan?.subtema ? [d.pengaturan.subtema] : []);
+  return k ? sub.map((s) => k + '::' + s) : [];
+};
+const KUNCI_PENELAAH = 'ukp-materi-penelaah';
 
 function ringkasTata(js: SlideJadi[], sembunyi?: boolean): { teks: string; kelas: string } {
   if (sembunyi) return { teks: 'disembunyikan', kelas: 'redup' };
@@ -63,13 +76,21 @@ function ringkasTata(js: SlideJadi[], sembunyi?: boolean): { teks: string; kelas
   return { teks: 'muat', kelas: 'st-lolos' };
 }
 
-export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp; tanggalAcuan: string; kabar: (p: string, galat?: boolean) => void }) {
-  const [tingkat, setTingkat] = useState<Tingkat>(PENGATURAN_MATERI_AWAL.tingkat);
-  const [kode, setKode] = useState<Kode>('PP');
+/** Subtema yang dibuka dari saran remedial Uji peserta (R8). */
+export interface FokusMateri { kode: Kode; subtema: string; tingkat: Tingkat }
+
+export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFokus, latihan }: {
+  data: DataUkp; tanggalAcuan: string; kabar: (p: string, galat?: boolean) => void;
+  fokus?: FokusMateri | null; selesaiFokus?: () => void; latihan?: (subtema: string[], tingkat: Tingkat) => void;
+}) {
+  const [tingkat, setTingkat] = useState<Tingkat>(fokus?.tingkat ?? PENGATURAN_MATERI_AWAL.tingkat);
+  const [kode, setKode] = useState<Kode>(fokus?.kode ?? 'PP');
   const [lingkup, setLingkup] = useState<Lingkup>('subtema');
   const [hanyaBaru, setHanyaBaru] = useState(false);
+  const [menitPertemuan, setMenitPertemuan] = useState(90);
+  const [silabus, setSilabus] = useState<Silabus | null>(null);
   const [bentuk, setBentuk] = useState<'subtema' | 'materi'>('subtema');
-  const [cek, setCek] = useState<Set<string>>(new Set());
+  const [cek, setCek] = useState<Set<string>>(() => new Set(fokus ? [idDeck(fokus.kode, fokus.subtema)] : []));
   const [saring, setSaring] = useState<Saring>('semua');
   const [kepadatan, setKepadatan] = useState<Kepadatan>(PENGATURAN_MATERI_AWAL.kepadatan);
   const [sumberSoal, setSumberSoal] = useState<SumberSoalMateri>('baru');
@@ -82,15 +103,23 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
   const [besar, setBesar] = useState(false);
   const [dialog, setDialog] = useState<null | { jenis: 'k2'; daftar: DeckMateri[]; format: FormatEkspor } | { jenis: 'timpa'; ids: string[] }>(null);
   const [formatEkspor, setFormatEkspor] = useState<FormatEkspor>('pptx');
+  const [isiEkspor, setIsiEkspor] = useState<IsiEkspor>('lengkap');
+  const [saringSlide, setSaringSlide] = useState<'semua' | 'belum' | 'ubah'>('semua');
+  const [penelaah, setPenelaah] = useState(() => { try { return typeof window === 'undefined' ? '' : localStorage.getItem(KUNCI_PENELAAH) ?? ''; } catch { return ''; } });
+  const imporTelaahRef = useRef<HTMLInputElement>(null);
   const [sibuk, setSibuk] = useState(false);
   const imporRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     daftarDeckMateri().then((d) => {
       setDecks(Object.fromEntries(d.map((x) => [x.id, x])));
+      // Dibuka dari saran remedial: deck subtema itu (bila sudah ada) dan centangnya; selain itu deck terbaru.
+      const idFokus = fokus ? idDeck(fokus.kode, fokus.subtema) : null;
+      if (idFokus) { if (d.some((x) => x.id === idFokus)) setAktif(idFokus); selesaiFokus?.(); return; }
       const terbaru = [...d].sort((a, b) => b.diperbarui.localeCompare(a.diperbarui))[0];
       if (terbaru) { setAktif(terbaru.id); if (terbaru.naskah.kode) setKode(terbaru.naskah.kode as Kode); }
     }).catch((e: Error) => kabar(e.message, true));
+    // Hanya saat dimuat: fokus dipakai sekali.
   }, [kabar]);
 
   const subs = useMemo(() => daftarSubtema(data, tingkat, tanggalAcuan), [data, tingkat, tanggalAcuan]);
@@ -206,7 +235,10 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
       const berkas: { nama: string; isi: Uint8Array; mime: string }[] = [];
       for (const d of daftar) {
         const folder = perFolder ? (d.naskah.kode ?? 'impor') + '/' : '';
-        if (pakaiPptx) berkas.push({ nama: folder + namaBerkas(d, 'pptx'), isi: tulisPptx(d.naskah, dasar, { ditelaah: d.status === 'telaah' }).berkas, mime: MIME.pptx });
+        // Handout peserta (R9): rangkuman, rumus, dan kuis tanpa catatan pembicara; naskah .json tetap lengkap.
+        if (pakaiPptx) berkas.push(isiEkspor === 'handout'
+          ? { nama: folder + namaBerkas(d, 'pptx').replace(/\.pptx$/, '-handout.pptx'), isi: tulisPptx(naskahHandout(d.naskah), dasar, { ditelaah: d.status === 'telaah', tanpaCatatan: true }).berkas, mime: MIME.pptx }
+          : { nama: folder + namaBerkas(d, 'pptx'), isi: tulisPptx(d.naskah, dasar, { ditelaah: d.status === 'telaah' }).berkas, mime: MIME.pptx });
         if (format !== 'pptx') berkas.push({ nama: folder + namaNaskah(d), isi: new TextEncoder().encode(JSON.stringify(d.naskah, null, 2)), mime: MIME.json });
       }
       const namaZip = (lingkup === 'tingkat' ? `materi-tingkat-${tingkat.toLowerCase()}${tambahan ? '-tambahan' : ''}` : `materi-${slug(kode)}`)
@@ -214,7 +246,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
       if (berkas.length === 1) unduh(berkas[0].isi, berkas[0].nama.split('/').pop() ?? berkas[0].nama, berkas[0].mime);
       // .pptx sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
       else unduh(await zip(Object.fromEntries(berkas.map((b) => [b.nama, b.isi])), pakaiPptx ? 0 : 6), namaZip + '.zip', MIME.zip);
-      kabar(`${daftar.length} deck diunduh (${LABEL_FORMAT[format]}${berkas.length > 1 ? ', .zip' : ''})${draf.length ? `; ${draf.length} bertanda Draf internal` : ''}.`);
+      kabar(`${daftar.length} deck diunduh (${pakaiPptx && isiEkspor === 'handout' ? 'handout peserta, ' : ''}${LABEL_FORMAT[format]}${berkas.length > 1 ? ', .zip' : ''})${draf.length ? `; ${draf.length} bertanda Draf internal` : ''}.`);
     } catch (e) { kabar((e as Error).message, true); }
     finally { setSibuk(false); }
   };
@@ -247,6 +279,26 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
   const unduhNaskah = () => {
     if (!deck) return;
     unduh(new TextEncoder().encode(JSON.stringify(deck.naskah, null, 2)), namaNaskah(deck), MIME.json);
+  };
+  const rt = deck ? ringkasTelaah(deck.naskah) : null;
+  const tandaiSlide = (status: 'sesuai' | 'ubah' | null, catatan?: string) => {
+    if (!deck || !slide) return;
+    const lama = slide.telaah;
+    ubahDeck((d) => telaahSlide(d, slide.id, status ? { status, catatan: (catatan ?? lama?.catatan) || undefined, oleh: penelaah || undefined, waktu: sekarang() } : null, sekarang()));
+  };
+  const unduhLembarTelaah = () => {
+    const daftar = deckDipilih.length ? deckDipilih : deck ? [deck] : [];
+    if (!daftar.length) return kabar('Belum ada deck untuk ditelaah.', true);
+    unduh(lembarTelaah(daftar), `telaah-${daftar.length === 1 ? namaBerkas(daftar[0], 'xlsx').replace(/^materi-/, '') : `${daftar.length}-deck.xlsx`}`, MIME.xlsx);
+    kabar(`Lembar telaah ${daftar.length} deck diunduh. Isi kolom Status dan Catatan, lalu impor kembali.`);
+  };
+  const imporLembarTelaah = async (f: File) => {
+    try {
+      const baris = bacaLembarTelaah(new Uint8Array(await f.arrayBuffer()));
+      const hasil = terapkanLembarTelaah(decks, baris, sekarang());
+      hasil.decks.forEach(simpanDeck);
+      kabar(`Lembar telaah diimpor: ${hasil.diterapkan} slide diperbarui di ${hasil.decks.length} deck, ${hasil.dilewati} baris dilewati (kosong, sama, atau deck tidak ada di browser ini).`);
+    } catch (e) { kabar((e as Error).message, true); }
   };
   const imporNaskah = async (f: File) => {
     try {
@@ -292,6 +344,16 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
     return () => window.removeEventListener('keydown', tekan);
   }, [dialog, deck, slides, slide]);
 
+  // Silabus per tingkat (R7): deck gabungan per materi; deck gabungan yang sudah disunting di browser ikut dipakai.
+  const unduhSilabus = () => {
+    try {
+      const s = susunSilabus(data, { tingkat, hanyaBaru: tambahan, menitPertemuan, deck: { ...PENGATURAN_MATERI_AWAL, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat: sekarang() } },
+        (k) => decks[idGabungan(k, tingkat, tambahan)]?.naskah);
+      setSilabus(s);
+      unduh(lembarSilabus(s), namaBerkasSilabus(s), MIME.xlsx);
+      kabar('Silabus diunduh. ' + ringkasSilabus(s) + '.');
+    } catch (e) { kabar((e as Error).message, true); }
+  };
   const nAcuan = slides.filter((s) => !s.sembunyi && s.asal === 'acuan').length;
   const nAturan = new Set(slides.flatMap((s) => (s.sumber ?? []).filter((x) => /^R-/.test(x)))).size;
   const totalSlide = deckDipilih.reduce((t, d) => t + tataLetak(d.naskah).length, 0);
@@ -340,7 +402,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                       <input type="checkbox" checked={cek.has(s.id)} onChange={() => setCek((c) => { const n = new Set(c); if (n.has(s.id)) n.delete(s.id); else n.add(s.id); return n; })} />
                       <span>
                         <span>{s.subtema}</span>
-                        <span className="meta"><span className={STATUS[s.status === 'semua' ? 'belum' : s.status].kelas}>{STATUS[s.status === 'semua' ? 'belum' : s.status].teks}</span> <span className="mono redup">{diujiDi(s.tingkat)} · {s.aturan} aturan{s.kuis ? ' · kuis' : ''}{s.model + s.orisinal ? ' · soal baru' : ''}</span></span>
+                        <span className="meta"><span className={statusDeck(decks[s.id]).kelas}>{statusDeck(decks[s.id]).teks}</span> <span className="mono redup">{diujiDi(s.tingkat)} · {s.aturan} aturan{s.kuis ? ' · kuis' : ''}{s.model + s.orisinal ? ' · soal baru' : ''}</span></span>
                       </span>
                     </label>
                   </Fragment>
@@ -372,8 +434,19 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
             <section className="ekspor-materi" aria-labelledby="mt-ekspor">
               <h3 id="mt-ekspor" className="label-kecil" style={{ margin: 0 }}>Ekspor</h3>
               <Segmented label="Format" nilai={formatEkspor} ubah={setFormatEkspor} pilihan={[{ nilai: 'pptx', label: '.pptx', judul: 'Deck PowerPoint' }, { nilai: 'json', label: '.json', judul: 'Naskah .json (bisa diimpor lagi)' }, { nilai: 'keduanya', label: 'Keduanya', judul: '.pptx dan naskah .json' }]} />
-              <p className="kecil redup" style={{ margin: 0 }}>{ringkasEkspor}</p>
+              <Segmented label="Isi .pptx" nilai={isiEkspor} ubah={setIsiEkspor} pilihan={[{ nilai: 'lengkap', label: 'Deck lengkap', judul: 'Semua slide beserta catatan pembicara' }, { nilai: 'handout', label: 'Handout peserta', judul: 'Versi ringkas untuk peserta: rangkuman, rumus, dan kuis, tanpa catatan pembicara' }]} />
+              <p className="kecil redup" style={{ margin: 0 }}>{ringkasEkspor}{isiEkspor === 'handout' ? ' Handout: rangkuman, rumus, dan kuis tanpa catatan pembicara. PDF lewat CLI --pdf (Windows dengan PowerPoint).' : ''}</p>
               <button type="button" className="btn btn-utama btn-besar" disabled={!idDipilih.length || sibuk} onClick={ekspor}>{sibuk ? 'Memproses…' : labelEkspor}</button>
+            </section>
+            <section className="ekspor-materi" aria-labelledby="mt-silabus">
+              <h3 id="mt-silabus" className="label-kecil" style={{ margin: 0 }}>Silabus {labelTingkat(tingkat)}{tambahan ? ' · subtema baru' : ''}</h3>
+              <div className="form"><label>Durasi per pertemuan
+                <select value={menitPertemuan} onChange={(e) => { setMenitPertemuan(Number(e.target.value)); setSilabus(null); }}>
+                  {PILIHAN_MENIT_PERTEMUAN.map((m) => <option key={m} value={m}>{m} menit ({(m / 45).toFixed(1).replace('.', ',').replace(/,0$/, '')} JP)</option>)}
+                </select>
+              </label></div>
+              <p className="kecil redup" style={{ margin: 0 }}>{silabus && silabus.tingkat === tingkat && silabus.menitPertemuan === menitPertemuan ? ringkasSilabus(silabus) : 'Deck gabungan per materi; durasi dihitung dari jumlah slide menurut kepadatan, contoh soal, dan kuis di atas.'}</p>
+              <button type="button" className="btn btn-besar" disabled={sibuk} onClick={unduhSilabus}>Unduh silabus .xlsx</button>
             </section>
             <button type="button" className="btn btn-kecil" onClick={() => imporRef.current?.click()}>Impor naskah .json</button>
             <input ref={imporRef} type="file" accept="application/json,.json" className="tersembunyi" onChange={(e) => { const f = e.target.files?.[0]; if (f) imporNaskah(f); e.target.value = ''; }} />
@@ -394,21 +467,25 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                   <label className="form pilih-deck">Deck ({tabDeck.length})
                     <select value={deck.id} onChange={(e) => { setAktif(e.target.value); setDipilih(null); }}>
                       {!tabDeck.some((d) => d.id === deck.id) && <option value={deck.id}>{deck.judul}</option>}
-                      {tabDeck.map((d) => <option key={d.id} value={d.id}>{d.naskah.kode ? d.naskah.kode + ' · ' : ''}{d.judul} · {STATUS[d.status].teks}</option>)}
+                      {tabDeck.map((d) => <option key={d.id} value={d.id}>{d.naskah.kode ? d.naskah.kode + ' · ' : ''}{d.judul} · {statusDeck(d).teks}</option>)}
                     </select>
                   </label>
                 ) : (
                   <div role="tablist" aria-label="Deck tersusun" className="tab-deck">
                     {tabDeck.map((d) => (
                       <button key={d.id} type="button" role="tab" aria-selected={d.id === deck.id} onClick={() => { setAktif(d.id); setDipilih(null); }}>
-                        {d.judul} <span className={STATUS[d.status].kelas}>{STATUS[d.status].teks}</span>
+                        {d.judul} <span className={statusDeck(d).kelas}>{statusDeck(d).teks}</span>
                       </button>
                     ))}
                   </div>
                 )}
                 <div className="aksi-tab">
                   <button type="button" className="btn btn-kecil" disabled={!deck.riwayat.length} onClick={() => ubahDeck(urungkan)} title="Kembalikan versi sebelumnya">Urungkan ({deck.riwayat.length})</button>
-                  <button type="button" className="btn btn-kecil" onClick={() => ubahDeck((d) => tandaiTelaah(d, d.status !== 'telaah', sekarang()))}>{deck.status === 'telaah' ? 'Kembalikan ke draf' : 'Tandai deck ditelaah'}</button>
+                  <button type="button" className="btn btn-kecil" title={rt ? `${rt.sesuai} dari ${rt.perlu} slide ditelaah sesuai` : undefined} onClick={() => ubahDeck((d) => tandaiTelaah(d, d.status !== 'telaah', sekarang()))}>{deck.status === 'telaah' ? 'Kembalikan ke draf' : `Tandai deck ditelaah${rt && !rt.lengkap ? ` (${rt.sesuai}/${rt.perlu})` : ''}`}</button>
+                  {latihan && subtemaDeck(deck).length > 0 && <button type="button" className="btn btn-kecil" title="Rakit paket latihan (20 soal, turun bila stok kurang) dari subtema deck ini, lalu buka di Hasil paket" onClick={() => latihan(subtemaDeck(deck), (deck.pengaturan?.tingkat ?? deck.naskah.tingkat ?? tingkat) as Tingkat)}>Buat latihan{subtemaDeck(deck).length > 1 ? ` (${subtemaDeck(deck).length} subtema)` : ''}</button>}
+                  <button type="button" className="btn btn-kecil" onClick={unduhLembarTelaah} title="Lembar Excel untuk penelaah di luar aplikasi; deck yang dicentang, atau deck ini">Lembar telaah .xlsx</button>
+                  <button type="button" className="btn btn-kecil" onClick={() => imporTelaahRef.current?.click()}>Impor lembar telaah</button>
+                  <input ref={imporTelaahRef} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="tersembunyi" onChange={(e) => { const f = e.target.files?.[0]; if (f) imporLembarTelaah(f); e.target.value = ''; }} />
                   <button type="button" className="btn btn-kecil" aria-pressed={besar} onClick={() => setBesar(!besar)} style={besar ? { background: 'var(--tinta)', color: '#fff' } : undefined}>{besar ? 'Kembali ke tabel' : 'Perbesar pratinjau'}</button>
                   <button type="button" className="btn btn-kecil" onClick={() => { hapusDeckMateri(deck.id).catch(() => undefined); setDecks((x) => { const n = { ...x }; delete n[deck.id]; return n; }); setAktif(null); kabar('Deck dihapus dari browser ini.'); }}>Hapus deck</button>
                 </div>
@@ -421,6 +498,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                 <div><span className="angka">{nAcuan} / {slides.filter((s) => !s.sembunyi).length - nAcuan}</span>teks acuan / lainnya</div>
                 <div><span className="angka">{nAturan}</span>aturan · per {deck.naskah.tanggalAcuan}</div>
                 <div><span className="angka">{slides.filter((s) => s.pola === 'P12').length} · {slides.filter((s) => s.pola === 'P11').length}</span>contoh soal · kuis</div>
+                {rt && <div><span className="angka" style={{ color: rt.lengkap ? 'var(--hijau)' : rt.ubah ? 'var(--merah)' : undefined }}>{rt.sesuai} / {rt.perlu}</span>slide ditelaah{rt.ubah ? ` · ${rt.ubah} perlu diubah` : ''}</div>}
               </div>
 
               {!!deck.naskah.catatan?.length && (
@@ -444,10 +522,19 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
               <div className="dua-kolom">
                 {!besar && (
                   <div className="utama kotak-tabel">
+                    {rt && (
+                      <div className="chips" role="group" aria-label="Saring slide menurut telaah" style={{ padding: '8px 12px', borderBottom: '1px solid var(--garis-muda)' }}>
+                        {([['semua', `Semua ${slides.length}`], ['belum', `Belum ditelaah ${rt.belum}`], ['ubah', `Perlu diubah ${rt.ubah}`]] as const).map(([k, l]) => (
+                          <button key={k} type="button" className="chip chip-kecil" aria-pressed={saringSlide === k} onClick={() => setSaringSlide(k)}>{l}</button>
+                        ))}
+                      </div>
+                    )}
                     <table className="lembar">
                       <thead><tr><th>No</th><th>Tampil</th><th>Bagian</th><th>Pola</th><th>Judul slide</th><th>Sumber</th><th>Asal</th><th>Tata letak</th></tr></thead>
                       <tbody>
                         {slides.map((s, i) => {
+                          if (saringSlide === 'belum' && !(perluTelaah(s) && !s.telaah)) return null;
+                          if (saringSlide === 'ubah' && s.telaah?.status !== 'ubah') return null;
                           const t = ringkasTata(jadiPer.get(s.id) ?? [], s.sembunyi);
                           const pilih = slide?.id === s.id;
                           return (
@@ -458,7 +545,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                               <td className="mono kecil" style={{ whiteSpace: 'nowrap' }}>{s.pola} {NAMA_POLA[s.pola]}</td>
                               <td><button type="button" className="btn-teks" style={{ color: 'var(--tinta)', padding: 0, textAlign: 'left', fontWeight: pilih ? 600 : 400 }} onClick={() => setDipilih(s.id)}>{s.judul}</button></td>
                               <td className="mono kecil redup" style={{ whiteSpace: 'nowrap' }}>{(s.sumber ?? []).slice(0, 2).join(', ')}{(s.sumber?.length ?? 0) > 2 ? '…' : ''}</td>
-                              <td style={{ whiteSpace: 'nowrap' }}><span className={ASAL[s.asal ?? 'otomatis'].kelas}>{ASAL[s.asal ?? 'otomatis'].teks}</span></td>
+                              <td style={{ whiteSpace: 'nowrap' }}><span className={ASAL[s.asal ?? 'otomatis'].kelas}>{ASAL[s.asal ?? 'otomatis'].teks}</span>{s.telaah && <> <span className={s.telaah.status === 'sesuai' ? 'tag tag-tulis' : 'tag tag-salah'} title={s.telaah.catatan}>{s.telaah.status === 'sesuai' ? '✓ Sesuai' : 'Perlu diubah'}</span></>}</td>
                               <td className={'kecil ' + t.kelas} style={{ whiteSpace: 'nowrap' }}>{t.teks}</td>
                             </tr>
                           );
@@ -487,6 +574,22 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                         </div>
                       )}
                       <IsianSlide slide={slide} nav={slide.nav ?? deck.naskah.nav} simpan={(baru) => ubahDeck((d) => suntingSlide(d, slide.id, () => baru, sekarang()))} />
+                      {perluTelaah(slide) && (
+                        <section aria-label="Telaah slide ini" className="telaah-slide">
+                          <h3 className="sub-judul" style={{ margin: 0 }}>Telaah slide ini</h3>
+                          <div className="seg" role="group" aria-label="Hasil telaah">
+                            <button type="button" aria-pressed={slide.telaah?.status === 'sesuai'} onClick={() => tandaiSlide(slide.telaah?.status === 'sesuai' ? null : 'sesuai')}>✓ Sesuai</button>
+                            <button type="button" aria-pressed={slide.telaah?.status === 'ubah'} onClick={() => tandaiSlide(slide.telaah?.status === 'ubah' ? null : 'ubah')}>Perlu diubah</button>
+                          </div>
+                          <label className="form">Catatan penelaah
+                            <textarea key={slide.id + (slide.telaah?.waktu ?? '')} rows={2} defaultValue={slide.telaah?.catatan ?? ''} placeholder="Apa yang perlu diperbaiki, atau dasar hukum yang dicek" onBlur={(e) => { const v = e.target.value.trim(); if (v !== (slide.telaah?.catatan ?? '')) tandaiSlide(slide.telaah?.status ?? 'ubah', v); }} />
+                          </label>
+                          <label className="form">Nama penelaah
+                            <input value={penelaah} onChange={(e) => { setPenelaah(e.target.value); try { localStorage.setItem(KUNCI_PENELAAH, e.target.value); } catch { /* penyimpanan browser tidak tersedia */ } }} placeholder="Dipakai untuk telaah berikutnya" />
+                          </label>
+                          {slide.telaah && <p className="kecil redup" style={{ margin: 0 }}>{LABEL_TELAAH[slide.telaah.status]}{slide.telaah.oleh ? ` · ${slide.telaah.oleh}` : ''} · {new Date(slide.telaah.waktu).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}. Menyunting isi slide menghapus hasil telaah.</p>}
+                        </section>
+                      )}
                       <section aria-label="Pemeriksaan slide ini">
                         <h3 className="sub-judul">Pemeriksaan slide ini</h3>
                         <DaftarMutu cek={cekSlide} />

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "O-PP-02", "bank": "orisinal", "paketSumber": null, "kode": "PP", "materi": "PPh Pemotongan/Pemungutan", "subtema": "Natura & kenikmatan", "subtemaDasar": "manual",
+    "subtopik": "Batas tempat tinggal individual Rp2 juta per bulan", "tingkat": "A", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Sepanjang 2026 PT Graha Mulia menyediakan apartemen bagi manajer pemasarannya (tempat tinggal individual) dengan nilai sewa Rp5.000.000 per bulan selama 12 bulan. Tidak ada natura lain. Nilai natura tempat tinggal yang menjadi objek PPh Pasal 21 manajer tersebut untuk Tahun 2026 adalah ...",
+    "opsi": { "A": "Rp60.000.000", "B": "Rp36.000.000", "C": "Rp24.000.000", "D": "Rp57.000.000" },
+    "kunci": "B",
+    "inti": "Tempat tinggal individual dikecualikan sampai Rp2.000.000 per bulan; objek PPh 21 = (Rp5.000.000 − Rp2.000.000) × 12 = Rp36.000.000.",
+    "langkah": ["Sejak UU HPP natura merupakan objek PPh penerima, kecuali yang dikecualikan (PMK 66/2023).", "Tempat tinggal individual dikecualikan sampai Rp2.000.000 per bulan; kelebihannya objek.", "(Rp5.000.000 − Rp2.000.000) × 12 bulan = Rp36.000.000."],
+    "kenapaSalah": { "A": "Seluruh nilai sewa dianggap objek; tempat tinggal individual dikecualikan sampai Rp2.000.000 per bulan.", "C": "Itu bagian yang dikecualikan (Rp2.000.000 × 12), bukan yang menjadi objek.", "D": "Memakai batas bingkisan Rp3.000.000 per tahun; untuk tempat tinggal individual batasnya Rp2.000.000 per bulan." },
+    "penyebabSalah": { "A": "lupa_syarat", "C": "salah_hitung", "D": "tertukar_aturan" },
+    "dasarHukum": ["UU PPh Pasal 4 ayat (1) huruf a s.t.d.d. UU 7/2021 (HPP)", "PMK 66/2023 Lampiran huruf A"], "ruleIds": ["R-PP-16"],
+    "catatanAturan": null, "poinIngat": "Natura bernilai batas: tempat tinggal individual Rp2 juta/bulan, bingkisan non-hari raya Rp3 juta/tahun, olahraga Rp1,5 juta/tahun.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-PP-03", "bank": "orisinal", "paketSumber": null, "kode": "PP", "materi": "PPh Pemotongan/Pemungutan", "subtema": "PPh 21: pemotong, penerima & objek", "subtemaDasar": "manual",
+    "subtopik": "Komponen penghasilan bruto pegawai tetap", "tingkat": "A", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Untuk Masa Pajak Maret 2026, Sdr. Bima (pegawai tetap) menerima gaji Rp12.000.000 dan tunjangan transportasi Rp1.500.000. Pemberi kerja juga membayar iuran JKK Rp29.000, JKM Rp36.000, BPJS Kesehatan bagian pemberi kerja Rp540.000, dan iuran JHT bagian pemberi kerja Rp444.000. Penghasilan bruto Sdr. Bima untuk penghitungan PPh Pasal 21 Masa Maret 2026 adalah ...",
+    "opsi": { "A": "Rp14.549.000", "B": "Rp13.500.000", "C": "Rp14.105.000", "D": "Rp13.565.000" },
+    "kunci": "C",
+    "inti": "Bruto = gaji Rp12.000.000 + tunjangan Rp1.500.000 + JKK Rp29.000 + JKM Rp36.000 + BPJS Kesehatan pemberi kerja Rp540.000 = Rp14.105.000; iuran JHT bagian pemberi kerja tidak termasuk.",
+    "langkah": ["Bruto pegawai tetap mencakup gaji, tunjangan, serta iuran JKK, JKM, dan jaminan kesehatan yang dibayar pemberi kerja.", "Iuran JHT dan JP bagian pemberi kerja tidak termasuk penghasilan bruto.", "Rp12.000.000 + Rp1.500.000 + Rp29.000 + Rp36.000 + Rp540.000 = Rp14.105.000."],
+    "kenapaSalah": { "A": "Ikut menambahkan iuran JHT bagian pemberi kerja; iuran itu tidak termasuk penghasilan bruto.", "B": "Hanya gaji dan tunjangan; JKK, JKM, dan BPJS Kesehatan yang dibayar pemberi kerja termasuk bruto.", "D": "Tidak memasukkan BPJS Kesehatan bagian pemberi kerja, padahal iuran jaminan kesehatan termasuk bruto." },
+    "penyebabSalah": { "A": "lupa_syarat", "B": "belum_tahu_aturan", "D": "lupa_syarat" },
+    "dasarHukum": ["PMK 168/2023 Pasal 5 ayat (2) dan ayat (3)"], "ruleIds": ["R-PP-03"],
+    "catatanAturan": null, "poinIngat": "Bruto pegawai tetap: termasuk JKK, JKM, BPJS Kesehatan, dan premi asuransi dari pemberi kerja; tidak termasuk JHT/JP pemberi kerja.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-PP-04", "bank": "orisinal", "paketSumber": null, "kode": "PP", "materi": "PPh Pemotongan/Pemungutan", "subtema": "PPh 21 pegawai tetap", "subtemaDasar": "manual",
+    "subtopik": "Batas biaya jabatan pegawai yang mulai bekerja di tengah tahun", "tingkat": "A", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sulit", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Sdri. Laras mulai bekerja sebagai pegawai tetap pada 1 Juli 2026 dengan gaji Rp15.000.000 per bulan, tanpa penghasilan lain, dan sebelumnya tidak bekerja pada tahun itu. Biaya jabatan yang dapat dikurangkan dalam penghitungan PPh Pasal 21 Masa Pajak Terakhir (Desember 2026) adalah ...",
+    "opsi": { "A": "Rp4.500.000", "B": "Rp6.000.000", "C": "Rp1.200.000", "D": "Rp3.000.000" },
+    "kunci": "D",
+    "inti": "Biaya jabatan = 5% × bruto, paling banyak Rp500.000 × jumlah bulan bekerja: min(5% × Rp90.000.000; Rp500.000 × 6) = min(Rp4.500.000; Rp3.000.000) = Rp3.000.000.",
+    "langkah": ["Bruto Juli–Desember = Rp15.000.000 × 6 = Rp90.000.000; 5% = Rp4.500.000.", "Batas biaya jabatan Rp500.000 per bulan bekerja: Rp500.000 × 6 = Rp3.000.000.", "Yang dikurangkan adalah yang lebih kecil: Rp3.000.000."],
+    "kenapaSalah": { "A": "5% × bruto tanpa batas; biaya jabatan paling banyak Rp500.000 per bulan bekerja.", "B": "Memakai batas setahun penuh padahal ia hanya bekerja 6 bulan.", "C": "Itu batas biaya pensiun Rp200.000 × 6 bulan, bukan biaya jabatan." },
+    "penyebabSalah": { "A": "lupa_syarat", "B": "salah_periode", "C": "tertukar_aturan" },
+    "dasarHukum": ["UU PPh Pasal 21 ayat (3) s.t.d.d. UU 36/2008", "PMK 168/2023 Pasal 10"], "ruleIds": ["R-PP-05"],
+    "catatanAturan": null, "poinIngat": "Biaya jabatan 5% bruto, maksimal Rp500.000 per bulan bekerja (Rp6 juta setahun); biaya pensiun maksimal Rp200.000 per bulan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  }
+]

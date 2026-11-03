@@ -65,21 +65,25 @@ Deck PowerPoint materi per subtema dengan gaya template tim ("Template Desain Ma
 
 1. **Cakupan deck.** Pilih tingkat (A 33 subtema, A+B 56, A+B+C 69), lalu lingkup:
    - *Subtema*: pilih materi, lalu centang subtema satu per satu.
-   - *Materi (kode)*: semua subtema satu materi langsung tercentang.
+   - *Materi* (kode): semua subtema satu materi langsung tercentang.
    - *Tingkat*: semua subtema tingkat itu, dikelompokkan per materi. Bisa dibatasi ke subtema yang baru mulai di tingkat itu (B 23, C 13).
 
    Setiap subtema menampilkan tingkatnya dan statusnya: *Belum disusun*, *Draf internal*, atau *Ditelaah*. Pilih kepadatan (Ringkas, Standar, atau Lengkap), jumlah contoh soal dan kuis, lalu tekan **Susun naskah**.
 
    **Bentuk deck** menentukan hasilnya:
    - *Per subtema*: satu deck per subtema.
-   - *Satu per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat itu. Isinya sampul, daftar isi dengan tanda subtema baru di tingkat itu, pembatas per subtema, lalu isi tiap subtema. Contohnya PP Tingkat A berisi 7 subtema, PP Tingkat B · A+B berisi 8.
+   - *Per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat itu. Isinya sampul, daftar isi dengan tanda subtema baru di tingkat itu, pembatas per subtema, lalu isi tiap subtema. Contohnya PP Tingkat A berisi 7 subtema, PP Tingkat B · A+B berisi 8.
 
    Contoh soal mendahulukan soal berlabel tingkat deck (soal pendalaman) bila ada.
 2. **Naskah.** Slide tampil sebagai tabel berisi pola, judul, sumber, asal (*Teks acuan*, *Ditulis ulang*, *Model*, *Orisinal*), dan status tata letak.
    - Panel kanan berisi pratinjau (sama dengan isi .pptx), isian slide, pemeriksaan, dan catatan pembicara.
    - **Perbesar pratinjau** (pintasan P) menampilkan deretan slide. J/K memindah slide.
    - Slide yang disunting berstatus *Ditulis ulang*. Tersedia juga Urungkan dan Kembalikan teks acuan.
-3. **Unduh** .pptx satu deck, .zip beberapa deck (satu folder per kode bila lebih dari satu materi; sekitar 2,4 MB per deck), atau naskah .json. Naskah .json juga bisa diimpor untuk topik lain.
+3. **Ekspor** di panel Cakupan deck:
+   - Pilih format: .pptx, naskah .json, atau keduanya.
+   - Tekan **Susun & unduh N deck**. Deck yang belum tersusun disusun dulu, lalu semuanya diunduh.
+   - Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip, misalnya `materi-tingkat-a-33-deck.zip` dengan satu folder per kode. Ukurannya sekitar 2,4 MB per deck .pptx.
+   - Bilah bawah juga menyediakan unduhan deck yang sedang dibuka (.pptx atau naskah .json). Naskah .json bisa diimpor lagi untuk topik lain.
    - Deck yang masih memuat teks acuan LatihUKP dan belum ditelaah meminta konfirmasi, lalu diberi tanda **Draf internal** di properti berkas dan catatan pembicara (PRD-Materi KM2).
 
 Teknisnya:

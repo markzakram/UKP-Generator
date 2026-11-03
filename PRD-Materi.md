@@ -232,12 +232,12 @@ Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tang
 - **Tingkat** mengikuti tingkat subtema di `data/ukp-mapping.json` (PRD K3): A 33 subtema, A+B 56, A+B+C 69. Semua kartu aturan dalam subtema ikut tingkat subtemanya, jadi label kisi pada kartu tidak lagi menyaring isi deck. Sampul menulis tingkat subtema.
 - **Lingkup** (tambahan 3 November 2026), satu deck per subtema:
   - *Subtema*: centang subtema satu per satu dari satu materi.
-  - *Materi (kode)*: semua subtema satu materi langsung tercentang.
+  - *Materi* (kode): semua subtema satu materi langsung tercentang.
   - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 23, C 13).
 - Unduhan beberapa deck menjadi satu .zip tanpa kompresi ulang. Lingkup tingkat memberi satu folder per kode, misalnya `materi-tingkat-b-tambahan-23-deck.zip`.
 - **Bentuk deck** (tambahan 3 November 2026, dipilih user: materi dibedakan per tingkat):
   - *Per subtema* (bawaan): satu deck per subtema.
-  - *Satu per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ujian itu, disusun `susunNaskahMateri()`. Contohnya PP Tingkat A berisi 7 subtema dan PP Tingkat B · A+B berisi 8.
+  - *Per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ujian itu, disusun `susunNaskahMateri()`. Contohnya PP Tingkat A berisi 7 subtema dan PP Tingkat B · A+B berisi 8.
   - Susunan deck gabungan:
     1. Sampul: nama materi, pil "Tingkat B · A+B" dan "8 subtema · UKP 2026".
     2. Daftar isi: tabel rapat No / Subtema / Diuji di / Mulai, dengan "Tingkat B (baru)" untuk subtema yang mulai di tingkat itu. Selalu satu slide.
@@ -261,6 +261,7 @@ Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tang
 ### F5. Unduh, P0
 - .pptx dan naskah .json.
 - Unduhan massal satu materi berupa .zip berisi satu deck per subtema.
+- **Ekspor di panel Cakupan deck** (3 November 2026): pilih format (.pptx, naskah .json, atau keduanya), lalu satu tombol "Susun & unduh N deck". Deck yang belum tersusun disusun dulu; deck yang sudah ada (termasuk yang disunting) diunduh apa adanya. Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip (folder per kode bila deck per subtema dari beberapa materi). Ringkasan di atas tombol menyebut jumlah deck, bentuk unduhan, perkiraan ukuran, dan jumlah deck yang akan disusun dulu. Nama .zip mengikuti lingkup, misalnya `materi-tingkat-a-33-deck.zip`, `materi-tingkat-a-33-deck-naskah.zip`, atau `materi-tingkat-a-per-materi-5-deck.zip`.
 - PDF menyusul (P2). Sementara bisa lewat PowerPoint (Simpan sebagai PDF).
 
 ### F6. Riwayat, P1

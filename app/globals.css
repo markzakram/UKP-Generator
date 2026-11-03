@@ -195,6 +195,10 @@ details > summary { cursor: pointer; }
 .tata-materi label.cek { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 .tata-materi .btn-teks:disabled { color: var(--abu); opacity: 0.6; cursor: default; }
 .pilih-deck { flex: 1 1 280px; padding: 6px 0; font-size: 12px; }
+/* Pilihan di panel Cakupan deck: satu baris selebar panel, tombol berbagi lebar. */
+.tata-materi .kiri .seg { display: flex; width: 100%; flex-wrap: nowrap; }
+.tata-materi .kiri .seg button { flex: 1 1 auto; padding: 7px 8px; white-space: nowrap; }
+.ekspor-materi { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--garis); border-radius: 6px; background: var(--panel); }
 .tag-tulis { background: var(--hijau-bg); border-color: #acd8b6; color: var(--hijau); }
 .baris-tab { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--garis); }
 .tab-deck { display: flex; flex-wrap: wrap; }

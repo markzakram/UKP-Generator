@@ -327,3 +327,18 @@ Risiko sisa:
 
 - Deck gabungan panjang (PP standar sekitar 200 slide); untuk sesi kelas, kepadatan ringkas (sekitar 95 slide) lebih cocok.
 - Status Ditelaah dicatat per deck, jadi deck gabungan dan deck subtema ditelaah terpisah.
+
+## Ekspor di panel Cakupan deck (3 Nov 2026)
+
+Permintaan user: lingkup yang memuat banyak deck harus punya pilihan unduh langsung sebagai .zip dari panel Cakupan deck.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Tingkat A, lingkup Tingkat, per subtema, .pptx: 31 deck yang belum ada disusun dulu, lalu `materi-tingkat-a-33-deck.zip` (78 MB, folder KUP, OP, PP, PPN, BM), dengan dialog Draf internal | Lulus |
+| Format .json: `materi-tingkat-a-33-deck-naskah.zip` (0,2 MB), tanpa dialog Draf internal | Lulus |
+| Per materi + keduanya: `materi-tingkat-a-per-materi-5-deck.zip` berisi 5 .pptx dan 5 .json | Lulus |
+| Satu subtema: langsung `materi-pp-pph-21-pemotong-penerima-objek.pptx` tanpa .zip | Lulus |
+| Tombol pilihan panel kiri (Tingkat, Lingkup, Bentuk deck, Kepadatan, Format) satu baris pada lebar panel minimum 260 px, tanpa teks terpotong; label "Materi (kode)" menjadi "Materi" dan "Satu per materi" menjadi "Per materi" | Lulus |
+| verify 115, verify:quality 40, verify:materi 146; typecheck dan build | Lulus |
+
+Unduhan diuji di browser dengan dicegat di memori. Deck uji dihapus dari IndexedDB pratinjau.

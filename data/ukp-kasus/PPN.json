@@ -1,0 +1,32 @@
+[
+  {
+    "id": "O-PPN-01", "bank": "orisinal", "paketSumber": null, "kode": "PPN", "materi": "PPN & SPT PPN", "subtema": "Pengkreditan Pajak Masukan", "subtemaDasar": "manual",
+    "subtopik": "Batas pengkreditan Pajak Masukan pada masa berbeda (3 Masa Pajak)", "tingkat": "C", "tipe": "Konsep & batas waktu", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penguasaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Lintas Bahari (PKP) menerima Faktur Pajak masukan atas pembelian bahan baku yang dibuat pada Maret 2026. Pajak Masukan itu belum dikreditkan pada SPT Masa PPN Maret 2026, belum dibebankan sebagai biaya, dan tidak dikapitalisasi. Masa Pajak paling akhir yang masih dapat dipakai untuk mengkreditkan Pajak Masukan tersebut adalah ...",
+    "opsi": { "A": "Masa Pajak Juni 2026", "B": "Masa Pajak Mei 2026", "C": "Masa Pajak Desember 2026 (akhir tahun buku)", "D": "Hanya Masa Pajak Maret 2026" },
+    "kunci": "A",
+    "inti": "Pajak Masukan dapat dikreditkan paling lama 3 Masa Pajak setelah berakhirnya masa Faktur Pajak dibuat: April, Mei, Juni 2026.",
+    "langkah": ["Masa Faktur Pajak dibuat: Maret 2026.", "Paling lama 3 Masa Pajak setelah berakhirnya masa itu: April, Mei, dan Juni 2026 (UU PPN Pasal 9 ayat (9)).", "Syarat lain terpenuhi (belum dibiayakan/dikapitalisasi), jadi batas akhirnya Masa Pajak Juni 2026."],
+    "kenapaSalah": { "B": "Menghitung tiga masa mulai dari masa faktur itu sendiri (Maret–Mei); hitungan dimulai setelah masa faktur berakhir.", "C": "Tidak ada ketentuan pengkreditan sampai akhir tahun buku; batasnya 3 Masa Pajak.", "D": "Pajak Masukan boleh dikreditkan pada masa berbeda, paling lama 3 Masa Pajak berikutnya." },
+    "penyebabSalah": { "B": "salah_hitung", "C": "belum_tahu_aturan", "D": "lupa_syarat" },
+    "dasarHukum": ["UU PPN Pasal 9 ayat (9) s.t.d.d. UU 7/2021 (HPP)", "PMK 81/2024 Pasal 376 ayat (1)–(3)"], "ruleIds": ["R-PPN-27"],
+    "catatanAturan": null, "poinIngat": "PM masa berbeda: paling lama 3 Masa Pajak SETELAH masa faktur berakhir, selama belum dibiayakan atau dikapitalisasi.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-PPN-02", "bank": "orisinal", "paketSumber": null, "kode": "PPN", "materi": "PPN & SPT PPN", "subtema": "Pengkreditan Pajak Masukan", "subtemaDasar": "manual",
+    "subtopik": "Pedoman pengkreditan 80% atas Pajak Masukan sebelum dikukuhkan PKP", "tingkat": "C", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sulit", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "CV Arta Gemilang seharusnya dikukuhkan sebagai PKP sejak Masa Pajak Juli 2026, tetapi baru dikukuhkan pada Oktober 2026. Pajak Keluaran yang seharusnya dipungut untuk Masa Juli–September 2026 sebesar Rp150.000.000, sedangkan PPN dalam Faktur Pajak pembelian pada masa yang sama Rp90.000.000. Pajak Masukan yang dapat dikreditkan untuk Masa Juli–September 2026 adalah ...",
+    "opsi": { "A": "Rp120.000.000", "B": "Rp0", "C": "Rp150.000.000", "D": "Rp90.000.000" },
+    "kunci": "A",
+    "inti": "Pajak Masukan untuk masa sebelum pengukuhan dikreditkan dengan pedoman 80% × Pajak Keluaran yang seharusnya dipungut: 80% × Rp150.000.000 = Rp120.000.000.",
+    "langkah": ["Masa Juli–September 2026 adalah masa sejak seharusnya dikukuhkan sampai sebelum dikukuhkan.", "Pajak Masukan masa itu memakai pedoman pengkreditan 80% dari Pajak Keluaran yang seharusnya dipungut (UU PPN Pasal 9 ayat (9a)).", "80% × Rp150.000.000 = Rp120.000.000; PPN dalam faktur pembelian masa itu tidak dikreditkan sendiri."],
+    "kenapaSalah": { "B": "Aturan lama (Pasal 9 ayat (8) huruf a) melarang pengkreditan PM sebelum PKP; ketentuan itu dihapus UU HPP.", "C": "Mengkreditkan seluruh Pajak Keluaran; pedomannya 80%.", "D": "Memakai PPN dalam faktur pembelian; untuk masa sebelum pengukuhan, PM diganti pedoman 80% dari PK." },
+    "penyebabSalah": { "B": "salah_periode", "C": "salah_hitung", "D": "lupa_syarat" },
+    "dasarHukum": ["UU PPN Pasal 9 ayat (9a), (9b), (9c) s.t.d.d. UU 7/2021 (HPP)", "PMK 81/2024 Pasal 378 ayat (1)–(7)"], "ruleIds": ["R-PPN-30"],
+    "catatanAturan": "Sebelum UU HPP, PM sebelum dikukuhkan sebagai PKP tidak dapat dikreditkan (Pasal 9 ayat (8) huruf a).", "poinIngat": "PM sebelum dikukuhkan PKP: 80% × PK yang seharusnya dipungut (pedoman), bukan PPN di faktur pembelian.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  }
+]

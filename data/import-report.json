@@ -1,0 +1,1115 @@
+{
+  "dibuat": "2026-11-02T09:28:49.043Z",
+  "folderSumber": "G:\\Ali\\code\\Scrape UKP\\output\\latihukp",
+  "hash": {
+    "questions": "c995454b31b3902675c360c3557582e80b05b1e98ee6baa7cb5de2f4af2201ae",
+    "rules": "909b21ef6eff6ec483832551730d61e0d39649358947bf74a980c8cfe1f9438d",
+    "cards": "2e9a7a713a60a5f408338aaf9b12a03779f890cad0bbd518b261c7a4f8825f7b",
+    "quizzes": "19231b6f8e158d0cf2c1dd80ba0668adecacb0deb9f95608fcde1c6fdacd8e30",
+    "topics": "6855d81d3066c50bc0917756fcc453b434e3a3b938d538a9e20c6f348256cc14"
+  },
+  "jumlah": {
+    "soal": 2387,
+    "easy": 1547,
+    "hard": 840,
+    "aturan": 334,
+    "kartu": 92,
+    "kuis": 318,
+    "topik": 11,
+    "kasus": 183,
+    "soalKasus": 461,
+    "blokCampurTingkat": 17,
+    "perTingkat": {
+      "A": 1197,
+      "B": 704,
+      "C": 486
+    },
+    "perKesulitan": {
+      "mudah": 966,
+      "sedang": 917,
+      "sulit": 504
+    },
+    "subtemaAturan": 1731,
+    "subtemaKemiripan": 656,
+    "subtemaLainnya": 0,
+    "posisiTetap": 7,
+    "opsiAngka": 783,
+    "akurasiTebakSubtema": 84.4
+  },
+  "rujukanHilang": [
+    {
+      "id": "E8-PP-10",
+      "hilang": [
+        "R-PP-40"
+      ]
+    },
+    {
+      "id": "E8-PP-11",
+      "hilang": [
+        "R-PP-40"
+      ]
+    },
+    {
+      "id": "E8-PP-14",
+      "hilang": [
+        "R-PP-42"
+      ]
+    },
+    {
+      "id": "E8-PPN-12",
+      "hilang": [
+        "R-PPN-45"
+      ]
+    },
+    {
+      "id": "E9-KUP-10",
+      "hilang": [
+        "R-KUP-37"
+      ]
+    },
+    {
+      "id": "E9-OP-03",
+      "hilang": [
+        "R-OP-24"
+      ]
+    },
+    {
+      "id": "E9-OP-05",
+      "hilang": [
+        "R-OP-25"
+      ]
+    },
+    {
+      "id": "E9-OP-06",
+      "hilang": [
+        "R-OP-25"
+      ]
+    },
+    {
+      "id": "E9-PP-01",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-02",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-03",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-04",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-05",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E9-PP-06",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-07",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E9-PP-09",
+      "hilang": [
+        "R-PP-47"
+      ]
+    },
+    {
+      "id": "E9-PPN-09",
+      "hilang": [
+        "R-PPN-45"
+      ]
+    },
+    {
+      "id": "E9-PBB-05",
+      "hilang": [
+        "R-PBB-28"
+      ]
+    },
+    {
+      "id": "E9-BTI-07",
+      "hilang": [
+        "R-BTI-29"
+      ]
+    },
+    {
+      "id": "E9-BTI-11",
+      "hilang": [
+        "R-BTI-31"
+      ]
+    },
+    {
+      "id": "E9-INT-01",
+      "hilang": [
+        "R-INT-48"
+      ]
+    },
+    {
+      "id": "E9-INT-02",
+      "hilang": [
+        "R-INT-48"
+      ]
+    },
+    {
+      "id": "E9-INT-03",
+      "hilang": [
+        "R-INT-49"
+      ]
+    },
+    {
+      "id": "E9-INT-04",
+      "hilang": [
+        "R-INT-49"
+      ]
+    },
+    {
+      "id": "E9-INT-06",
+      "hilang": [
+        "R-INT-51"
+      ]
+    },
+    {
+      "id": "E9-INT-07",
+      "hilang": [
+        "R-INT-51"
+      ]
+    },
+    {
+      "id": "E9-INT-08",
+      "hilang": [
+        "R-INT-51"
+      ]
+    },
+    {
+      "id": "E9-INT-15",
+      "hilang": [
+        "R-INT-52"
+      ]
+    },
+    {
+      "id": "E10-KUP-11",
+      "hilang": [
+        "R-KUP-37"
+      ]
+    },
+    {
+      "id": "E10-OP-05",
+      "hilang": [
+        "R-OP-26"
+      ]
+    },
+    {
+      "id": "E10-OP-06",
+      "hilang": [
+        "R-OP-25"
+      ]
+    },
+    {
+      "id": "E10-PP-02",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E10-PP-04",
+      "hilang": [
+        "R-PP-46"
+      ]
+    },
+    {
+      "id": "E10-PP-05",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E10-PP-06",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E10-PP-07",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E10-PP-08",
+      "hilang": [
+        "R-PP-49"
+      ]
+    },
+    {
+      "id": "E10-PP-12",
+      "hilang": [
+        "R-PP-48"
+      ]
+    },
+    {
+      "id": "E10-BDN-05",
+      "hilang": [
+        "R-BDN-29"
+      ]
+    },
+    {
+      "id": "E10-BTI-03",
+      "hilang": [
+        "R-BTI-28"
+      ]
+    },
+    {
+      "id": "E10-BTI-05",
+      "hilang": [
+        "R-BTI-31"
+      ]
+    },
+    {
+      "id": "E10-BTI-07",
+      "hilang": [
+        "R-BTI-30"
+      ]
+    },
+    {
+      "id": "E10-INT-01",
+      "hilang": [
+        "R-INT-48"
+      ]
+    },
+    {
+      "id": "E10-INT-02",
+      "hilang": [
+        "R-INT-50"
+      ]
+    },
+    {
+      "id": "E10-INT-03",
+      "hilang": [
+        "R-INT-50"
+      ]
+    },
+    {
+      "id": "E10-INT-08",
+      "hilang": [
+        "R-INT-54"
+      ]
+    },
+    {
+      "id": "E10-INT-09",
+      "hilang": [
+        "R-INT-54"
+      ]
+    },
+    {
+      "id": "E10-INT-10",
+      "hilang": [
+        "R-INT-51"
+      ]
+    },
+    {
+      "id": "E10-INT-11",
+      "hilang": [
+        "R-INT-55"
+      ]
+    },
+    {
+      "id": "E10-INT-13",
+      "hilang": [
+        "R-INT-53"
+      ]
+    },
+    {
+      "id": "E10-INT-14",
+      "hilang": [
+        "R-INT-56"
+      ]
+    },
+    {
+      "id": "E11-OP-01",
+      "hilang": [
+        "R-OP-26"
+      ]
+    },
+    {
+      "id": "E11-OP-05",
+      "hilang": [
+        "R-OP-24"
+      ]
+    },
+    {
+      "id": "E11-OP-07",
+      "hilang": [
+        "R-OP-26"
+      ]
+    },
+    {
+      "id": "E11-PP-03",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E11-PP-04",
+      "hilang": [
+        "R-PP-46",
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E11-PP-05",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E11-PP-06",
+      "hilang": [
+        "R-PP-46"
+      ]
+    },
+    {
+      "id": "E11-PP-07",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E11-PP-08",
+      "hilang": [
+        "R-PP-49"
+      ]
+    },
+    {
+      "id": "E11-PBB-04",
+      "hilang": [
+        "R-PBB-29"
+      ]
+    },
+    {
+      "id": "E11-BTI-10",
+      "hilang": [
+        "R-BTI-30"
+      ]
+    },
+    {
+      "id": "E11-INT-01",
+      "hilang": [
+        "R-INT-48"
+      ]
+    },
+    {
+      "id": "E11-INT-02",
+      "hilang": [
+        "R-INT-48"
+      ]
+    },
+    {
+      "id": "E11-INT-04",
+      "hilang": [
+        "R-INT-54"
+      ]
+    },
+    {
+      "id": "E11-INT-09",
+      "hilang": [
+        "R-INT-56"
+      ]
+    },
+    {
+      "id": "E11-INT-11",
+      "hilang": [
+        "R-INT-57"
+      ]
+    },
+    {
+      "id": "E11-INT-12",
+      "hilang": [
+        "R-INT-52"
+      ]
+    },
+    {
+      "id": "E12-KUP-12",
+      "hilang": [
+        "R-KUP-37"
+      ]
+    },
+    {
+      "id": "E12-OP-06",
+      "hilang": [
+        "R-OP-26"
+      ]
+    },
+    {
+      "id": "E12-PP-07",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E12-PP-11",
+      "hilang": [
+        "R-PP-48"
+      ]
+    },
+    {
+      "id": "E12-PP-12",
+      "hilang": [
+        "R-PP-50"
+      ]
+    },
+    {
+      "id": "E12-PBB-05",
+      "hilang": [
+        "R-PBB-28"
+      ]
+    },
+    {
+      "id": "E12-BDN-02",
+      "hilang": [
+        "R-BDN-28"
+      ]
+    },
+    {
+      "id": "E12-INT-06",
+      "hilang": [
+        "R-INT-50"
+      ]
+    },
+    {
+      "id": "E12-INT-09",
+      "hilang": [
+        "R-INT-56"
+      ]
+    },
+    {
+      "id": "E12-INT-11",
+      "hilang": [
+        "R-INT-57"
+      ]
+    },
+    {
+      "id": "E13-KUP-09",
+      "hilang": [
+        "R-KUP-38"
+      ]
+    },
+    {
+      "id": "E13-KUP-10",
+      "hilang": [
+        "R-KUP-38"
+      ]
+    },
+    {
+      "id": "E13-KUP-12",
+      "hilang": [
+        "R-KUP-37"
+      ]
+    },
+    {
+      "id": "E13-OP-04",
+      "hilang": [
+        "R-OP-26"
+      ]
+    },
+    {
+      "id": "E13-OP-05",
+      "hilang": [
+        "R-PP-48"
+      ]
+    },
+    {
+      "id": "E13-PP-01",
+      "hilang": [
+        "R-PP-51"
+      ]
+    },
+    {
+      "id": "E13-PP-02",
+      "hilang": [
+        "R-PP-51"
+      ]
+    },
+    {
+      "id": "E13-PP-03",
+      "hilang": [
+        "R-PP-46"
+      ]
+    },
+    {
+      "id": "E13-PP-06",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E13-PP-11",
+      "hilang": [
+        "R-PP-52"
+      ]
+    },
+    {
+      "id": "E13-PP-13",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E13-PP-14",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E13-PPN-04",
+      "hilang": [
+        "R-PPN-47"
+      ]
+    },
+    {
+      "id": "E13-PPN-05",
+      "hilang": [
+        "R-PPN-47"
+      ]
+    },
+    {
+      "id": "E13-PPN-10",
+      "hilang": [
+        "R-PPN-46"
+      ]
+    },
+    {
+      "id": "E13-BM-01",
+      "hilang": [
+        "R-BM-17"
+      ]
+    },
+    {
+      "id": "E13-BM-02",
+      "hilang": [
+        "R-BM-18"
+      ]
+    },
+    {
+      "id": "E13-BM-04",
+      "hilang": [
+        "R-BM-16"
+      ]
+    },
+    {
+      "id": "E13-BM-05",
+      "hilang": [
+        "R-BM-16"
+      ]
+    },
+    {
+      "id": "E13-PBB-01",
+      "hilang": [
+        "R-PBB-31"
+      ]
+    },
+    {
+      "id": "E13-PBB-02",
+      "hilang": [
+        "R-PBB-31"
+      ]
+    },
+    {
+      "id": "E13-PBB-03",
+      "hilang": [
+        "R-PBB-31"
+      ]
+    },
+    {
+      "id": "E13-PBB-04",
+      "hilang": [
+        "R-PBB-28"
+      ]
+    },
+    {
+      "id": "E13-AKT-03",
+      "hilang": [
+        "R-AKT-27"
+      ]
+    },
+    {
+      "id": "E13-AKT-04",
+      "hilang": [
+        "R-AKT-27"
+      ]
+    },
+    {
+      "id": "E13-BDN-05",
+      "hilang": [
+        "R-BDN-30"
+      ]
+    },
+    {
+      "id": "E13-BDN-06",
+      "hilang": [
+        "R-BDN-28"
+      ]
+    },
+    {
+      "id": "E14-KUP-02",
+      "hilang": [
+        "R-KUP-39"
+      ]
+    },
+    {
+      "id": "E14-KUP-03",
+      "hilang": [
+        "R-KUP-39"
+      ]
+    },
+    {
+      "id": "E14-KUP-08",
+      "hilang": [
+        "R-KUP-40"
+      ]
+    },
+    {
+      "id": "E14-KUP-11",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E14-OP-03",
+      "hilang": [
+        "R-OP-27"
+      ]
+    },
+    {
+      "id": "E14-OP-04",
+      "hilang": [
+        "R-OP-28"
+      ]
+    },
+    {
+      "id": "E14-PP-01",
+      "hilang": [
+        "R-PP-51"
+      ]
+    },
+    {
+      "id": "E14-PP-03",
+      "hilang": [
+        "R-PP-52"
+      ]
+    },
+    {
+      "id": "E14-PP-04",
+      "hilang": [
+        "R-PP-54"
+      ]
+    },
+    {
+      "id": "E14-PP-06",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E14-PP-07",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E14-PP-08",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E14-PP-09",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E14-PP-10",
+      "hilang": [
+        "R-PP-53"
+      ]
+    },
+    {
+      "id": "E14-PP-11",
+      "hilang": [
+        "R-PP-43",
+        "R-PP-46"
+      ]
+    },
+    {
+      "id": "E14-PP-12",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E14-PP-13",
+      "hilang": [
+        "R-PP-48"
+      ]
+    },
+    {
+      "id": "E14-PP-14",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E14-PPN-03",
+      "hilang": [
+        "R-PPN-50"
+      ]
+    },
+    {
+      "id": "E14-PPN-04",
+      "hilang": [
+        "R-PPN-48"
+      ]
+    },
+    {
+      "id": "E14-PPN-11",
+      "hilang": [
+        "R-PPN-48"
+      ]
+    },
+    {
+      "id": "E14-BM-02",
+      "hilang": [
+        "R-BM-16"
+      ]
+    },
+    {
+      "id": "E14-PBB-01",
+      "hilang": [
+        "R-PBB-30"
+      ]
+    },
+    {
+      "id": "E14-PBB-02",
+      "hilang": [
+        "R-PBB-32"
+      ]
+    },
+    {
+      "id": "E14-PBB-04",
+      "hilang": [
+        "R-PBB-33"
+      ]
+    },
+    {
+      "id": "E14-PBB-05",
+      "hilang": [
+        "R-PBB-33"
+      ]
+    },
+    {
+      "id": "E14-AKT-03",
+      "hilang": [
+        "R-AKT-27"
+      ]
+    },
+    {
+      "id": "E14-AKT-07",
+      "hilang": [
+        "R-AKT-27"
+      ]
+    },
+    {
+      "id": "E14-BDN-01",
+      "hilang": [
+        "R-BDN-31"
+      ]
+    },
+    {
+      "id": "E14-BDN-03",
+      "hilang": [
+        "R-AKT-27"
+      ]
+    },
+    {
+      "id": "E15-KUP-01",
+      "hilang": [
+        "R-KUP-39"
+      ]
+    },
+    {
+      "id": "E15-KUP-02",
+      "hilang": [
+        "R-KUP-39"
+      ]
+    },
+    {
+      "id": "E15-KUP-03",
+      "hilang": [
+        "R-KUP-39"
+      ]
+    },
+    {
+      "id": "E15-KUP-08",
+      "hilang": [
+        "R-KUP-40"
+      ]
+    },
+    {
+      "id": "E15-KUP-09",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E15-KUP-12",
+      "hilang": [
+        "R-KUP-38"
+      ]
+    },
+    {
+      "id": "E15-OP-03",
+      "hilang": [
+        "R-OP-28"
+      ]
+    },
+    {
+      "id": "E15-OP-04",
+      "hilang": [
+        "R-OP-28"
+      ]
+    },
+    {
+      "id": "E15-PP-01",
+      "hilang": [
+        "R-PP-51"
+      ]
+    },
+    {
+      "id": "E15-PP-04",
+      "hilang": [
+        "R-PP-52"
+      ]
+    },
+    {
+      "id": "E15-PP-05",
+      "hilang": [
+        "R-PP-52"
+      ]
+    },
+    {
+      "id": "E15-PP-07",
+      "hilang": [
+        "R-PP-48"
+      ]
+    },
+    {
+      "id": "E15-PP-10",
+      "hilang": [
+        "R-PP-53"
+      ]
+    },
+    {
+      "id": "E15-PP-11",
+      "hilang": [
+        "R-PP-53",
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E15-PP-12",
+      "hilang": [
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E15-PPN-04",
+      "hilang": [
+        "R-PPN-47"
+      ]
+    },
+    {
+      "id": "E15-PPN-07",
+      "hilang": [
+        "R-PPN-46"
+      ]
+    },
+    {
+      "id": "E15-PPN-08",
+      "hilang": [
+        "R-PPN-48"
+      ]
+    },
+    {
+      "id": "E15-PPN-09",
+      "hilang": [
+        "R-PPN-48"
+      ]
+    },
+    {
+      "id": "E15-BM-01",
+      "hilang": [
+        "R-BM-18"
+      ]
+    },
+    {
+      "id": "E15-PBB-01",
+      "hilang": [
+        "R-PBB-34"
+      ]
+    },
+    {
+      "id": "E15-PBB-04",
+      "hilang": [
+        "R-PBB-28"
+      ]
+    },
+    {
+      "id": "E15-PBB-05",
+      "hilang": [
+        "R-PBB-34"
+      ]
+    },
+    {
+      "id": "E15-BDN-02",
+      "hilang": [
+        "R-BDN-31"
+      ]
+    },
+    {
+      "id": "E16-KUP-06",
+      "hilang": [
+        "R-KUP-41",
+        "R-PP-45"
+      ]
+    },
+    {
+      "id": "E16-KUP-09",
+      "hilang": [
+        "R-KUP-40"
+      ]
+    },
+    {
+      "id": "E16-KUP-10",
+      "hilang": [
+        "R-KUP-41"
+      ]
+    },
+    {
+      "id": "E16-OP-02",
+      "hilang": [
+        "R-OP-28"
+      ]
+    },
+    {
+      "id": "E16-OP-05",
+      "hilang": [
+        "R-OP-27"
+      ]
+    },
+    {
+      "id": "E16-OP-07",
+      "hilang": [
+        "R-OP-28"
+      ]
+    },
+    {
+      "id": "E16-PP-01",
+      "hilang": [
+        "R-PP-52"
+      ]
+    },
+    {
+      "id": "E16-PP-04",
+      "hilang": [
+        "R-PP-56"
+      ]
+    },
+    {
+      "id": "E16-PP-09",
+      "hilang": [
+        "R-PP-43"
+      ]
+    },
+    {
+      "id": "E16-PP-10",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E16-PP-11",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E16-PP-12",
+      "hilang": [
+        "R-PP-55",
+        "R-PP-46"
+      ]
+    },
+    {
+      "id": "E16-PP-13",
+      "hilang": [
+        "R-PP-55"
+      ]
+    },
+    {
+      "id": "E16-PP-14",
+      "hilang": [
+        "R-PP-44"
+      ]
+    },
+    {
+      "id": "E16-PPN-01",
+      "hilang": [
+        "R-PPN-49"
+      ]
+    },
+    {
+      "id": "E16-PPN-06",
+      "hilang": [
+        "R-PPN-48"
+      ]
+    },
+    {
+      "id": "E16-BM-01",
+      "hilang": [
+        "R-BM-18"
+      ]
+    },
+    {
+      "id": "E16-PBB-03",
+      "hilang": [
+        "R-PBB-32"
+      ]
+    },
+    {
+      "id": "E16-PBB-04",
+      "hilang": [
+        "R-PBB-30"
+      ]
+    }
+  ],
+  "peringatan": []
+}

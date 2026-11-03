@@ -1,0 +1,32 @@
+[
+  {
+    "id": "O-KUP-01", "bank": "orisinal", "paketSumber": null, "kode": "KUP", "materi": "KUP, PPSP & Pengadilan Pajak", "subtema": "Pembayaran & pelaporan", "subtemaDasar": "manual",
+    "subtopik": "Batas penyampaian SPT Tahunan badan dengan tahun buku tidak sama dengan tahun kalender", "tingkat": "A", "tipe": "Konsep & batas waktu", "bloom": "apply", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Mitra Selaras memakai tahun buku 1 Juli sampai dengan 30 Juni. Untuk tahun buku yang berakhir 30 Juni 2026, PT Mitra Selaras tidak mengajukan perpanjangan. Batas akhir penyampaian SPT Tahunan PPh Badan untuk tahun buku tersebut adalah ...",
+    "opsi": { "A": "31 Oktober 2026", "B": "30 April 2027", "C": "30 September 2026", "D": "31 Desember 2026" },
+    "kunci": "A",
+    "inti": "SPT Tahunan PPh badan disampaikan paling lama 4 bulan setelah akhir Tahun Pajak; bila tahun buku tidak sama dengan tahun kalender, akhir Tahun Pajak adalah akhir tahun buku, sehingga batasnya 31 Oktober 2026.",
+    "langkah": ["Batas SPT Tahunan badan: paling lama 4 bulan setelah akhir Tahun Pajak (UU KUP Pasal 3 ayat (3) huruf c).", "Tahun Pajak mengikuti tahun buku (UU KUP Pasal 1 angka 8): akhir Tahun Pajak 30 Juni 2026.", "30 Juni 2026 + 4 bulan = 31 Oktober 2026."],
+    "kenapaSalah": { "B": "30 April berlaku bila tahun buku sama dengan tahun kalender; batas dihitung dari akhir tahun buku.", "C": "3 bulan adalah batas SPT Tahunan orang pribadi, bukan badan.", "D": "Perpanjangan 2 bulan tidak otomatis; harus diberitahukan dengan penghitungan sementara, dan PT Mitra Selaras tidak mengajukannya." },
+    "penyebabSalah": { "B": "salah_periode", "C": "tertukar_aturan", "D": "lupa_syarat" },
+    "dasarHukum": ["UU KUP Pasal 1 angka 8 dan Pasal 3 ayat (3) huruf c, ayat (4)", "PMK 81/2024 Pasal 169 dan Pasal 170"], "ruleIds": ["R-KUP-05"],
+    "catatanAturan": null, "poinIngat": "SPT Tahunan: OP 3 bulan, badan 4 bulan setelah akhir tahun buku; perpanjangan maksimal 2 bulan dengan pemberitahuan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-KUP-02", "bank": "orisinal", "paketSumber": null, "kode": "KUP", "materi": "KUP, PPSP & Pengadilan Pajak", "subtema": "Pembayaran & pelaporan", "subtemaDasar": "manual",
+    "subtopik": "Denda Pasal 7 untuk beberapa SPT Masa yang terlambat", "tingkat": "C", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Cahaya Persada terlambat menyampaikan tiga SPT untuk Masa Pajak Mei 2026: SPT Masa PPN, SPT Masa PPh Unifikasi, dan SPT Masa PPh Pasal 21/26. Ketiga SPT tidak diperpanjang dan tidak ada keadaan kahar. Jumlah denda Pasal 7 UU KUP yang ditagih atas keterlambatan tersebut adalah ...",
+    "opsi": { "A": "Rp700.000", "B": "Rp1.500.000", "C": "Rp300.000", "D": "Rp1.000.000" },
+    "kunci": "A",
+    "inti": "Denda per SPT: Masa PPN Rp500.000, SPT Masa lainnya Rp100.000 masing-masing, sehingga Rp500.000 + Rp100.000 + Rp100.000 = Rp700.000.",
+    "langkah": ["SPT Masa PPN terlambat: denda Rp500.000.", "SPT Masa PPh Unifikasi dan SPT Masa PPh 21/26 termasuk SPT Masa lainnya: masing-masing Rp100.000.", "Jumlah = Rp700.000; denda tetap per SPT, tidak dihitung per hari atau per bulan."],
+    "kenapaSalah": { "B": "Mengenakan Rp500.000 untuk semua SPT; Rp500.000 hanya untuk SPT Masa PPN.", "C": "Mengenakan Rp100.000 untuk semua SPT; SPT Masa PPN didenda Rp500.000.", "D": "Rp1.000.000 adalah denda SPT Tahunan PPh badan, bukan SPT Masa." },
+    "penyebabSalah": { "B": "lupa_syarat", "C": "lupa_syarat", "D": "tertukar_aturan" },
+    "dasarHukum": ["UU KUP Pasal 7 ayat (1)", "UU KUP Pasal 14 ayat (1) huruf c"], "ruleIds": ["R-KUP-06"],
+    "catatanAturan": null, "poinIngat": "Denda telat lapor: Masa PPN Rp500 rb, Masa lain Rp100 rb, Tahunan badan Rp1 jt, Tahunan OP Rp100 rb, per SPT.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  }
+]

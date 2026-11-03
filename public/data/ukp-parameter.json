@@ -1,0 +1,72 @@
+{
+  "_keterangan": "Nilai aturan bertanggal untuk model soal baru (PRD F5). Model membaca nilai yang berlaku pada tanggal acuan paket; nilai lama dipakai sebagai pengecoh 'salah_periode'. Sumber: kartu rumus dan kartu aturan LatihUKP (data/ukp-materi.json, data/ukp-rules.json) per Oktober 2026. Perlu disahkan penelaah materi (PRD K8). Jangan menanam angka ini di kode.",
+  "ppn.tarif": { "nama": "Tarif PPN umum", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.10, "mulai": "1985-01-01", "sampai": "2022-03-31", "dasar": "UU PPN Pasal 7 ayat (1) sebelum UU HPP" },
+    { "nilai": 0.11, "mulai": "2022-04-01", "sampai": "2024-12-31", "dasar": "UU PPN Pasal 7 ayat (1) huruf a s.t.d.d. UU 7/2021 (HPP)" },
+    { "nilai": 0.12, "mulai": "2025-01-01", "sampai": null, "dasar": "UU PPN Pasal 7 ayat (1) huruf b s.t.d.d. UU 7/2021 (HPP)" } ] },
+  "ppn.dppNonMewah": { "nama": "DPP nilai lain BKP/JKP selain barang mewah (pembilang/penyebut dari harga jual)", "riwayat": [
+    { "nilai": [11, 12], "mulai": "2025-01-01", "sampai": null, "dasar": "PMK 131/2024 Pasal 3 ayat (1)–(3)" } ] },
+  "ppn.mewahHargaPenuh": { "nama": "BKP tergolong mewah: PPN 12% × harga jual penuh", "riwayat": [
+    { "nilai": 1, "mulai": "2025-02-01", "sampai": null, "dasar": "PMK 131/2024 Pasal 2 ayat (3)" } ] },
+  "pph23.tarifModal": { "nama": "PPh 23 atas dividen, bunga, royalti, hadiah", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.15, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 23 ayat (1) huruf a s.t.d.d. UU 36/2008" } ] },
+  "pph23.tarifJasaSewa": { "nama": "PPh 23 atas sewa harta selain tanah/bangunan dan jasa", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.02, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 23 ayat (1) huruf c s.t.d.d. UU 36/2008; PMK 141/2015" } ] },
+  "pph23.kenaikanTanpaNpwp": { "nama": "Kenaikan tarif PPh 22/23 tanpa NPWP (NIK tervalidasi berfungsi sebagai NPWP)", "satuan": "proporsi kenaikan", "riwayat": [
+    { "nilai": 1.0, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 23 ayat (1a) s.t.d.d. UU 36/2008" } ] },
+  "pph21.kenaikanTanpaNpwp": { "nama": "Kenaikan tarif PPh 21 tanpa NPWP", "satuan": "proporsi kenaikan", "riwayat": [
+    { "nilai": 0.2, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 21 ayat (5a) s.t.d.d. UU 36/2008" } ] },
+  "pph42.sewaTanahBangunan": { "nama": "PPh final sewa tanah dan/atau bangunan", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.10, "mulai": "2018-01-02", "sampai": null, "dasar": "PP 34/2017 Pasal 2 ayat (1) dan Pasal 3" } ] },
+  "pph26.tarif": { "nama": "PPh 26 umum atas bruto", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.20, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 26 ayat (1) s.t.d.d. UU 36/2008" } ] },
+  "pph21.dppBukanPegawai": { "nama": "DPP PPh 21 bukan pegawai (proporsi bruto)", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.5, "mulai": "2024-01-01", "sampai": null, "dasar": "PMK 168/2023 (PPh 21 bukan pegawai: tarif Pasal 17 × 50% × bruto)" } ] },
+  "pph17.lapisan": { "nama": "Lapisan tarif Pasal 17 ayat (1) huruf a: [batas atas PKP, tarif]; batas null = tanpa batas", "riwayat": [
+    { "nilai": [[50000000, 0.05], [250000000, 0.15], [500000000, 0.25], [null, 0.30]], "mulai": "2009-01-01", "sampai": "2021-12-31", "dasar": "UU PPh Pasal 17 ayat (1) huruf a s.t.d.d. UU 36/2008" },
+    { "nilai": [[60000000, 0.05], [250000000, 0.15], [500000000, 0.25], [5000000000, 0.30], [null, 0.35]], "mulai": "2022-01-01", "sampai": null, "dasar": "UU PPh Pasal 17 ayat (1) huruf a s.t.d.d. UU 7/2021 (HPP)" } ] },
+  "ptkp": { "nama": "PTKP setahun", "riwayat": [
+    { "nilai": { "diri": 54000000, "kawin": 4500000, "tanggungan": 4500000, "maksTanggungan": 3, "istriGabung": 54000000 }, "mulai": "2016-01-01", "sampai": null, "dasar": "UU PPh Pasal 7 ayat (1) s.t.d.d. UU 7/2021 (HPP); PMK 101/PMK.010/2016" } ] },
+  "umkm.tarif": { "nama": "PPh final peredaran bruto tertentu (UMKM)", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.01, "mulai": "2013-07-01", "sampai": "2018-06-30", "dasar": "PP 46/2013" },
+    { "nilai": 0.005, "mulai": "2018-07-01", "sampai": null, "dasar": "PP 23/2018 s.t.d.d. PP 55/2022 s.t.d.d. PP 20/2026" } ] },
+  "umkm.bebasOp": { "nama": "Bagian peredaran bruto OP yang tidak dikenai PPh (setahun, kumulatif sejak Januari)", "satuan": "rupiah", "riwayat": [
+    { "nilai": 500000000, "mulai": "2022-01-01", "sampai": null, "dasar": "UU PPh Pasal 7 ayat (2a) s.t.d.d. UU 7/2021 (HPP); PP 55/2022" } ] },
+  "umkm.batasPeredaran": { "nama": "Batas peredaran bruto setahun untuk PPh final UMKM", "satuan": "rupiah", "riwayat": [
+    { "nilai": 4800000000, "mulai": "2018-07-01", "sampai": null, "dasar": "PP 55/2022 s.t.d.d. PP 20/2026" } ] },
+  "bm.tarif": { "nama": "Tarif tetap Bea Meterai per dokumen", "satuan": "rupiah", "riwayat": [
+    { "nilai": 6000, "mulai": "2000-05-01", "sampai": "2020-12-31", "dasar": "PP 24/2000 (UU 13/1985)" },
+    { "nilai": 10000, "mulai": "2021-01-01", "sampai": null, "dasar": "UU 10/2020 Pasal 5" } ] },
+  "bm.batasNominal": { "nama": "Dokumen yang menyatakan jumlah uang menjadi objek bila nilainya LEBIH DARI", "satuan": "rupiah", "riwayat": [
+    { "nilai": 5000000, "mulai": "2021-01-01", "sampai": null, "dasar": "UU 10/2020 Pasal 3 ayat (2) huruf g" } ] },
+  "bm.sanksiPemeteraianKemudian": { "nama": "Sanksi administratif Pemeteraian Kemudian (dokumen terutang sejak 1 Januari 2021)", "satuan": "proporsi", "riwayat": [
+    { "nilai": 1.0, "mulai": "2021-01-01", "sampai": null, "dasar": "UU 10/2020 Pasal 17 ayat (1) huruf a dan ayat (2); PMK 78/2024 Pasal 49" } ] },
+  "tenggat.setorPphMasa": { "nama": "Tanggal batas setor PPh masa yang dipotong/dipungut dan PPh 25 (tanggal bulan berikutnya)", "satuan": "tanggal", "riwayat": [
+    { "nilai": 10, "mulai": "2015-01-01", "sampai": "2024-12-31", "dasar": "PMK 242/PMK.03/2014" },
+    { "nilai": 15, "mulai": "2025-01-01", "sampai": null, "dasar": "PMK 81/2024 Pasal 94 ayat (2)" } ] },
+  "tenggat.laporSptMasaPph": { "nama": "Tanggal batas lapor SPT Masa PPh (tanggal bulan berikutnya)", "satuan": "tanggal", "riwayat": [
+    { "nilai": 20, "mulai": "2015-01-01", "sampai": null, "dasar": "UU KUP Pasal 3 ayat (3) huruf a; PMK 81/2024 Pasal 181" } ] },
+  "tenggat.ppnAkhirBulan": { "nama": "PPN/PPnBM: setor dan lapor SPT Masa PPN paling lambat akhir bulan berikutnya", "satuan": "penanda", "riwayat": [
+    { "nilai": 1, "mulai": "2010-04-01", "sampai": null, "dasar": "UU PPN Pasal 15A; PMK 81/2024 Pasal 94 ayat (3) huruf e, f" } ] },
+  "bunga.uplift": { "nama": "Uplift sanksi bunga per pasal (setahun, ditambahkan ke suku bunga acuan lalu dibagi 12)", "riwayat": [
+    { "nilai": { "19": 0, "8-2": 0.05, "9-2a": 0.05, "8-5": 0.10, "13-2": 0.15, "13-3b": 0.20 }, "mulai": "2021-11-02", "sampai": null, "dasar": "UU KUP Pasal 8, 9, 13, 19 s.t.d.t.d. UU 6/2023 (Cipta Kerja) dan UU 7/2021 (HPP)" } ] },
+  "bunga.lama": { "nama": "Bunga sanksi flat per bulan sebelum UU Cipta Kerja", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.02, "mulai": "2008-01-01", "sampai": "2020-11-01", "dasar": "UU KUP s.t.d.d. UU 16/2009 (sebelum UU 11/2020)" } ] },
+  "bunga.maksBulan": { "nama": "Jumlah bulan sanksi bunga paling lama", "satuan": "bulan", "riwayat": [
+    { "nilai": 24, "mulai": "2008-01-01", "sampai": null, "dasar": "UU KUP Pasal 8 ayat (2), 9 ayat (2a), 19 ayat (1)" } ] },
+  "pphBadan.tarif": { "nama": "Tarif PPh badan dalam negeri dan BUT", "satuan": "proporsi", "riwayat": [
+    { "nilai": 0.25, "mulai": "2010-01-01", "sampai": "2019-12-31", "dasar": "UU PPh Pasal 17 ayat (2a) s.t.d.d. UU 36/2008" },
+    { "nilai": 0.22, "mulai": "2020-01-01", "sampai": null, "dasar": "UU PPh Pasal 17 ayat (1) huruf b s.t.d.d. UU 7/2021 (HPP)" } ] },
+  "pasal31E": { "nama": "Fasilitas Pasal 31E: pengurangan tarif dan batas peredaran bruto", "riwayat": [
+    { "nilai": { "pengurangan": 0.5, "batasPkp": 4800000000, "batasBruto": 50000000000 }, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 31E ayat (1) s.t.d.d. UU 7/2021 (HPP)" } ] },
+  "pbb.p5l": { "nama": "PBB-P5L: tarif, NJOPTKP, NJKP", "riwayat": [
+    { "nilai": { "tarif": 0.005, "njoptkp": 12000000, "njkpTinggi": 0.4, "njkpRendah": 0.2, "batasNjop": 1000000000 }, "mulai": "2014-01-01", "sampai": null, "dasar": "UU PBB Pasal 5–7 s.t.d.d. UU 12/1994; PP 25/2002; PMK 23/PMK.03/2014; PMK 186/2019 s.t.d.d. PMK 234/2022" } ] },
+  "konstruksi.tarif": { "nama": "PPh final jasa konstruksi (PP 9/2022)", "riwayat": [
+    { "nilai": { "kecil": 0.0175, "menengahBesar": 0.0265, "tanpaSertifikat": 0.04, "konsultansiSertifikat": 0.035, "konsultansiTanpa": 0.06 }, "mulai": "2022-02-21", "sampai": null, "dasar": "PP 9/2022 Pasal 3 ayat (1)" } ] },
+  "thincap.der": { "nama": "Batas DER (utang : modal)", "satuan": "rasio", "riwayat": [
+    { "nilai": 4, "mulai": "2016-01-01", "sampai": null, "dasar": "UU PPh Pasal 18 ayat (1); PMK 169/PMK.010/2015 Pasal 2" } ] },
+  "pesangon.lapisan": { "nama": "PPh 21 final uang pesangon: [batas atas, tarif]", "riwayat": [
+    { "nilai": [[50000000, 0], [100000000, 0.05], [500000000, 0.15], [null, 0.25]], "mulai": "2009-11-16", "sampai": null, "dasar": "PP 68/2009 Pasal 3" } ] },
+  "penyusutan.kelompok": { "nama": "Masa manfaat dan tarif penyusutan fiskal: [tahun, garis lurus, saldo menurun]", "riwayat": [
+    { "nilai": { "1": [4, 0.25, 0.5], "2": [8, 0.125, 0.25], "3": [16, 0.0625, 0.125], "4": [20, 0.05, 0.1], "bangunanPermanen": [20, 0.05, null], "bangunanTidakPermanen": [10, 0.1, null] }, "mulai": "2009-01-01", "sampai": null, "dasar": "UU PPh Pasal 11 ayat (6) dan (11) s.t.d.d. UU 7/2021 (HPP); PMK 72/2023" } ] }
+}

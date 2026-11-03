@@ -1,0 +1,62 @@
+[
+  {
+    "id": "O-BM-01", "bank": "orisinal", "paketSumber": null, "kode": "BM", "materi": "Bea Meterai", "subtema": "Objek & pengecualian", "subtemaDasar": "manual",
+    "subtopik": "Dokumen yang tidak dikenai Bea Meterai walaupun nominalnya di atas Rp5 juta", "tingkat": "C", "tipe": "Konsep", "bloom": "understand", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "konsep",
+    "kasusId": null, "kasus": null,
+    "soal": "Semua dokumen berikut bernilai lebih dari Rp5.000.000. Dokumen yang tidak dikenai Bea Meterai adalah ...",
+    "opsi": { "A": "Tanda terima gaji karyawan sebesar Rp8.000.000", "B": "Kuitansi pelunasan piutang dagang sebesar Rp8.000.000", "C": "Surat perjanjian sewa kendaraan senilai Rp8.000.000", "D": "Akta jual beli tanah di hadapan PPAT senilai Rp800.000.000" },
+    "kunci": "A",
+    "inti": "Tanda terima gaji dan pembayaran lain terkait hubungan kerja termasuk dokumen yang tidak dikenai Bea Meterai (UU 10/2020 Pasal 7), berapa pun nilainya.",
+    "langkah": ["UU 10/2020 Pasal 7 menyebut dokumen yang tidak dikenai Bea Meterai, antara lain tanda terima gaji, uang tunggu, pensiun, dan tunjangan.", "Dokumen Pasal 7 tetap tidak dikenai walaupun nominalnya di atas Rp5.000.000."],
+    "kenapaSalah": { "B": "Kuitansi penerimaan uang bernilai lebih dari Rp5.000.000 adalah objek Bea Meterai (Pasal 3 ayat (2) huruf g).", "C": "Surat perjanjian adalah objek Bea Meterai tanpa batas nominal (Pasal 3 ayat (2) huruf a).", "D": "Akta PPAT adalah objek Bea Meterai (Pasal 3 ayat (2) huruf d)." },
+    "penyebabSalah": { "B": "belum_tahu_aturan", "C": "belum_tahu_aturan", "D": "belum_tahu_aturan" },
+    "dasarHukum": ["UU 10/2020 Pasal 3 ayat (2) dan Pasal 7"], "ruleIds": ["R-BM-03", "R-BM-01"],
+    "catatanAturan": null, "poinIngat": "Dokumen Pasal 7 (mis. tanda terima gaji, ijazah, dokumen lalu lintas barang) tidak dikenai BM berapa pun nilainya.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  },
+  {
+    "id": "O-PP-01", "bank": "orisinal", "paketSumber": null, "kode": "PP", "materi": "PPh Pemotongan/Pemungutan", "subtema": "PPh Pasal 26 & BUT", "subtemaDasar": "manual",
+    "subtopik": "PPh 26 atas penjualan saham perseroan tidak tercatat oleh WPLN", "tingkat": "C", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Kencana Holdings Ltd, Wajib Pajak luar negeri tanpa BUT di Indonesia, menjual seluruh sahamnya pada PT Tirta Utama (tidak tercatat di bursa) kepada PT Samudra Jaya dengan harga Rp4.000.000.000. Harga perolehan saham tersebut Rp2.500.000.000, dan menurut P3B yang berlaku hak pemajakan atas penghasilan ini ada pada Indonesia. PPh Pasal 26 yang wajib dipotong PT Samudra Jaya adalah ...",
+    "opsi": { "A": "Rp200.000.000", "B": "Rp800.000.000", "C": "Rp300.000.000", "D": "Rp4.000.000" },
+    "kunci": "A",
+    "inti": "Penjualan saham perseroan tidak tercatat oleh WPLN: 20% × perkiraan neto 25% × harga jual = 5% × Rp4.000.000.000 = Rp200.000.000, final.",
+    "langkah": ["Perkiraan penghasilan neto = 25% × harga jual = Rp1.000.000.000.", "PPh 26 = 20% × Rp1.000.000.000 = Rp200.000.000 (efektif 5% × harga jual), final.", "Pemotongnya pembeli dalam negeri, PT Samudra Jaya."],
+    "kenapaSalah": { "B": "Mengalikan 20% dengan harga jual; dasarnya perkiraan neto 25% dari harga jual.", "C": "Mengalikan 20% dengan keuntungan riil; ketentuannya memakai perkiraan neto, bukan keuntungan.", "D": "0,1% adalah PPh final penjualan saham di bursa, bukan saham perseroan tidak tercatat." },
+    "penyebabSalah": { "B": "salah_tarif_dpp", "C": "tertukar_aturan", "D": "tertukar_aturan" },
+    "dasarHukum": ["UU PPh Pasal 26 ayat (2) dan (3)", "PMK 81/2024 Pasal 238–240"], "ruleIds": ["R-PP-31"],
+    "catatanAturan": null, "poinIngat": "Saham tidak tercatat dijual WPLN: 20% × 25% harga jual = 5%, final, dipotong pembeli.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-PBB-01", "bank": "orisinal", "paketSumber": null, "kode": "PBB", "materi": "PBB-P5L", "subtema": "Pembayaran, jatuh tempo & denda", "subtemaDasar": "manual",
+    "subtopik": "Denda administrasi PBB 2% sebulan atas keterlambatan pembayaran SPPT", "tingkat": "B", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Rimba Lestari menerima SPPT PBB-P5L sektor perkebunan dengan PBB terutang Rp100.000.000 dan melunasinya tepat 3 bulan setelah tanggal jatuh tempo. Denda administrasi yang ditagih dengan STP PBB adalah ...",
+    "opsi": { "A": "Rp6.000.000", "B": "Rp3.030.000", "C": "Rp2.000.000", "D": "Rp48.000.000" },
+    "kunci": "A",
+    "inti": "Denda PBB = 2% sebulan × pokok yang terlambat × jumlah bulan sejak jatuh tempo (maks 24 bulan): 2% × Rp100.000.000 × 3 = Rp6.000.000.",
+    "langkah": ["PBB yang tidak dibayar pada jatuh tempo dikenai denda administrasi 2% sebulan (UU PBB Pasal 11 ayat (3)).", "Terlambat 3 bulan: 2% × Rp100.000.000 × 3 = Rp6.000.000, ditagih dengan STP PBB."],
+    "kenapaSalah": { "B": "Memakai tarif bunga KMK UU KUP; denda PBB diatur UU PBB, yaitu 2% sebulan.", "C": "Hanya menghitung satu bulan; denda dihitung untuk setiap bulan keterlambatan.", "D": "Mengenakan 24 bulan; 24 bulan adalah batas maksimum, bukan jumlah tetap." },
+    "penyebabSalah": { "B": "tertukar_aturan", "C": "salah_hitung", "D": "salah_hitung" },
+    "dasarHukum": ["UU PBB Pasal 11 ayat (3) s.t.d.d. UU 12/1994", "PMK 186/PMK.03/2019 Pasal 40 ayat (11) s.t.d.d. PMK 234/PMK.03/2022"], "ruleIds": ["R-PBB-16"],
+    "catatanAturan": null, "poinIngat": "Denda PBB: 2% sebulan sejak jatuh tempo, maks 24 bulan, via STP PBB; bukan tarif bunga KMK.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-AKT-01", "bank": "orisinal", "paketSumber": null, "kode": "AKT", "materi": "Akuntansi Perpajakan", "subtema": "Jurnal PPh & PPN", "subtemaDasar": "manual",
+    "subtopik": "Jurnal penyetoran angsuran PPh Pasal 25", "tingkat": "C", "tipe": "Konsep", "bloom": "understand", "kesulitan": "mudah", "kesulitanSumber": "manual", "kategori": "konsep",
+    "kasusId": null, "kasus": null,
+    "soal": "PT Harmoni Teguh menyetor angsuran PPh Pasal 25 Masa Juli 2026 sebesar Rp45.000.000 pada 14 Agustus 2026. Jurnal yang tepat saat penyetoran adalah ...",
+    "opsi": { "A": "Dr Pajak dibayar di muka – PPh 25 Rp45.000.000; Cr Kas Rp45.000.000", "B": "Dr Beban pajak penghasilan Rp45.000.000; Cr Kas Rp45.000.000", "C": "Dr Utang PPh Pasal 25 Rp45.000.000; Cr Kas Rp45.000.000", "D": "Dr Kas Rp45.000.000; Cr Pajak dibayar di muka – PPh 25 Rp45.000.000" },
+    "kunci": "A",
+    "inti": "Angsuran PPh 25 adalah pembayaran di muka atas PPh badan tahun berjalan, sehingga dicatat sebagai aset (pajak dibayar di muka) yang nanti mengurangi utang PPh badan.",
+    "langkah": ["PPh 25 dibayar sebelum PPh terutang tahun itu diketahui, jadi merupakan kredit pajak tahun berjalan.", "Saat setor: Dr Pajak dibayar di muka – PPh 25; Cr Kas.", "Di akhir tahun, saldo ini dikurangkan dari utang PPh badan; beban pajak diakui lewat penghitungan PPh terutang, bukan saat angsuran."],
+    "kenapaSalah": { "B": "Angsuran bukan beban; beban pajak kini diakui dari PPh terutang akhir tahun.", "C": "Tidak ada utang PPh 25 yang dicatat sebelumnya; angsuran disetor dari kas sebagai pembayaran di muka.", "D": "Jurnalnya terbalik; penyetoran mengurangi kas." },
+    "penyebabSalah": { "B": "tertukar_aturan", "C": "salah_hitung", "D": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 25 dan Pasal 28 ayat (1) huruf d", "PSAK 212 (Pajak Penghasilan)"], "ruleIds": ["R-AKT-04"],
+    "catatanAturan": null, "poinIngat": "Setor PPh 25: Dr Pajak dibayar di muka (aset), Cr Kas; bukan beban.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  }
+]

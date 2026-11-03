@@ -1,0 +1,112 @@
+{
+  "_keterangan": "Pekerjaan tanpa token untuk Agent Office (operator UKP Generator / UKP Studio). Meniru npm run dev / generate / verify / verify:quality / verify:models / verify:export / verify:materi / import:data di package.json dan opsi scripts/generate.ts (lihat npm run generate -- --help). Kalau script atau opsi CLI berubah, sesuaikan berkas ini di perubahan yang sama. Format: README Agent Office bagian agent-office.json.",
+  "nama": "UKP Generator",
+  "pekerjaan": [
+    {
+      "id": "aplikasi",
+      "judul": "Buka UKP Studio",
+      "singkat": "Buka UKP Studio",
+      "jenis": "aplikasi",
+      "prioritas": 2,
+      "kata_kunci": ["ukp studio", "ukp generator", "studio ukp", "generator ukp", "aplikasi", "buka", "jalankan", "nyalakan", "dev", "web"],
+      "wajib_salah_satu": ["buka ukp studio", "jalankan ukp studio", "nyalakan ukp studio", "buka ukp generator", "jalankan ukp generator", "buka generator ukp", "buka aplikasi ukp", "jalankan aplikasi ukp", "web ukp studio"],
+      "perintah": ["npm", "run", "dev"],
+      "gagal": "(Another next dev [^\\r\\n]+)|Error: ([^\\r\\n]+)",
+      "catatan": [
+        "sama dengan npm run dev; alamat biasanya http://localhost:3000 (kalau terpakai, Next memakai port berikutnya)",
+        "link Network di log bisa dibuka perangkat satu Wi-Fi/LAN; IP komputer ini sudah diizinkan di next.config.mjs",
+        "tanpa API key dan tanpa server AI; paket tersimpan di IndexedDB browser, unduh cadangan JSON dari menu Cadangan"
+      ]
+    },
+    {
+      "id": "buatpaket",
+      "judul": "Buat paket UKP (CLI)",
+      "singkat": "Buat paket UKP",
+      "tab": "Atur paket",
+      "tombol": "Buat paket",
+      "kata_kunci": ["buat", "membuat", "buatkan", "bikin", "bikinin", "generate", "seed", "tryout", "latihan", "boleh kembar"],
+      "wajib_salah_satu": ["paket ukp", "tryout ukp", "latihan ukp", "generate ukp", "paket tingkat a", "paket tingkat b", "paket tingkat c", "soal ukp"],
+      "perintah": [
+        "npm", "run", "generate", "--",
+        ["--tingkat", "{tingkat}"],
+        ["--jenis", "{jenis}"],
+        ["--materi", "{materi}"],
+        ["--soal", "{soal}"],
+        ["--paket", "{paket}"],
+        ["--sumber", "{sumber}"],
+        ["--seed", "{seed}"],
+        ["--format", "{format}"],
+        ["--isi", "{isi}"],
+        "{boleh_kembar?--boleh-kembar}",
+        "{acuan?--{acuan}}",
+        ["--out", "output/{waktu}"]
+      ],
+      "parameter": {
+        "tingkat": { "jenis": "teks", "label": "Tingkat", "bantuan": "A, B, atau C. Cakupan kumulatif: B = materi A+B, C = A+B+C.", "contoh": "C", "bawaan": "C", "pola": "^[ABCabc]$", "dari_tugas": "(?<=\\btingkat\\s{0,3})([ABCabc])\\b" },
+        "jenis": { "jenis": "teks", "label": "Jenis paket", "bantuan": "tryout (semua materi), materi (isi kode materi), atau jebakan (drill ketentuan yang berubah 2025–2026). Jenis subtema hanya lewat aplikasi atau terminal.", "contoh": "tryout", "bawaan": "tryout", "pola": "^(tryout|materi|jebakan)$", "dari_tugas": "\\b(tryout|jebakan)\\b" },
+        "materi": { "jenis": "teks", "label": "Materi (khusus jenis materi)", "bantuan": "Kode dipisah koma: KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT. Kosongkan untuk semua materi.", "contoh": "PPN,KUP", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
+        "soal": { "jenis": "teks", "label": "Soal per paket", "bantuan": "1 sampai 200. Kosongkan untuk bawaan: tryout 100, lainnya 40.", "contoh": "100", "pola": "^(?:[1-9]|[1-9]\\d|1\\d\\d|200)$", "dari_tugas": "\\d+(?=\\s*(?:soal|butir)\\b)" },
+        "paket": { "jenis": "teks", "label": "Jumlah paket", "bantuan": "1 sampai 50 (bawaan 1). Tanpa soal kembar, bank acuan cukup untuk 12 paket tryout 100 soal Tingkat C, 7 Tingkat B, atau 6 Tingkat A (diukur 2 Nov 2026); lebih dari itu gagal dengan pesan Persediaan.", "contoh": "3", "bawaan": "1", "pola": "^(?:[1-9]|[1-4]\\d|50)$", "dari_tugas": "\\d+(?=\\s*paket\\b)" },
+        "sumber": { "jenis": "teks", "label": "Sumber soal", "bantuan": "campuran (bawaan: soal baru dari model untuk materi bermodel + bank acuan), bank (hanya bank acuan LatihUKP), atau baru (hanya soal baru).", "contoh": "campuran", "bawaan": "campuran", "pola": "^(campuran|bank|baru)$" },
+        "seed": { "jenis": "teks", "label": "Seed", "bantuan": "Seed yang sama menghasilkan paket yang sama. Kosongkan untuk UKP-<tingkat>-01.", "contoh": "UKP-C-01", "pola": "^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$", "dari_tugas": "\\bseed\\s*[:=]?\\s*([A-Za-z0-9][A-Za-z0-9._-]*)" },
+        "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "Dipisah koma: json, pdf, docx, csv, siadu-docx (Word SiAdu), siadu-xlsx (Excel template Bank Soal SiAdu), uji-html (berkas uji peserta tanpa kunci, satu per paket). Bawaan json. SiAdu hanya isi lengkap atau soal-jawaban.", "contoh": "json,pdf,siadu-docx", "bawaan": "json", "pola": "^(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html)(,(json|pdf|docx|csv|siadu-docx|siadu-xlsx|uji-html))*$" },
+        "acuan": { "jenis": "teks", "label": "Soal acuan LatihUKP di ekspor SiAdu", "bantuan": "tanpa-acuan = keluarkan soal bank acuan dari berkas SiAdu (soal baru saja); setuju-acuan = sertakan untuk penggunaan internal (PRD K2). Wajib diisi bila memilih format siadu-docx/siadu-xlsx dan paket memuat soal bank.", "contoh": "tanpa-acuan", "pola": "^(tanpa-acuan|setuju-acuan)?$" },
+        "isi": { "jenis": "teks", "label": "Isi PDF/Word", "bantuan": "lengkap (soal + jawaban + pembahasan), soal-jawaban, naskah (tanpa kunci), atau kunci.", "contoh": "lengkap", "bawaan": "lengkap", "pola": "^(lengkap|soal-jawaban|naskah|kunci)$" },
+        "boleh_kembar": { "jenis": "tanda", "label": "Boleh pakai soal yang sama di paket berbeda", "bantuan": "Centang bila stok kurang untuk jumlah paket yang diminta.", "jika_disebut": ["boleh kembar", "boleh sama", "boleh ulang"], "jika_tanpa": ["tanpa kembar", "tidak boleh sama", "soal berbeda"] }
+      },
+      "catatan": [
+        "menjalankan npm run generate (scripts/generate.ts); tanpa API key dan tanpa internet",
+        "hasil di output/<tanggal_jam>/: validasi.json (mutu per paket dan per soal) dan berkas format yang dipilih; semuanya muncul sebagai tombol Buka hasil",
+        "kuota tangan, durasi, judul, dan subtema diatur di aplikasi (tab Atur paket)",
+        "ekspor SiAdu yang memuat soal bank acuan LatihUKP gagal dengan pesan 'acuan internal' kecuali isian Soal acuan diisi tanpa-acuan atau setuju-acuan (PRD K2)",
+        "seed dan pengaturan yang sama menghasilkan paket yang sama"
+      ],
+      "hasil": "^(?:RINGKASAN|BERKAS) -> (.+)$",
+      "gagal": "Error: ([^\\r\\n]+)",
+      "saran_gagal": { "pola": "Persediaan", "pesan": "Kurangi jumlah paket atau soal, atau centang 'Boleh pakai soal yang sama di paket berbeda'." },
+      "ringkasan": "Paket UKP selesai dibuat",
+      "batas_menit": 5
+    },
+    {
+      "id": "verifikasi",
+      "judul": "Verifikasi UKP Generator",
+      "singkat": "Verifikasi generator",
+      "prioritas": 2,
+      "kata_kunci": ["verifikasi", "verify", "uji generator", "tes generator", "cek generator", "periksa generator", "cek mutu", "uji mutu", "ukp"],
+      "wajib_salah_satu": ["verifikasi generator", "verifikasi ukp", "verify", "uji generator", "tes generator", "cek generator", "periksa generator", "cek mutu", "uji mutu"],
+      "perintah": ["npm", "run", "verify"],
+      "lanjutan": [
+        { "judul": "Verifikasi mutu", "perintah": ["npm", "run", "verify:quality"], "hasil": "(\\d+) cek lulus" },
+        { "judul": "Verifikasi model soal baru", "perintah": ["npm", "run", "verify:models"], "hasil": "(\\d+) cek lulus" },
+        { "judul": "Verifikasi ekspor", "perintah": ["npm", "run", "verify:export"], "hasil": "(\\d+) cek lulus" },
+        { "judul": "Verifikasi mesin materi", "perintah": ["npm", "run", "verify:materi"], "hasil": "(\\d+) cek lulus" }
+      ],
+      "catatan": [
+        "lima langkah berurutan: verify (data impor, perakit paket, ganti nomor, cadangan), verify:quality (mutu banyak seed, sebaran kunci, pemetaan opsi, deteksi aturan lama), verify:models (hitung ulang tiap model di banyak seed), verify:export (PDF, Word, Word/Excel SiAdu, CSV, JSON, HTML uji), verify:materi (mesin deck materi .pptx: metrik Poppins, paket dasar, 69 subtema, kasus tepi)",
+        "tanpa internet; kalau gagal, baris GAGAL menyebut bagian dan pemeriksaannya"
+      ],
+      "hasil": "(\\d+) cek lulus",
+      "gagal": "GAGAL ([^\\r\\n]+)|Error: ([^\\r\\n]+)",
+      "ringkasan": "Generator lulus; jumlah cek verify · quality · models · export",
+      "batas_menit": 10
+    },
+    {
+      "id": "imporData",
+      "judul": "Impor ulang data dari Scrape UKP",
+      "singkat": "Impor data UKP",
+      "prioritas": 3,
+      "kata_kunci": ["impor", "import", "perbarui data", "update data", "bank soal", "scrape ukp", "latihukp"],
+      "wajib_salah_satu": ["impor data ukp", "import data ukp", "perbarui data ukp", "update data ukp", "impor ulang", "import ulang", "perbarui bank soal ukp"],
+      "perintah": ["npm", "run", "import:data"],
+      "catatan": [
+        "membaca ../Scrape UKP/output/latihukp (jalankan 4-LatihUKP.bat di Scrape UKP lebih dulu bila sumber ingin diperbarui) lalu menulis data/ dan public/data/",
+        "bagian override di data/ukp-mapping.json dipertahankan; berkas lain di data/ ditulis ulang",
+        "setelah impor, jalankan Verifikasi UKP Generator; jumlah soal yang berubah membuat beberapa cek jumlah di scripts/verify.ts perlu diperbarui"
+      ],
+      "hasil": "^(?:RINGKASAN|BERKAS) -> (.+)$",
+      "gagal": "Error: ([^\\r\\n]+)",
+      "ringkasan": "Data UKP diimpor ulang",
+      "batas_menit": 3
+    }
+  ]
+}

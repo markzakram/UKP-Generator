@@ -1,0 +1,38 @@
+{
+  "name": "ukp-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UKP Studio: generator paket soal Uji Kompetensi Perpajakan Tingkat A, B, dan C.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "import:data": "node scripts/import-latihukp.mjs",
+    "verify": "tsx scripts/verify.ts",
+    "verify:quality": "tsx scripts/quality-verify.ts",
+    "verify:models": "tsx scripts/models-verify.ts",
+    "verify:export": "tsx scripts/export-verify.ts",
+    "verify:materi": "tsx scripts/materi-verify.ts",
+    "materi:dasar": "node scripts/materi-dasar.mjs",
+    "generate": "tsx scripts/generate.ts"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "docx": "^9.5.0",
+    "fflate": "^0.8.3",
+    "jspdf": "^4.2.1",
+    "next": "16.4.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

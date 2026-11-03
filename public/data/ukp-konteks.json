@@ -1,0 +1,24 @@
+{
+  "_keterangan": "Konteks fiktif untuk model soal baru: kota beragam (pemeriksa mutu membatasi satu kota per paket), jenis usaha, dan unsur nama. Nama perusahaan dan orang disusun dari kata umum dan tidak dimaksudkan merujuk pihak nyata.",
+  "kota": ["Banda Aceh", "Medan", "Pematangsiantar", "Padang", "Bukittinggi", "Pekanbaru", "Batam", "Jambi", "Palembang", "Bengkulu", "Bandar Lampung", "Pangkalpinang", "Serang", "Tangerang", "Bekasi", "Bogor", "Bandung", "Cirebon", "Tasikmalaya", "Semarang", "Surakarta", "Tegal", "Yogyakarta", "Surabaya", "Malang", "Kediri", "Jember", "Banyuwangi", "Denpasar", "Mataram", "Kupang", "Pontianak", "Singkawang", "Palangka Raya", "Banjarmasin", "Balikpapan", "Samarinda", "Tarakan", "Manado", "Gorontalo", "Palu", "Makassar", "Parepare", "Kendari", "Ambon", "Ternate", "Sorong", "Jayapura", "Merauke", "Purwokerto", "Madiun", "Probolinggo", "Cilegon", "Sukabumi", "Garut", "Magelang", "Pekalongan", "Lhokseumawe", "Dumai", "Tanjungpinang"],
+  "usaha": [
+    { "jenis": "pabrik makanan ringan", "jasa": "jasa perawatan mesin produksi", "barang": "kemasan plastik" },
+    { "jenis": "distributor alat tulis", "jasa": "jasa konsultan sistem gudang", "barang": "kertas fotokopi" },
+    { "jenis": "kontraktor jalan", "jasa": "jasa uji laboratorium tanah", "barang": "aspal curah" },
+    { "jenis": "rumah sakit swasta", "jasa": "jasa pemeliharaan alat kesehatan", "barang": "linen medis" },
+    { "jenis": "perusahaan perkebunan sawit", "jasa": "jasa konsultan pemetaan lahan", "barang": "pupuk" },
+    { "jenis": "hotel", "jasa": "jasa kebersihan gedung", "barang": "perlengkapan kamar" },
+    { "jenis": "pabrik garmen", "jasa": "jasa desain motif kain", "barang": "kain katun" },
+    { "jenis": "perusahaan logistik", "jasa": "jasa perbaikan armada truk", "barang": "suku cadang truk" },
+    { "jenis": "toko bangunan", "jasa": "jasa pembuatan aplikasi kasir", "barang": "keramik lantai" },
+    { "jenis": "sekolah swasta", "jasa": "jasa penyelenggaraan acara (event organizer) pelatihan guru", "barang": "perangkat laboratorium" },
+    { "jenis": "perusahaan percetakan", "jasa": "jasa servis mesin cetak", "barang": "tinta cetak" },
+    { "jenis": "pabrik furnitur", "jasa": "jasa konsultan ekspor", "barang": "kayu olahan" },
+    { "jenis": "perusahaan pengembang perumahan", "jasa": "jasa arsitektur", "barang": "baja ringan" },
+    { "jenis": "restoran waralaba", "jasa": "jasa manajemen restoran", "barang": "peralatan dapur" },
+    { "jenis": "perusahaan tambak udang", "jasa": "jasa analisis kualitas air", "barang": "pakan udang" },
+    { "jenis": "bengkel resmi kendaraan", "jasa": "jasa kalibrasi peralatan", "barang": "oli mesin" }
+  ],
+  "namaPt": ["Sinar", "Mitra", "Karya", "Bumi", "Cahaya", "Sentosa", "Abadi", "Makmur", "Jaya", "Lestari", "Utama", "Mandiri", "Prima", "Sejahtera", "Nusantara", "Gemilang", "Harmoni", "Selaras", "Kencana", "Samudra", "Rimba", "Tirta", "Arta", "Bahari", "Pelita", "Teguh", "Indah", "Persada", "Lintas", "Dwi"],
+  "namaOrang": ["Tn. Ardi", "Ny. Laras", "Tn. Bima", "Ny. Citra", "Tn. Dimas", "Ny. Endah", "Tn. Fajar", "Ny. Gita", "Tn. Hendra", "Ny. Intan", "Tn. Joko", "Ny. Kirana", "Tn. Lukman", "Ny. Maya", "Tn. Nanda", "Ny. Okta", "Tn. Prasetyo", "Ny. Ratna", "Tn. Satria", "Ny. Tiara", "Tn. Umar", "Ny. Vina", "Tn. Wahyu", "Ny. Yuni"]
+}

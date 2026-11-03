@@ -1,0 +1,32 @@
+[
+  {
+    "id": "O-OP-01", "bank": "orisinal", "paketSumber": null, "kode": "OP", "materi": "PPh Orang Pribadi & SPT PPh OP", "subtema": "PTKP, tarif & PPh terutang", "subtemaDasar": "manual",
+    "subtopik": "Sisa kompensasi kerugian fiskal OP setelah laba tahun antara", "tingkat": "A", "tipe": "Hitungan dasar", "bloom": "apply", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "penerapan",
+    "kasusId": null, "kasus": null,
+    "soal": "Tn. Fajar menjalankan usaha dengan pembukuan. Rugi fiskal Tahun Pajak 2021 Rp80.000.000. Penghasilan neto fiskal (sebelum kompensasi) Tahun Pajak 2022 Rp20.000.000, 2023 Rp15.000.000, 2024 Rp10.000.000, dan 2025 Rp30.000.000. Tidak ada kerugian tahun lain. Sisa kerugian 2021 yang masih dapat dikompensasikan dengan penghasilan Tahun Pajak 2026 adalah ...",
+    "opsi": { "A": "Rp5.000.000", "B": "Rp80.000.000", "C": "Rp0", "D": "Rp35.000.000" },
+    "kunci": "A",
+    "inti": "Rugi 2021 dikompensasikan berturut-turut mulai 2022 sampai paling lama 2026: Rp80 juta − (20 + 15 + 10 + 30) juta = Rp5.000.000 masih tersisa untuk 2026.",
+    "langkah": ["Rugi 2021 dapat dikompensasikan mulai 2022 berturut-turut sampai 5 tahun, yaitu sampai 2026 (UU PPh Pasal 6 ayat (2)).", "Laba tahun antara wajib dipakai: 2022 Rp20 juta, 2023 Rp15 juta, 2024 Rp10 juta, 2025 Rp30 juta = Rp75 juta.", "Sisa = Rp80 juta − Rp75 juta = Rp5.000.000, masih dapat dipakai pada 2026 (tahun kelima)."],
+    "kenapaSalah": { "B": "Melewatkan laba tahun antara; kompensasi wajib dilakukan berturut-turut setiap tahun.", "C": "Menganggap kerugian hangus; 2026 masih tahun kelima sejak 2022.", "D": "Tidak memakai laba 2025 untuk kompensasi." },
+    "penyebabSalah": { "B": "salah_hitung", "C": "salah_periode", "D": "salah_hitung" },
+    "dasarHukum": ["UU PPh Pasal 6 ayat (2) s.t.d.d. UU 36/2008"], "ruleIds": ["R-OP-10"],
+    "catatanAturan": null, "poinIngat": "Rugi fiskal dikompensasikan berturut-turut 5 tahun mulai tahun berikutnya; laba tahun antara tidak boleh dilewatkan.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": true, "sumber": []
+  },
+  {
+    "id": "O-OP-02", "bank": "orisinal", "paketSumber": null, "kode": "OP", "materi": "PPh Orang Pribadi & SPT PPh OP", "subtema": "PPh final UMKM (peredaran bruto tertentu)", "subtemaDasar": "manual",
+    "subtopik": "Omzet OP melewati Rp4,8 miliar di tengah tahun", "tingkat": "A", "tipe": "Jebakan umum", "bloom": "understand", "kesulitan": "sedang", "kesulitanSumber": "manual", "kategori": "pembedaan_aturan",
+    "kasusId": null, "kasus": null,
+    "soal": "Ny. Ratna, Wajib Pajak orang pribadi yang memenuhi syarat PPh final 0,5% pada 2026 berdasarkan peredaran bruto 2025, mencatat peredaran bruto kumulatif 2026 melewati Rp4,8 miliar pada Agustus 2026. Perlakuan PPh atas peredaran bruto September–Desember 2026 adalah ...",
+    "opsi": { "A": "Tetap PPh final 0,5% sampai akhir 2026; mulai 2027 dikenai tarif umum", "B": "Dikenai tarif umum Pasal 17 sejak September 2026", "C": "PPh final 0,5% hanya sampai omzet Rp4,8 miliar; kelebihannya dikenai tarif umum", "D": "Tetap PPh final 0,5% pada 2027 karena OP tidak dibatasi jangka waktu" },
+    "kunci": "A",
+    "inti": "Kelayakan PPh final diuji dari peredaran bruto tahun sebelumnya; bila omzet tahun berjalan melewati Rp4,8 miliar, WP tetap dikenai 0,5% sampai akhir tahun itu dan mulai tahun berikutnya dikenai tarif umum.",
+    "langkah": ["Kelayakan 2026 diuji dari omzet 2025, dan Ny. Ratna memenuhi syarat.", "Omzet 2026 melewati Rp4,8 miliar pada Agustus: PPh final 0,5% tetap berlaku sampai akhir 2026 (PP 55/2022 s.t.d.d. PP 20/2026).", "Mulai 2027 dikenai tarif umum dan tidak dapat kembali ke PPh final."],
+    "kenapaSalah": { "B": "Tarif umum tidak langsung berlaku di bulan omzet melewati Rp4,8 miliar; perubahan berlaku tahun berikutnya.", "C": "0,5% tetap berlaku atas seluruh omzet tahun berjalan, termasuk bagian di atas Rp4,8 miliar.", "D": "Tanpa batas jangka waktu tetap mensyaratkan omzet tahun sebelumnya tidak lebih dari Rp4,8 miliar; omzet 2026 sudah melewatinya." },
+    "penyebabSalah": { "B": "salah_periode", "C": "tertukar_aturan", "D": "lupa_syarat" },
+    "dasarHukum": ["PP 55/2022 Pasal 58 ayat (1) dan Pasal 61 s.t.d.d. PP 20/2026"], "ruleIds": ["R-OP-18", "R-OP-16"],
+    "catatanAturan": null, "poinIngat": "Omzet melewati Rp4,8 M di tengah tahun: tetap 0,5% sampai akhir tahun, tarif umum mulai tahun berikutnya.", "keyakinan": "Sedang",
+    "posisiTetap": false, "opsiAngka": false, "sumber": []
+  }
+]

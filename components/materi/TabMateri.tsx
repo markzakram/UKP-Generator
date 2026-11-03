@@ -3,12 +3,12 @@
 // pratinjau yang sama dengan .pptx, isian per pola, pemeriksaan, dan unduhan dengan konfirmasi Draf internal.
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { periksaTataLetak } from '@/lib/materi/cek';
-import { aturSlide, bacaNaskah, buatDeck, idDeck, kembalikanSlide, suntingSlide, tandaiTelaah, urungkan, type DeckMateri } from '@/lib/materi/deck';
+import { aturSlide, bacaNaskah, buatDeck, idDeck, idGabungan, kembalikanSlide, suntingSlide, tandaiTelaah, urungkan, type DeckMateri } from '@/lib/materi/deck';
 import type { SlideJadi } from '@/lib/materi/kotak';
 import { adaTeksAcuan, NAMA_POLA, type AsalBlok, type SlideNaskah } from '@/lib/materi/naskah';
 import { tulisPptx } from '@/lib/materi/pptx';
 import { diujiDi, labelTingkat, singkatTingkat, TINGKAT } from '@/lib/config';
-import { berlakuPada, daftarSubtema, PENGATURAN_MATERI_AWAL, susunNaskah, teksSlide, type Kepadatan, type SumberSoalMateri } from '@/lib/materi/susun';
+import { berlakuPada, daftarSubtema, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, teksSlide, type Kepadatan, type SumberSoalMateri } from '@/lib/materi/susun';
 import { tataLetak } from '@/lib/materi/tata-letak';
 import { cariJebakan } from '@/lib/quality';
 import { daftarDeckMateri, hapusDeckMateri, simpanDeckMateri } from '@/lib/storage';
@@ -44,7 +44,9 @@ const muatDasar = () => (dasarCache ??= fetch('/materi/dasar.pptx').then((r) => 
   return r.arrayBuffer();
 }).then((b) => new Uint8Array(b)).catch((e) => { dasarCache = null; throw e; }));
 
-const namaBerkas = (d: DeckMateri, ext: string) => `materi-${slug(d.naskah.kode ?? 'impor')}-${slug(d.naskah.subtema ?? d.judul)}.${ext}`;
+const namaBerkas = (d: DeckMateri, ext: string) => d.id.startsWith('gabung:')
+  ? `materi-${slug(d.naskah.kode ?? 'impor')}-tingkat-${(d.naskah.tingkat ?? '').toLowerCase()}${d.id.endsWith('+baru') ? '-tambahan' : ''}.${ext}`
+  : `materi-${slug(d.naskah.kode ?? 'impor')}-${slug(d.naskah.subtema ?? d.judul)}.${ext}`;
 const sekarang = () => new Date().toISOString();
 
 function ringkasTata(js: SlideJadi[], sembunyi?: boolean): { teks: string; kelas: string } {
@@ -62,6 +64,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
   const [kode, setKode] = useState<Kode>('PP');
   const [lingkup, setLingkup] = useState<Lingkup>('subtema');
   const [hanyaBaru, setHanyaBaru] = useState(false);
+  const [bentuk, setBentuk] = useState<'subtema' | 'materi'>('subtema');
   const [cek, setCek] = useState<Set<string>>(new Set());
   const [saring, setSaring] = useState<Saring>('semua');
   const [kepadatan, setKepadatan] = useState<Kepadatan>(PENGATURAN_MATERI_AWAL.kepadatan);
@@ -93,7 +96,16 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
   const hitung = (st: Saring) => daftar.filter((s) => st === 'semua' || s.status === st).length;
   const tampil = daftar.filter((s) => saring === 'semua' || s.status === saring);
   const dicentang = daftar.filter((s) => cek.has(s.id));
-  const tabDeck = (dicentang.length ? dicentang.map((s) => decks[s.id]).filter(Boolean) : Object.values(decks).filter((d) => lingkup === 'tingkat' || d.naskah.kode === kode || !d.naskah.kode))
+  // Bentuk "materi": subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ini.
+  const gabung = bentuk === 'materi';
+  const tambahan = lingkup === 'tingkat' && hanyaBaru && tingkat !== 'A';
+  const kodeDari = (idSub: string) => idSub.split('|')[0] as Kode;
+  const target = (idSub: string) => (gabung ? idGabungan(kodeDari(idSub), tingkat, tambahan) : idSub);
+  const idDipilih = [...new Set(dicentang.map((s) => target(s.id)))];
+  const deckDipilih = idDipilih.map((id) => decks[id]).filter(Boolean);
+  const tabDeck = (deckDipilih.length ? deckDipilih : Object.values(decks).filter((d) => (gabung
+    ? d.id.startsWith('gabung:') && (lingkup === 'tingkat' || d.naskah.kode === kode)
+    : !d.id.startsWith('gabung:') && (lingkup === 'tingkat' || d.naskah.kode === kode || !d.naskah.kode))))
     .sort((a, b) => a.judul.localeCompare(b.judul));
   const nBaru = subs.filter((s) => s.tingkat === tingkat).length;
 
@@ -128,25 +140,38 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
     simpanDeckMateri(d).catch((e: Error) => kabar(e.message, true));
   }, [kabar]);
 
+  /** `ids` = id subtema yang dicentang; deck tujuannya per subtema atau satu deck gabungan per materi. */
   const susun = (ids: string[], timpa: boolean) => {
-    const sudahDisunting = ids.filter((id) => decks[id] && decks[id].riwayat.length > 0);
+    const sudahDisunting = [...new Set(ids.map(target))].filter((id) => decks[id] && decks[id].riwayat.length > 0);
     if (sudahDisunting.length && !timpa) { setDialog({ jenis: 'timpa', ids }); return; }
     setSibuk(true);
     // Jeda satu tik supaya tombol sempat menampilkan status sibuk sebelum puluhan deck disusun.
     setTimeout(() => {
       let dibuat = 0;
       const galat: string[] = [];
+      const dasar = { ...PENGATURAN_MATERI_AWAL, tingkat, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan };
       try {
-        for (const id of ids) {
-          const s = subs.find((x) => idDeck(x.kode, x.subtema) === id);
-          if (!s) continue;
-          try {
-            const peng = { ...PENGATURAN_MATERI_AWAL, kode: s.kode, subtema: s.subtema, tingkat, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat: sekarang() };
-            simpanDeck(buatDeck(susunNaskah(data, peng), peng, peng.dibuat));
-            dibuat++;
-          } catch (e) { galat.push(s.subtema + ': ' + (e as Error).message); }
+        if (gabung) {
+          for (const k of [...new Set(ids.map(kodeDari))]) {
+            const daftarSub = subs.filter((x) => x.kode === k && ids.includes(idDeck(x.kode, x.subtema))).map((x) => x.subtema);
+            try {
+              const peng = { ...dasar, kode: k, subtema: '', gabung: daftarSub, dibuat: sekarang() };
+              simpanDeck(buatDeck(susunNaskahMateri(data, peng, daftarSub), peng, peng.dibuat, idGabungan(k, tingkat, tambahan)));
+              dibuat++;
+            } catch (e) { galat.push(k + ': ' + (e as Error).message); }
+          }
+        } else {
+          for (const id of ids) {
+            const s = subs.find((x) => idDeck(x.kode, x.subtema) === id);
+            if (!s) continue;
+            try {
+              const peng = { ...dasar, kode: s.kode, subtema: s.subtema, dibuat: sekarang() };
+              simpanDeck(buatDeck(susunNaskah(data, peng), peng, peng.dibuat));
+              dibuat++;
+            } catch (e) { galat.push(s.subtema + ': ' + (e as Error).message); }
+          }
         }
-        if (ids[0]) { setAktif(ids[0]); setDipilih(null); }
+        if (ids[0]) { setAktif(target(ids[0])); setDipilih(null); }
         if (galat.length) kabar(galat.join(' · '), true);
         else kabar(`${dibuat} deck disusun.`);
       } finally { setSibuk(false); }
@@ -163,12 +188,12 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
     try {
       const dasar = await muatDasar();
       // Lebih dari satu materi: satu folder per kode di dalam .zip.
-      const perFolder = new Set(daftar.map((d) => d.naskah.kode ?? 'impor')).size > 1;
+      const perFolder = !daftar.every((d) => d.id.startsWith('gabung:')) && new Set(daftar.map((d) => d.naskah.kode ?? 'impor')).size > 1;
       const berkas = daftar.map((d) => ({ nama: (perFolder ? (d.naskah.kode ?? 'impor') + '/' : '') + namaBerkas(d, 'pptx'), isi: tulisPptx(d.naskah, dasar, { ditelaah: d.status === 'telaah' }).berkas }));
       const namaZip = lingkup === 'tingkat' ? `materi-tingkat-${tingkat.toLowerCase()}${hanyaBaru && tingkat !== 'A' ? '-tambahan' : ''}` : `materi-${slug(kode)}`;
       if (berkas.length === 1) unduh(berkas[0].isi, namaBerkas(daftar[0], 'pptx'), MIME.pptx);
       // .pptx sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
-      else unduh(await zip(Object.fromEntries(berkas.map((b) => [b.nama, b.isi])), 0), `${namaZip}-${berkas.length}-deck.zip`, MIME.zip);
+      else unduh(await zip(Object.fromEntries(berkas.map((b) => [b.nama, b.isi])), 0), `${namaZip}${daftar.every((d) => d.id.startsWith('gabung:')) ? '-per-materi' : ''}-${berkas.length}-deck.zip`, MIME.zip);
       kabar(`${berkas.length} deck diunduh${draf.length ? `; ${draf.length} bertanda Draf internal` : ''}.`);
     } catch (e) { kabar((e as Error).message, true); }
     finally { setSibuk(false); }
@@ -224,7 +249,6 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
 
   const nAcuan = slides.filter((s) => !s.sembunyi && s.asal === 'acuan').length;
   const nAturan = new Set(slides.flatMap((s) => (s.sumber ?? []).filter((x) => /^R-/.test(x)))).size;
-  const deckDipilih = dicentang.map((s) => decks[s.id]).filter(Boolean);
   const totalSlide = deckDipilih.reduce((t, d) => t + tataLetak(d.naskah).length, 0);
   const nDraf = deckDipilih.filter((d) => adaTeksAcuan(d.naskah) && d.status !== 'telaah').length;
   const asliAda = !!(slide && deck?.asli.slides.some((s) => s.id === slide.id) && JSON.stringify(deck.asli.slides.find((s) => s.id === slide.id)) !== JSON.stringify(slide));
@@ -237,6 +261,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
           <div className="panel-isi">
             <Segmented label="Tingkat" nilai={tingkat} ubah={(t) => atur({ t })} pilihan={TINGKAT.map((t) => ({ nilai: t, label: singkatTingkat(t), judul: labelTingkat(t) }))} />
             <Segmented label="Lingkup" nilai={lingkup} ubah={(l) => atur({ l })} pilihan={[{ nilai: 'subtema', label: 'Subtema', judul: 'Pilih subtema satu per satu' }, { nilai: 'materi', label: 'Materi (kode)', judul: 'Semua subtema satu materi' }, { nilai: 'tingkat', label: 'Tingkat', judul: 'Semua subtema dalam cakupan tingkat' }]} />
+            <Segmented label="Bentuk deck" nilai={bentuk} ubah={setBentuk} pilihan={[{ nilai: 'subtema', label: 'Per subtema', judul: 'Satu deck per subtema' }, { nilai: 'materi', label: 'Satu per materi', judul: 'Subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ini' }]} />
             {lingkup !== 'tingkat' && (
               <div className="form">
                 <label>Materi
@@ -250,7 +275,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
               <label className="cek"><input type="checkbox" checked={hanyaBaru} onChange={(e) => atur({ baru: e.target.checked })} style={{ width: 16, height: 16 }} />Hanya subtema baru di Tingkat {tingkat} ({nBaru}, {diujiDi(tingkat)})</label>
             )}
             <fieldset className="tanpa-bingkai">
-              <legend className="label-kecil">Subtema (satu deck per subtema)</legend>
+              <legend className="label-kecil">Subtema ({gabung ? 'digabung jadi satu deck per materi' : 'satu deck per subtema'})</legend>
               <div className="chips" role="group" aria-label="Saring status subtema" style={{ marginBottom: 6 }}>
                 {(['semua', 'belum', 'draf', 'telaah'] as Saring[]).map((st) => (
                   <button key={st} type="button" className="chip chip-kecil" aria-pressed={saring === st} onClick={() => setSaring(st)}>{st === 'semua' ? 'Semua' : st === 'belum' ? 'Belum' : st === 'draf' ? 'Draf' : 'Ditelaah'} {hitung(st)}</button>
@@ -298,7 +323,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
               </label>
             </div>
             <p className="kecil redup" style={{ margin: 0 }}>Aturan per <span className="mono">{tanggalAcuan}</span> (tanggal acuan di bilah atas).</p>
-            <button type="button" className="btn btn-besar" style={{ background: 'var(--tinta)', color: '#fff', borderColor: 'var(--tinta)' }} disabled={!dicentang.length || sibuk} onClick={() => susun(dicentang.map((s) => s.id), false)}>{sibuk ? 'Memproses…' : `Susun naskah · ${dicentang.length} deck`}</button>
+            <button type="button" className="btn btn-besar" style={{ background: 'var(--tinta)', color: '#fff', borderColor: 'var(--tinta)' }} disabled={!dicentang.length || sibuk} onClick={() => susun(dicentang.map((s) => s.id), false)}>{sibuk ? 'Memproses…' : `Susun naskah · ${idDipilih.length} deck`}</button>
             <button type="button" className="btn btn-kecil" onClick={() => imporRef.current?.click()}>Impor naskah .json</button>
             <input ref={imporRef} type="file" accept="application/json,.json" className="tersembunyi" onChange={(e) => { const f = e.target.files?.[0]; if (f) imporNaskah(f); e.target.value = ''; }} />
           </div>
@@ -410,7 +435,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
                           <button type="button" className="btn btn-kecil" disabled={keJadi >= jadiSlide.length - 1} onClick={() => setKeJadi(keJadi + 1)}>›</button>
                         </div>
                       )}
-                      <IsianSlide slide={slide} nav={deck.naskah.nav} simpan={(baru) => ubahDeck((d) => suntingSlide(d, slide.id, () => baru, sekarang()))} />
+                      <IsianSlide slide={slide} nav={slide.nav ?? deck.naskah.nav} simpan={(baru) => ubahDeck((d) => suntingSlide(d, slide.id, () => baru, sekarang()))} />
                       <section aria-label="Pemeriksaan slide ini">
                         <h3 className="sub-judul">Pemeriksaan slide ini</h3>
                         <DaftarMutu cek={cekSlide} />
@@ -456,10 +481,10 @@ export default function TabMateri({ data, tanggalAcuan, kabar }: { data: DataUkp
       )}
       {dialog?.jenis === 'timpa' && (
         <Dialog judul="Susun ulang deck yang sudah disunting?" tutup={() => setDialog(null)} kaki={<>
-          <button type="button" className="btn" onClick={() => { const ids = dialog.ids.filter((id) => !decks[id]?.riwayat.length); setDialog(null); if (ids.length) susun(ids, true); }}>Lewati yang disunting</button>
+          <button type="button" className="btn" onClick={() => { const ids = dialog.ids.filter((id) => !decks[target(id)]?.riwayat.length); setDialog(null); if (ids.length) susun(ids, true); }}>Lewati yang disunting</button>
           <button type="button" className="btn btn-utama" onClick={() => { const ids = dialog.ids; setDialog(null); susun(ids, true); }}>Susun ulang semua</button>
         </>}>
-          <p style={{ margin: 0 }}>{dialog.ids.filter((id) => decks[id]?.riwayat.length).length} deck sudah disunting. Menyusun ulang mengganti suntingan dengan naskah baru dari data.</p>
+          <p style={{ margin: 0 }}>{new Set(dialog.ids.map(target).filter((id) => decks[id]?.riwayat.length)).size} deck sudah disunting. Menyusun ulang mengganti suntingan dengan naskah baru dari data.</p>
         </Dialog>
       )}
     </>

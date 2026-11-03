@@ -235,6 +235,16 @@ Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tang
   - *Materi (kode)*: semua subtema satu materi langsung tercentang.
   - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 23, C 13).
 - Unduhan beberapa deck menjadi satu .zip tanpa kompresi ulang. Lingkup tingkat memberi satu folder per kode, misalnya `materi-tingkat-b-tambahan-23-deck.zip`.
+- **Bentuk deck** (tambahan 3 November 2026, dipilih user: materi dibedakan per tingkat):
+  - *Per subtema* (bawaan): satu deck per subtema.
+  - *Satu per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ujian itu, disusun `susunNaskahMateri()`. Contohnya PP Tingkat A berisi 7 subtema dan PP Tingkat B · A+B berisi 8.
+  - Susunan deck gabungan:
+    1. Sampul: nama materi, pil "Tingkat B · A+B" dan "8 subtema · UKP 2026".
+    2. Daftar isi: tabel rapat No / Subtema / Diuji di / Mulai, dengan "Tingkat B (baru)" untuk subtema yang mulai di tingkat itu. Selalu satu slide.
+    3. Per subtema: pembatas (P16, "Bagian 8 dari 8 · baru di Tingkat B"), lalu isi deck subtemanya tanpa sampul dan penutup, dengan bilah navigasi subtema itu (`nav` per slide).
+    4. Satu penutup.
+  - Nama berkas `materi-pp-tingkat-b.pptx`, dan `materi-tingkat-b-per-materi-9-deck.zip` untuk satu tingkat. Ukurannya sekitar 2,5–3 MB per materi, karena font dan media hanya disimpan sekali.
+- **Contoh soal ikut tingkat:** soal berlabel tingkat deck (soal pendalaman) didahulukan. Di dalam tingkat yang sama, urutan sumber tetap model, orisinal, lalu bank acuan. Contohnya, deck PPh 22/23 Tingkat B dengan sumber bank memakai soal berlabel B.
 
 ### F2. Susun naskah otomatis, P0
 `susunNaskah()` deterministik untuk data dan pengaturan yang sama. Setiap blok mencatat `asal` (acuan, ditulis ulang, atau orisinal) dan rujukan ID aturan/kartu/soal.
@@ -261,7 +271,9 @@ Naskah disimpan di IndexedDB dengan 20 versi terakhir, sama seperti paket soal. 
 npm run materi -- --subtema "PP::PPh 21: pemotong, penerima & objek" --kepadatan standar --format pptx,json --setuju-acuan --out output/materi
 npm run materi -- --tingkat A --kode PPN --setuju-acuan --zip
 npm run materi -- --tingkat B --hanya-baru --setuju-acuan
+npm run materi -- --tingkat B --gabung --setuju-acuan --zip
 ```
+- `--gabung`: satu deck per materi (lihat F1, bentuk deck).
 - Lingkup: `--subtema` (per subtema), `--kode` (per materi), atau keduanya kosong (per tingkat, opsi `--hanya-baru`). Cakupan mengikuti `--tingkat`; subtema atau kode di luar cakupan ditolak. `--daftar` menampilkan subtema tanpa menulis berkas.
 - `--setuju-acuan` wajib untuk .pptx yang memuat teks acuan LatihUKP (KM2, setara dialog di tab Materi); `--format json` tidak memerlukannya.
 - CLI mencetak `RINGKASAN ->` dan `BERKAS ->`, lalu menulis `laporan.json` (slide, teks meluap, catatan penyusun per deck) serta berkas per subtema dengan folder per kode, atau satu .zip.

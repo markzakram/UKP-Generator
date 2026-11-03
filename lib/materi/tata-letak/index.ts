@@ -41,6 +41,6 @@ export function catatanSlide(a: SlideNaskah, lanjutan: number, tandaDraf = true)
 }
 
 export function tataLetak(naskah: Naskah, opsi: { tandaDraf?: boolean } = {}): SlideJadi[] {
-  if (naskah.nav.length > 6) throw new Error('Bilah navigasi paling banyak 6 label.');
+  if (naskah.nav.length > 6 || naskah.slides.some((s) => (s.nav?.length ?? 0) > 6)) throw new Error('Bilah navigasi paling banyak 6 label.');
   return naskah.slides.filter((s) => !s.sembunyi).flatMap((s) => tataSlide(s, naskah).map((j) => ({ ...j, catatan: catatanSlide(s, j.lanjutan, opsi.tandaDraf ?? true) })));
 }

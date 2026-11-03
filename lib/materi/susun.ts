@@ -1,5 +1,6 @@
 // Penyusun naskah materi dari data UKP (PRD-Materi bagian 7–8): aturan, kartu hafalan/rumus, kuis,
 // dan contoh soal (model/orisinal; bank acuan hanya bila diminta). Deterministik untuk data dan pengaturan yang sama.
+import { diujiDi, labelTingkat, ujianUntuk } from '../config';
 import { dalamCakupan, tingkatAturan, tingkatSoal } from '../data';
 import { dariModel } from '../generate';
 import { kondisiTersedia, MODELS } from '../models';
@@ -26,6 +27,8 @@ export interface PengaturanMateri {
   jumlahKuis: number;
   seed: string;
   dibuat: string;
+  /** Deck gabungan per materi: subtema yang digabung (`subtema` kosong). */
+  gabung?: string[];
 }
 
 export const PENGATURAN_MATERI_AWAL: Omit<PengaturanMateri, 'kode' | 'subtema' | 'tanggalAcuan' | 'dibuat'> = {
@@ -45,8 +48,9 @@ export function labelPendek(judul: string, maks: number): { teks: string; dipoto
     const calon = [...t.matchAll(pola)].map((m) => t.slice(0, m.index)).filter((x) => x.length >= 8 && x.length <= maks);
     if (calon.length) return { teks: calon[calon.length - 1], dipotong: true };
   }
-  let potong = t.slice(0, maks + 1).replace(/\s+\S*$/, '');
-  while (KATA_SAMBUNG.test(potong)) potong = potong.replace(KATA_SAMBUNG, '');
+  // Tanda baca di ujung potongan ("tanggal 15,") ikut dibuang.
+  let potong = t.slice(0, maks + 1).replace(/\s+\S*$/, '').replace(/[,;.]+$/, '');
+  while (KATA_SAMBUNG.test(potong)) potong = potong.replace(KATA_SAMBUNG, '').replace(/[,;.]+$/, '');
   return { teks: potong || t.slice(0, maks), dipotong: true };
 }
 
@@ -110,24 +114,29 @@ export function contohSoal(data: DataUkp, p: PengaturanMateri, r: Rng): { daftar
   const daftar: ContohSoal[] = [];
   if (p.sumberSoal === 'tanpa' || p.jumlahSoal <= 0) return { daftar, catatan };
   const ctx = { data, tanggalAcuan: p.tanggalAcuan };
-  const model = MODELS.filter((m) => m.kode === p.kode && m.subtema === p.subtema && dalamCakupan(tingkatSoal(m, data.mapping), p.tingkat));
-  for (let i = 0; i < p.jumlahSoal * 3 && daftar.length < p.jumlahSoal && model.length; i++) {
-    const m = model[i % model.length];
-    const kondisi = kondisiTersedia(m, ctx);
-    if (!kondisi.length) continue;
-    try {
-      const s = urutkanOpsi(dariModel(m.buat(r, ctx, r.pick(kondisi)), m, data), r);
-      if (!daftar.some((d) => d.soal.soal === s.soal)) daftar.push({ soal: s, asal: 'model', label: 'model ' + m.id });
-    } catch { /* kondisi tidak berlaku pada tanggal acuan */ }
-  }
   const cocok = (b: { kode: Kode; subtema: string; tingkat: Tingkat }) => b.kode === p.kode && b.subtema === p.subtema && dalamCakupan(tingkatSoal(b, data.mapping), p.tingkat);
-  for (const b of data.orisinal.filter(cocok)) {
-    if (daftar.length >= p.jumlahSoal) break;
-    daftar.push({ soal: urutkanOpsi(dariBank(b, data, 'orisinal'), r), asal: 'orisinal', label: 'orisinal ' + b.id });
-  }
-  if (daftar.length < p.jumlahSoal && p.sumberSoal === 'bank') {
-    const bank = r.shuffle(data.bank.filter((b) => cocok(b) && !b.kasusId));
-    for (const b of bank.slice(0, p.jumlahSoal - daftar.length)) daftar.push({ soal: urutkanOpsi(dariBank(b, data, 'bank'), r), asal: 'acuan', label: 'bank acuan ' + b.id });
+  // Putaran pertama hanya soal berlabel tingkat deck (soal pendalaman di B/C), putaran kedua sisanya.
+  // Di dalam satu putaran urutan sumber tetap: model, orisinal, lalu bank acuan bila diizinkan.
+  for (const putaran of [true, false]) {
+    const tingkatIni = (b: { kode: Kode; subtema: string; tingkat: Tingkat }) => (tingkatSoal(b, data.mapping) === p.tingkat) === putaran;
+    const model = MODELS.filter((m) => cocok(m) && tingkatIni(m));
+    for (let i = 0; i < p.jumlahSoal * 3 && daftar.length < p.jumlahSoal && model.length; i++) {
+      const m = model[i % model.length];
+      const kondisi = kondisiTersedia(m, ctx);
+      if (!kondisi.length) continue;
+      try {
+        const s = urutkanOpsi(dariModel(m.buat(r, ctx, r.pick(kondisi)), m, data), r);
+        if (!daftar.some((d) => d.soal.soal === s.soal)) daftar.push({ soal: s, asal: 'model', label: 'model ' + m.id });
+      } catch { /* kondisi tidak berlaku pada tanggal acuan */ }
+    }
+    for (const b of data.orisinal.filter((x) => cocok(x) && tingkatIni(x))) {
+      if (daftar.length >= p.jumlahSoal) break;
+      daftar.push({ soal: urutkanOpsi(dariBank(b, data, 'orisinal'), r), asal: 'orisinal', label: 'orisinal ' + b.id });
+    }
+    if (daftar.length < p.jumlahSoal && p.sumberSoal === 'bank') {
+      const bank = r.shuffle(data.bank.filter((b) => cocok(b) && !b.kasusId && tingkatIni(b)));
+      for (const b of bank.slice(0, p.jumlahSoal - daftar.length)) daftar.push({ soal: urutkanOpsi(dariBank(b, data, 'bank'), r), asal: 'acuan', label: 'bank acuan ' + b.id });
+    }
   }
   if (daftar.length < p.jumlahSoal) {
     catatan.push(p.sumberSoal === 'bank'
@@ -235,6 +244,42 @@ export function susunNaskah(data: DataUkp, p: PengaturanMateri): Naskah {
     for (const j of cariJebakan(teks, { kode: p.kode, soal: '', kasus: null }, data.jebakan)) catatan.push(`${s.id}: kemungkinan ketentuan lama (${j.topik}) — ${j.pesan}`);
   }
   return { versi: 1, judul: p.subtema, subjudul: materi, kode: p.kode, materi, subtema: p.subtema, tingkat: p.tingkat, tanggalAcuan: p.tanggalAcuan, dibuat: p.dibuat, nav, slides, catatan };
+}
+
+/**
+ * Deck gabungan satu materi untuk satu tingkat ujian: sampul materi, daftar isi subtema (tingkat mulai dan tanda
+ * "baru"), lalu tiap subtema sebagai bagian berpembatas, dan satu penutup. Isi tiap bagian sama dengan deck
+ * subtemanya pada tingkat itu; navigasi bawah mengikuti subtema masing-masing. `subtema` kosong = semua dalam cakupan.
+ */
+export function susunNaskahMateri(data: DataUkp, p: PengaturanMateri, subtema?: string[]): Naskah {
+  const urut = data.mapping.materi.find((m) => m.kode === p.kode)?.subtema ?? [];
+  const daftar = daftarSubtema(data, p.tingkat, p.tanggalAcuan).filter((s) => s.kode === p.kode && (!subtema || subtema.includes(s.subtema)))
+    .sort((a, b) => urut.indexOf(a.subtema) - urut.indexOf(b.subtema));
+  if (!daftar.length) throw new Error(`Materi ${p.kode} tidak punya subtema dalam cakupan ${labelTingkat(p.tingkat)} pada ${p.tanggalAcuan}.`);
+  const materi = data.mapping.materi.find((m) => m.kode === p.kode)?.nama ?? p.kode;
+  const baru = (t: Tingkat) => p.tingkat !== 'A' && t === p.tingkat;
+  const nBaru = daftar.filter((s) => baru(s.tingkat)).length;
+  const bagian = daftar.map((s) => ({ s, naskah: susunNaskah(data, { ...p, subtema: s.subtema }) }));
+  const slides: SlideNaskah[] = [
+    // Spasi di sekitar "/" supaya judul besar terputus di antara kata, bukan di tengah "PEMOTONGAN/PEMUNGUTAN".
+    { id: 'sampul', pola: 'P1', judul: materi.replace(/\s*\/\s*/g, ' / '), pil: [labelTingkat(p.tingkat), `${daftar.length} subtema · UKP ${p.tanggalAcuan.slice(0, 4)}`], asal: 'otomatis',
+      catatanPembicara: `Deck materi ${p.kode} untuk ${labelTingkat(p.tingkat)}: ${daftar.length} subtema, kepadatan ${p.kepadatan}, aturan per ${tanggal(p.tanggalAcuan)}.` },
+    { id: 'daftar-isi', pola: 'P6', judul: 'Daftar isi', chip: materi, ikon: 1, bagian: 'Daftar isi', asal: 'otomatis',
+      pembuka: `Subtema ${materi} yang diuji di ${labelTingkat(p.tingkat)}.` + (nBaru ? ` ${nBaru} subtema baru di Tingkat ${p.tingkat}.` : ''),
+      kolom: ['No', 'Subtema', 'Diuji di', 'Mulai'], lebar: [0.6, 4, 1.4, 1.6], rapat: true,
+      baris: daftar.map((s, i) => [String(i + 1), s.subtema, ujianUntuk(s.tingkat), 'Tingkat ' + s.tingkat + (baru(s.tingkat) ? ' (baru)' : '')]) },
+  ];
+  bagian.forEach(({ s, naskah }, i) => {
+    const no = i + 1;
+    slides.push({ id: `${no}-pembatas`, pola: 'P16', judul: s.subtema, subjudul: `Bagian ${no} dari ${daftar.length} · ${baru(s.tingkat) ? 'baru di Tingkat ' + p.tingkat : diujiDi(s.tingkat)}`, asal: 'otomatis' });
+    for (const x of naskah.slides) {
+      if (x.pola === 'P1' || x.pola === 'P15') continue;
+      slides.push({ ...x, id: `${no}-${x.id}`, nav: naskah.nav, chip: x.chip ?? s.subtema });
+    }
+  });
+  slides.push({ id: 'penutup', pola: 'P15', judul: 'Terima kasih', asal: 'otomatis' });
+  const catatan = bagian.flatMap(({ s, naskah }, i) => (naskah.catatan ?? []).map((c) => `Bagian ${i + 1} (${s.subtema}): ${c}`));
+  return { versi: 1, judul: `${materi} · ${labelTingkat(p.tingkat)}`, subjudul: labelTingkat(p.tingkat), kode: p.kode, materi, tingkat: p.tingkat, tanggalAcuan: p.tanggalAcuan, dibuat: p.dibuat, nav: ['Daftar isi'], slides, catatan };
 }
 
 /** Semua teks yang tampil di slide (untuk pemindaian ketentuan lama dan pencarian). */

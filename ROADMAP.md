@@ -78,3 +78,6 @@
 - [x] Unduhan massal .zip di tab Materi (lingkup materi/tingkat)
 - [x] CLI `npm run materi` (per tingkat, kode, atau subtema), job `buatmateri` di `agent-office.json`, README (3 Nov 2026)
 - [x] QC akhir (3 Nov 2026)
+
+## Materi per tingkat
+- [x] Deck gabungan satu per materi per tingkat (sampul, daftar isi, pembatas per subtema), contoh soal ikut tingkat, `--gabung` di CLI dan agent-office (3 Nov 2026)

@@ -68,7 +68,13 @@ Deck PowerPoint materi per subtema dengan gaya template tim ("Template Desain Ma
    - *Materi (kode)*: semua subtema satu materi langsung tercentang.
    - *Tingkat*: semua subtema tingkat itu, dikelompokkan per materi. Bisa dibatasi ke subtema yang baru mulai di tingkat itu (B 23, C 13).
 
-   Setiap subtema menampilkan tingkatnya dan statusnya: *Belum disusun*, *Draf internal*, atau *Ditelaah*. Pilih kepadatan (Ringkas, Standar, atau Lengkap), jumlah contoh soal dan kuis, lalu tekan **Susun naskah**. Satu deck dibuat per subtema.
+   Setiap subtema menampilkan tingkatnya dan statusnya: *Belum disusun*, *Draf internal*, atau *Ditelaah*. Pilih kepadatan (Ringkas, Standar, atau Lengkap), jumlah contoh soal dan kuis, lalu tekan **Susun naskah**.
+
+   **Bentuk deck** menentukan hasilnya:
+   - *Per subtema*: satu deck per subtema.
+   - *Satu per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat itu. Isinya sampul, daftar isi dengan tanda subtema baru di tingkat itu, pembatas per subtema, lalu isi tiap subtema. Contohnya PP Tingkat A berisi 7 subtema, PP Tingkat B · A+B berisi 8.
+
+   Contoh soal mendahulukan soal berlabel tingkat deck (soal pendalaman) bila ada.
 2. **Naskah.** Slide tampil sebagai tabel berisi pola, judul, sumber, asal (*Teks acuan*, *Ditulis ulang*, *Model*, *Orisinal*), dan status tata letak.
    - Panel kanan berisi pratinjau (sama dengan isi .pptx), isian slide, pemeriksaan, dan catatan pembicara.
    - **Perbesar pratinjau** (pintasan P) menampilkan deretan slide. J/K memindah slide.
@@ -133,12 +139,14 @@ npm run materi -- --tingkat B --hanya-baru --daftar
 npm run materi -- --tingkat A --setuju-acuan
 npm run materi -- --tingkat A --kode PPN,KUP --kepadatan ringkas --setuju-acuan --zip
 npm run materi -- --subtema "PPN::DPP & tarif PPN;KUP::Sanksi administrasi" --format pptx,json --setuju-acuan
+npm run materi -- --tingkat B --gabung --setuju-acuan --zip
 ```
 
 - Lingkupnya ditentukan dari opsi yang diisi:
   - `--subtema`: per subtema.
   - `--kode`: per materi (semua subtema kode itu).
   - Tanpa keduanya: per tingkat. Tambahkan `--hanya-baru` untuk subtema yang mulai di tingkat itu saja.
+  - Tambahkan `--gabung` untuk satu deck per materi (misalnya `materi-pp-tingkat-b.pptx`), bukan satu deck per subtema.
 - Cakupan mengikuti `--tingkat`: A 33 subtema, A+B 56, A+B+C 69. Subtema atau kode di luar cakupan ditolak.
 - `--setuju-acuan` wajib untuk .pptx selama isi deck masih teks acuan LatihUKP. Berkasnya diberi tanda Draf internal (PRD-Materi KM2), sama dengan dialog di tab Materi. `--format json` (naskah saja) tidak memerlukannya.
 - Hasil ditulis ke `output/materi-<lingkup>/`: `laporan.json` (slide, teks meluap, catatan penyusun per deck), lalu .pptx/.json per subtema dengan folder per kode, atau satu .zip dengan `--zip`.

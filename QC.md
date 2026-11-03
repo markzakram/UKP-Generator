@@ -299,3 +299,31 @@ Semua label tingkat di layar sekarang memakai helper di `lib/config.ts` (`labelT
 | Cek baru di `verify`: label cocok dengan `dalamCakupan` untuk semua pasangan tingkat | Lulus (verify 115) |
 | Browser 1440 dan 375 px: Atur paket, Materi, Pustaka tanpa geser horizontal | Lulus |
 | typecheck, build | Lulus |
+
+## Materi dibedakan per tingkat: deck gabungan per materi (3 Nov 2026)
+
+Keputusan user: materi dibedakan per tingkat dengan **satu deck per materi per tingkat**. Isi deck subtema tidak dibedakan, karena kartu aturan tidak memisahkan bagian dasar dan pendalaman.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| `susunNaskahMateri`: PP Tingkat A 7 bagian, PP Tingkat B · A+B 8 bagian; "Tata cara penyetoran & pelaporan" bertanda "Tingkat B (baru)" di daftar isi dan "baru di Tingkat B" di pembatas | Lulus (`verify:materi`) |
+| Isi tiap bagian = deck subtemanya tanpa sampul dan penutup; navigasi bawah ikut subtema (`nav` per slide); subset subtema dihormati; materi di luar cakupan ditolak; ekspor-impor naskah; nav slide lebih dari 6 ditolak | Lulus |
+| 24 deck gabungan ringkas (A 5, A+B 9, A+B+C 10 materi): tata letak, berkas, id unik, navigasi, daftar isi satu slide | Lulus |
+| Daftar isi memakai tabel `rapat` (baris min 40 pt) supaya 8 subtema muat satu slide; sebelumnya terpecah 6 + 2 | Diperbaiki |
+| Contoh soal: deck Tingkat A memakai soal A; deck Tingkat B mendahulukan soal berlabel B (PPh 22/23 dengan sumber bank) | Lulus |
+| CLI `--gabung` (`materi-bm-tingkat-a.pptx`); job agent-office mendapat isian "Satu deck per materi" | Lulus |
+| Tab Materi: pilihan Bentuk deck (Per subtema / Satu per materi); 9 deck gabungan Tingkat B disusun dalam 0,4 detik; unduhan `materi-tingkat-b-per-materi-9-deck.zip` 24,9 MB; lebar 375 px tanpa geser | Lulus di browser (unduhan dicegat; deck uji dihapus) |
+| Uji render PowerPoint: 24 deck gabungan standar (3.391 slide) dan 138 deck subtema (69 deck uji mesin + 69 naskah standar) | Semua terbuka; 38.431 dan 39.614 kotak teks; 0 meluap |
+| Rangkaian lengkap: typecheck, verify 115, verify:quality 40, verify:models 114, verify:export 52, verify:materi 146; build | 467 cek lulus |
+
+Perbaikan kecil yang ikut:
+
+- Judul sampul gabungan memberi spasi di sekitar "/" ("PPh Pemotongan / Pemungutan"), supaya tidak terputus di tengah kata.
+- Label pendek tidak lagi berakhir dengan tanda baca ("…tanggal 15," menjadi "…tanggal 15").
+
+Contoh hasil: `docs/materi/gabung-pp-tingkat-b.png` (sampul, daftar isi, pembatas, dan isi bagian 1 dan 8).
+
+Risiko sisa:
+
+- Deck gabungan panjang (PP standar sekitar 200 slide); untuk sesi kelas, kepadatan ringkas (sekitar 95 slide) lebih cocok.
+- Status Ditelaah dicatat per deck, jadi deck gabungan dan deck subtema ditelaah terpisah.

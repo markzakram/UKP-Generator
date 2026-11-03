@@ -15,9 +15,11 @@ import { tataLetak } from '../lib/materi/tata-letak';
 import { bagian, cek, selesai } from './harness';
 import { muatAturan, naskahUji } from './materi-fixture';
 import { muatDataNode } from '../lib/data-node';
+import { tingkatSoal } from '../lib/data';
+import { MODELS } from '../lib/models';
 import { adaTeksAcuan } from '../lib/materi/naskah';
 import { aturSlide, bacaNaskah, buatDeck, kembalikanSlide, suntingSlide, tandaiTelaah, urungkan } from '../lib/materi/deck';
-import { berlakuPada, daftarSubtema, labelPendek, PENGATURAN_MATERI_AWAL, susunNaskah, type Kepadatan, type PengaturanMateri } from '../lib/materi/susun';
+import { berlakuPada, daftarSubtema, labelPendek, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, type Kepadatan, type PengaturanMateri } from '../lib/materi/susun';
 import type { Kode } from '../lib/types';
 
 const KELUAR = 'output/materi-uji';
@@ -373,6 +375,53 @@ bagian('Kasus tepi pola baru (P8, P9, P11–P14)');
   writeFileSync(`${KELUAR}/tepi-pola-baru.pptx`, h2.berkas);
 }
 
+bagian('Deck gabungan per materi per tingkat');
+{
+  type P1 = Extract<SlideNaskah, { pola: 'P1' }>;
+  type P6 = Extract<SlideNaskah, { pola: 'P6' }>;
+  type P16 = Extract<SlideNaskah, { pola: 'P16' }>;
+  const pembatas = (n: Naskah) => n.slides.filter((s): s is P16 => s.pola === 'P16');
+  const ppA = susunNaskahMateri(data, PENG('PP', '', { tingkat: 'A' }));
+  const ppB = susunNaskahMateri(data, PENG('PP', '', { tingkat: 'B' }));
+  const daftarB = (ppB.slides[1] as P6).baris;
+  cek('PP: Tingkat A 7 bagian, Tingkat B · A+B 8 bagian; subtema baru ditandai di daftar isi dan pembatas', pembatas(ppA).length === 7 && pembatas(ppB).length === 8
+    && daftarB[7][1] === 'Tata cara penyetoran & pelaporan' && daftarB[7][3] === 'Tingkat B (baru)' && daftarB[0][3] === 'Tingkat A' && /baru di Tingkat B/.test(pembatas(ppB)[7].subjudul ?? ''), daftarB.map((b) => b[3]));
+  cek('sampul gabungan menulis materi dan tingkat ujian', ppB.slides[0].pola === 'P1' && ppB.slides[0].judul === 'PPh Pemotongan / Pemungutan' && (ppB.slides[0] as P1).pil[0] === 'Tingkat B · A+B' && ppB.subtema === undefined);
+  const sub = susunNaskah(data, PENG('PP', 'PPh 21 pegawai tetap', { tingkat: 'B' }));
+  const bagian2 = ppB.slides.filter((s) => s.id.startsWith('2-') && s.pola !== 'P16');
+  cek('isi bagian = deck subtemanya tanpa sampul/penutup; navigasi bawah ikut subtema', JSON.stringify(bagian2.map((s) => [s.pola, s.judul])) === JSON.stringify(sub.slides.filter((s) => s.pola !== 'P1' && s.pola !== 'P15').map((s) => [s.pola, s.judul]))
+    && bagian2.every((s) => JSON.stringify(s.nav) === JSON.stringify(sub.nav)));
+  cek('subset subtema dihormati', pembatas(susunNaskahMateri(data, PENG('PP', '', { tingkat: 'B' }), ['PPh 21 pegawai tetap', 'Natura & kenikmatan'])).map((s) => s.judul).join() === 'PPh 21 pegawai tetap,Natura & kenikmatan');
+  let galatG = '';
+  try { susunNaskahMateri(data, PENG('INT', '', { tingkat: 'A' })); } catch (e) { galatG = String(e); }
+  cek('materi tanpa subtema dalam cakupan ditolak', /tidak punya subtema dalam cakupan Tingkat A/.test(galatG), galatG);
+  const impor = bacaNaskah(JSON.stringify(ppB));
+  let galatNav = '';
+  try { bacaNaskah(JSON.stringify({ ...ppB, slides: [{ ...ppB.slides[2], nav: ['1', '2', '3', '4', '5', '6', '7'] }] })); } catch (e) { galatNav = String(e); }
+  cek('naskah gabungan bisa diekspor-impor; nav slide > 6 ditolak', impor.slides.length === ppB.slides.length && /paling banyak 6/.test(galatNav));
+  let deck = 0, bersih = 0;
+  for (const t of ['A', 'B', 'C'] as const) for (const m of data.mapping.materi) {
+    let n: Naskah;
+    try { n = susunNaskahMateri(data, PENG(m.kode, '', { tingkat: t, kepadatan: 'ringkas' })); } catch { continue; }
+    deck++;
+    const h = tulisPptx(n, dasar);
+    if (!periksaTataLetak(h.slides).length && !periksaPaket(h.berkas).length && new Set(n.slides.map((s) => s.id)).size === n.slides.length && n.slides.every((s) => (s.nav ?? n.nav).length <= 6)
+      && h.slides.filter((j) => j.asal === 'daftar-isi').length === 1) bersih++;
+  }
+  cek('semua deck gabungan (A 5, A+B 9, A+B+C 10 materi; ringkas): tata letak, berkas, id unik, navigasi bersih, daftar isi satu slide', deck === 24 && bersih === 24, { deck, bersih });
+  // Contoh soal mengutamakan soal berlabel tingkat deck (soal pendalaman).
+  const tingkatContoh = (t: 'A' | 'B') => {
+    const n = susunNaskah(data, PENG('PP', 'PPh Pasal 22 & PPh Pasal 23', { tingkat: t, sumberSoal: 'bank', jumlahSoal: 2 }));
+    return n.slides.filter((s) => s.pola === 'P12').map((s) => {
+      const id = s.sumber?.[0] ?? '';
+      const asal = id.startsWith('model ') ? MODELS.find((m) => m.id === id.slice(6)) : data.bank.find((x) => x.id === id);
+      return asal ? tingkatSoal(asal, data.mapping) : null;
+    });
+  };
+  const cA = tingkatContoh('A'), cB = tingkatContoh('B');
+  cek('contoh soal: deck Tingkat A memakai soal A, deck Tingkat B mendahulukan soal pendalaman B', cA.length === 2 && cA.every((x) => x === 'A') && cB.length === 2 && cB.every((x) => x === 'B'), { cA, cB });
+}
+
 bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
 {
   const tmp = mkdtempSync(path.join(os.tmpdir(), 'ukp-materi-cli-'));
@@ -400,6 +449,9 @@ bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
   const luar = jalan(['--tingkat', 'A', '--subtema', 'PBB::Objek & subjek PBB-P5L']);
   const kodeLuar = jalan(['--tingkat', 'A', '--kode', 'INT']);
   cek('subtema/kode di luar cakupan tingkat ditolak', luar.kode === 1 && /di luar cakupan Tingkat A/.test(luar.out) && kodeLuar.kode === 1 && /INT tidak punya subtema dalam cakupan Tingkat A/.test(kodeLuar.out));
+  const gab = jalan(['--tingkat', 'A', '--kode', 'BM', '--gabung', '--kepadatan', 'ringkas', '--setuju-acuan', '--out', path.join(tmp, 'gab')]);
+  cek('--gabung: satu deck per materi (materi-bm-tingkat-a.pptx) dengan berkas sah', gab.kode === 0 && /^RINGKASAN -> 1 deck \(materi BM, cakupan Tingkat A, ringkas, satu deck per materi\)/m.test(gab.out)
+    && existsSync(path.join(tmp, 'gab', 'materi-bm-tingkat-a.pptx')) && periksaPaket(new Uint8Array(readFileSync(path.join(tmp, 'gab', 'materi-bm-tingkat-a.pptx')))).length === 0, gab.out);
   const salah = jalan(['--kepadatan', 'padat']);
   cek('opsi tidak valid ditolak', salah.kode === 1 && /Error: --kepadatan/.test(salah.out));
   const bantuan = jalan(['--help']).out;

@@ -112,7 +112,7 @@ export function navBar(s: Slide, label: string[], aktif?: string) {
 export function kepala(s: Slide, naskah: Naskah, judul: string): number {
   const a = s.asal;
   chip(s, a.chip || naskah.subtema || naskah.judul, a.ikon ?? 1);
-  navBar(s, naskah.nav, a.bagian);
+  navBar(s, a.nav ?? naskah.nav, a.bagian);
   return judulSlide(s, judul) + 16;
 }
 

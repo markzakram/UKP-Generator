@@ -60,7 +60,7 @@ export function tataIkhtisar(a: P2, naskah: Naskah): SlideJadi[] {
       s.bentuk({ nama: 'Ubin ikon', x: x + lebar / 2 - 30, y: y + tinggi - 70, w: 60, h: 56, isi: W.putih, radius: 12, bayangan: true });
       s.gambar(`ikon-${ikon}` as Aset, x + lebar / 2 - 17, y + tinggi - 59, 34, 34, 'Ikon kartu');
     });
-    navBar(s, naskah.nav, a.bagian);
+    navBar(s, a.nav ?? naskah.nav, a.bagian);
     return s.jadi();
   });
 }

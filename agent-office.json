@@ -81,6 +81,7 @@
         ["--kode", "{kode}"],
         ["--subtema", "{subtema}"],
         "{hanya_baru?--hanya-baru}",
+        "{gabung?--gabung}",
         ["--kepadatan", "{kepadatan}"],
         ["--format", "{format}"],
         "{zip?--zip}",
@@ -92,13 +93,14 @@
         "kode": { "jenis": "teks", "label": "Materi (kode)", "bantuan": "Per materi: kode dipisah koma (KUP, OP, PP, PPN, BM, PBB, AKT, BDN, BTI, INT). Kosongkan kode dan subtema untuk semua subtema dalam cakupan tingkat.", "contoh": "PPN", "pola": "^((KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT)(,(KUP|OP|PP|PPN|BM|PBB|AKT|BDN|BTI|INT))*)?$" },
         "subtema": { "jenis": "teks", "label": "Subtema", "bantuan": "Per subtema: KODE::Nama subtema, dipisah titik koma, persis seperti di tab Materi atau npm run materi -- --daftar.", "contoh": "PPN::DPP & tarif PPN", "pola": "^([A-Z]{2,3}::[^;]+(;[A-Z]{2,3}::[^;]+)*)?$" },
         "hanya_baru": { "jenis": "tanda", "label": "Hanya subtema yang mulai di tingkat ini", "bantuan": "Per tingkat tanpa kode/subtema: B 23 subtema, C 13 subtema.", "jika_disebut": ["hanya tambahan", "subtema baru", "tambahan tingkat", "materi baru tingkat"] },
-        "kepadatan": { "jenis": "teks", "label": "Kepadatan", "bantuan": "ringkas (±9 slide per deck), standar (±18), atau lengkap (±31).", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b" },
+        "gabung": { "jenis": "tanda", "label": "Satu deck per materi", "bantuan": "Subtema dalam lingkup digabung menjadi satu deck per materi untuk tingkat itu: sampul, daftar isi (tanda subtema baru di tingkat itu), pembatas per subtema. Tanpa centang: satu deck per subtema.", "jika_disebut": ["per materi", "satu deck per materi", "deck gabungan", "gabungan", "gabung"] },
+        "kepadatan": { "jenis": "teks", "label": "Kepadatan", "bantuan": "ringkas (±9 slide per subtema), standar (±18), atau lengkap (±31). Deck gabungan per materi = jumlah semua subtemanya.", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b" },
         "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "pptx (deck) dan/atau json (naskah yang bisa diimpor di tab Materi), dipisah koma. Bawaan pptx.", "contoh": "pptx", "bawaan": "pptx", "pola": "^(pptx|json)(,(pptx|json))?$" },
         "zip": { "jenis": "tanda", "label": "Bungkus jadi satu .zip", "bantuan": "Satu folder per kode bila lebih dari satu materi; sekitar 2,4 MB per deck.", "jika_disebut": ["zip", "satu berkas"] },
         "setuju_acuan": { "jenis": "tanda", "label": "Setuju deck memuat teks acuan LatihUKP (Draf internal)", "bantuan": "Wajib untuk .pptx: isi deck masih teks acuan LatihUKP yang belum ditelaah, jadi berkas diberi tanda Draf internal dan bukan untuk peserta (PRD-Materi KM2).", "jika_disebut": ["setuju acuan", "draf internal", "internal"] }
       },
       "catatan": [
-        "menjalankan npm run materi (scripts/materi.ts); tanpa API key dan tanpa internet; satu deck per subtema",
+        "menjalankan npm run materi (scripts/materi.ts); tanpa API key dan tanpa internet; satu deck per subtema, atau satu deck per materi bila Satu deck per materi dicentang",
         "lingkup: isi subtema untuk per subtema, kode untuk per materi, atau kosongkan keduanya untuk per tingkat",
         "hasil di output/materi-<tanggal_jam>/: laporan.json (slide, teks meluap, catatan penyusun per deck) dan .pptx/.json per subtema (folder per kode) atau satu .zip",
         "suntingan naskah, pratinjau, dan tanda Ditelaah hanya di aplikasi (tab Materi)"

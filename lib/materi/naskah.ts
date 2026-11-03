@@ -16,6 +16,8 @@ interface SlideDasar {
   id: string;
   /** Label bagian di bilah navigasi yang ditampilkan aktif. Kosong = semua label tampil biasa. */
   bagian?: string;
+  /** Bilah navigasi khusus slide ini (deck gabungan per materi: navigasi subtemanya); kosong = `nav` naskah. */
+  nav?: string[];
   /** Teks chip judul bagian di kiri atas (slide isi). */
   chip?: string;
   ikon?: Ikon;
@@ -42,7 +44,8 @@ export type SlideNaskah = SlideDasar & (
   | { pola: 'P3'; judul: string; pembuka?: string; isi: string; sorotan?: Sorotan; gambar?: Gambar }
   | { pola: 'P4'; judul: string; pembuka?: string; item: Definisi[] }
   | { pola: 'P5'; judul: string; pembuka?: string; kiri: SisiKontras; kanan: SisiKontras }
-  | { pola: 'P6'; judul: string; pembuka?: string; kolom: string[]; baris: string[][]; lebar?: number[] }
+  /** `rapat`: baris lebih pendek (daftar isi), supaya sampai 8 baris muat satu slide. */
+  | { pola: 'P6'; judul: string; pembuka?: string; kolom: string[]; baris: string[][]; lebar?: number[]; rapat?: boolean }
   | { pola: 'P7'; judul: string; pembuka?: string; langkah: string[]; gambar?: Gambar }
   | { pola: 'P8'; judul: string; rumus: string[]; keterangan?: string; contoh?: string[] }
   | { pola: 'P9'; judul: string; pembuka?: string; angka: AngkaBesar[] }

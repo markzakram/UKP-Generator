@@ -20,6 +20,8 @@ export interface DeckMateri {
 }
 
 export const idDeck = (kode: string, subtema: string) => kode + '|' + subtema;
+/** Deck gabungan satu materi untuk satu tingkat ujian; `tambahan` = hanya subtema yang baru di tingkat itu. */
+export const idGabungan = (kode: string, tingkat: string, tambahan = false) => 'gabung:' + kode + '|' + tingkat + (tambahan ? '+baru' : '');
 
 export function buatDeck(naskah: Naskah, pengaturan: PengaturanMateri | null, waktu: string, id?: string): DeckMateri {
   return { id: id ?? (naskah.kode && naskah.subtema ? idDeck(naskah.kode, naskah.subtema) : 'impor:' + naskah.judul), judul: naskah.judul, naskah, asli: naskah, pengaturan, status: 'draf', diperbarui: waktu, riwayat: [] };
@@ -89,6 +91,7 @@ export function bacaNaskah(teks: string): Naskah {
     id.add(s.id);
     if (!POLA_SAH.has(s.pola)) throw new Error(`Slide ${s.id}: pola "${(s as { pola: string }).pola}" tidak dikenal.`);
     if (typeof s.judul !== 'string') throw new Error(`Slide ${s.id}: judul wajib diisi.`);
+    if (s.nav !== undefined && (!Array.isArray(s.nav) || s.nav.length > 6 || s.nav.some((x) => typeof x !== 'string'))) throw new Error(`Slide ${s.id}: "nav" harus berisi paling banyak 6 label teks.`);
   });
   return { ...n, tanggalAcuan: n.tanggalAcuan || new Date().toISOString().slice(0, 10), dibuat: n.dibuat || new Date().toISOString() };
 }

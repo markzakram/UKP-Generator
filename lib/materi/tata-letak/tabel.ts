@@ -1,4 +1,5 @@
 // P6 Tabel: kepala slate, baris berselang; baris berlebih dipindah ke slide lanjutan dengan kepala diulang.
+// `rapat` (daftar isi deck gabungan): baris minimal 40 pt dan bantalan 8 pt agar 8 baris muat satu slide.
 import type { SlideJadi } from '../kotak';
 import { EPS, ruang, tinggiTeks } from '../metrik';
 import type { Naskah, SlideNaskah } from '../naskah';
@@ -22,12 +23,16 @@ function lebarKolom(a: P6): number[] {
   return awal.map((w) => w * skala);
 }
 
-const tinggiBaris = (baris: string[], lebar: number[], pt: number) =>
-  Math.max(54, ...baris.map((t, j) => tinggiTeks([par(t ?? '', { b: j === 0 })], pt, lebar[j] - 2 * PAD, { tebal: j === 0 }).tinggi + 2 * PAD));
+const tinggiBaris = (baris: string[], lebar: number[], pt: number, rapat?: boolean) => {
+  const pad = rapat ? 8 : PAD;
+  return Math.max(rapat ? 40 : 54, ...baris.map((t, j) => tinggiTeks([par(t ?? '', { b: j === 0 })], pt, lebar[j] - 2 * pad, { tebal: j === 0 }).tinggi + 2 * pad));
+};
 
 export function tataTabel(a: P6, naskah: Naskah): SlideJadi[] {
   const hasil: SlideJadi[] = [];
   const lebar = lebarKolom(a);
+  const pad = a.rapat ? 8 : PAD;
+  const tinggi = (b: string[], pt: number) => tinggiBaris(b, lebar, pt, a.rapat);
   let sisa = a.baris.slice();
   // Setelah tabel dipecah, semua slide lanjutan memakai ukuran yang sama.
   let ptTetap: number | null = null;
@@ -41,12 +46,12 @@ export function tataTabel(a: P6, naskah: Naskah): SlideJadi[] {
     const avail = BATAS_BAWAH - (y0 + hKepala);
     // Ukuran seragam: terbesar yang memuat semua baris; bila tidak ada, pecah pada PT_PECAH.
     let pt: number = ptTetap ?? MAKS, n = sisa.length;
-    while (ptTetap == null && pt > MIN && sisa.reduce((t, b) => t + tinggiBaris(b, lebar, pt), 0) > avail + EPS) pt--;
-    if (sisa.reduce((t, b) => t + tinggiBaris(b, lebar, pt), 0) > avail + EPS) {
+    while (ptTetap == null && pt > MIN && sisa.reduce((t, b) => t + tinggi(b, pt), 0) > avail + EPS) pt--;
+    if (sisa.reduce((t, b) => t + tinggi(b, pt), 0) > avail + EPS) {
       pt = ptTetap ?? Math.max(MIN, PT_PECAH);
       ptTetap = pt;
       let total = 0; n = 0;
-      while (n < sisa.length && total + tinggiBaris(sisa[n], lebar, pt) <= avail + EPS) { total += tinggiBaris(sisa[n], lebar, pt); n++; }
+      while (n < sisa.length && total + tinggi(sisa[n], pt) <= avail + EPS) { total += tinggi(sisa[n], pt); n++; }
       n = Math.max(1, n);
       s.lapor('dipecah', `${sisa.length - n} baris tabel dipindah ke slide lanjutan`);
     } else if (pt < MAKS) s.lapor('diperkecil', `Isi tabel ${pt} pt (maks ${MAKS})`);
@@ -58,13 +63,13 @@ export function tataTabel(a: P6, naskah: Naskah): SlideJadi[] {
     });
     let y = y0 + hKepala;
     sisa.slice(0, n).forEach((b, i) => {
-      let h = tinggiBaris(b, lebar, pt);
+      let h = tinggi(b, pt);
       if (y + h > BATAS_BAWAH) h = BATAS_BAWAH - y;
       s.bentuk({ nama: 'Baris', x: X0, y, w: LEBAR, h, isi: i % 2 ? W.barisMuda : W.putih, radius: 0, garis: { warna: W.garisTabel, tebal: 0.75 } });
       x = X0;
       b.forEach((t, j) => {
-        const sel = pasAtauPotong(s, t ?? '', lebar[j] - 2 * PAD, h - 2 * PAD, pt, pt, { tebal: j === 0, label: 'Sel tabel' });
-        s.teks({ nama: 'Sel', x: x + PAD, y: y + PAD, w: lebar[j] - 2 * PAD, h: h - 2 * PAD, paragraf: [par(sel.teks, { b: j === 0 })], pt, tebal: j === 0, warna: j === 0 ? W.teal : W.hitam, jangkar: 'ctr' });
+        const sel = pasAtauPotong(s, t ?? '', lebar[j] - 2 * pad, h - 2 * pad, pt, pt, { tebal: j === 0, label: 'Sel tabel' });
+        s.teks({ nama: 'Sel', x: x + pad, y: y + pad, w: lebar[j] - 2 * pad, h: h - 2 * pad, paragraf: [par(sel.teks, { b: j === 0 })], pt, tebal: j === 0, warna: j === 0 ? W.teal : W.hitam, jangkar: 'ctr' });
         if (j < b.length - 1) s.garis(x + lebar[j], y, x + lebar[j], y + h, W.garisTabel, 0.75);
         x += lebar[j];
       });

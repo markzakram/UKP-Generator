@@ -524,3 +524,23 @@ Sebelumnya bank orisinal berisi 10 soal, 45 subtema tidak punya soal non-acuan s
 
 Yang masih terbuka (dicatat di ROADMAP): telaah penelaah materi (K8) atas 25 model dan 56 soal orisinal; tulis ulang materi selain Bea Meterai; 4 subtema tanpa soal orisinal; repositori private dan pembatasan akses situs (pemilik repo).
 
+## Cakupan deck: bawaan tingkat, Unduh semua, .zip berhierarki (4 Nov 2026)
+
+Permintaan user: bawaan lingkup Tingkat dan bentuk Per subtema, opsi unduh semua menurut cakupan bawaan maupun yang diatur, .zip rapi menurut tingkat, materi, subtema.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Bawaan: lingkup Tingkat, Per subtema, semua subtema tercentang, satu tombol "Susun & unduh semua"; urutan pilihan lingkup Tingkat, Materi, Subtema; baris cakupan "5 materi, 34 subtema" | Lulus (browser) |
+| Tingkat bawaan tab Materi diubah dari C ke A atas keputusan user: 34 deck, tombol utama sesuai; *Kembali ke bawaan* ke Tingkat A; CLI dan Atur paket tetap bawaan C | Lulus (browser) |
+| Tingkat A: .zip `materi-tingkat-a-34-deck.zip`, satu folder `Tingkat A`, 5 folder materi bernomor, 34 deck kedalaman 3, 84 MB, 14 detik, progres "Memproses 7/34…" | Lulus (browser, isi zip dibaca) |
+| Tingkat C: 69 deck, 10 folder materi, 171 MB, 31 detik, jalur terpanjang 127 karakter | Lulus (browser) |
+| Centang sebagian: tombol utama "yang dicentang" (33), "Unduh semua" (34) tetap ada dan mengabaikan centangan; bentuk Per materi: 5 deck per folder materi | Lulus (browser) |
+| Masalah yang ditemukan: id deck subtema tidak memuat tingkat, padahal contoh soalnya mengikuti tingkat, dan pengaturan baru diabaikan untuk deck yang sudah ada. Deck Tingkat C yang diunduh dari Tingkat A bisa membawa soal level C. `rencanaDeck`: deck yang belum disunting disusun ulang menurut pengaturan sekarang; yang disunting, ditelaah, atau impor tidak ditimpa dan disebut di ringkasan | Diperbaiki (`verify:materi`; browser: PPN Pengkreditan PM berganti dari `O-PPN-01` label C ke model level A, deck tersunting tetap C) |
+| Deck gabungan berisi sebagian subtema disusun ulang bila cakupan unduhan berbeda | Diperbaiki |
+| Pengaturan hilang setiap pindah tab karena komponen dilepas: kini diingat per browser, nilai rusak jatuh ke bawaan, *Kembali ke bawaan* tersedia | Diperbaiki (browser) |
+| Deck terbuka bisa berada di luar cakupan (materi INT saat Tingkat A): deck terbuka kini mengikuti cakupan, juga saat tab dimuat | Diperbaiki (browser) |
+| `lib/materi/jalur.ts`: nama aman Windows (`:` `/` dan karakter terlarang), jalur unik, nomor berurutan untuk A, A+B, A+B+C dan "hanya subtema baru" | Lulus (`verify:materi`) |
+| CLI memakai hierarki yang sama untuk lebih dari satu berkas; satu berkas tetap langsung. `--tingkat A` 34 deck dibuka PowerPoint lewat folder baru: 8.970 kotak teks, 0 meluap | Lulus |
+| Silabus: kolom baru jalur deck per subtema di .zip, karena kolom Deck merujuk deck gabungan yang bukan bawaan unduhan | Ditambahkan |
+| verify:materi 201; verify 137; typecheck; build | Lulus |
+

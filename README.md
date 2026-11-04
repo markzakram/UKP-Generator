@@ -66,12 +66,12 @@ npm start
 
 Deck PowerPoint materi per subtema dengan gaya template tim ("Template Desain Materi"). Spesifikasinya ada di [PRD-Materi.md](PRD-Materi.md).
 
-1. **Cakupan deck.** Pilih tingkat (A 34 subtema, A+B 48, A+B+C 69), lalu lingkup:
-   - *Subtema*: pilih materi, lalu centang subtema satu per satu.
-   - *Materi* (kode): semua subtema satu materi langsung tercentang.
+1. **Cakupan deck.** Bawaannya Tingkat A, lingkup *Tingkat*, dan bentuk *Per subtema*: pilih tingkat (A 34 subtema, A+B 48, A+B+C 69), dan semua subtemanya langsung tercentang. Fokus Tingkat A berarti hanya materi Tingkat A; tingkat lebih tinggi menambah materi, dan contoh soalnya mengikuti tingkat. Pengaturan diingat per browser; *Kembali ke bawaan* mengembalikannya. Lingkup:
    - *Tingkat*: semua subtema tingkat itu, dikelompokkan per materi. Bisa dibatasi ke subtema yang baru mulai di tingkat itu (B 14, C 21).
+   - *Materi* (kode): semua subtema satu materi langsung tercentang.
+   - *Subtema*: pilih materi, lalu centang subtema satu per satu.
    - *Buat latihan* (bilah deck): merakit paket latihan dari subtema deck yang terbuka (deck gabungan: semua subtemanya) dan membukanya di Hasil paket. Ukuran 20 soal, turun ke 15, 10, atau 5 bila stok subtema kurang; pengaturan tryout di Atur paket tidak berubah.
-   - *Silabus* (bagian di bawah Ekspor): satu .xlsx per tingkat berisi pertemuan (60/90/120/180 menit), materi, subtema, nomor slide di deck gabungan, menit, kuis, contoh soal, dan stok soal latihan. Durasi dihitung dari slide hasil tata letak: slide isi 2 menit, rumus/contoh soal/pembahasan 3 menit, pembatas 0,5 menit. Kepadatan standar, 90 menit: A 34 subtema ±26 jam (20 pertemuan), A+B 48 ±37 jam (27), A+B+C 69 ±53 jam (40). CLI: `npm run materi -- --tingkat A --silabus --menit-pertemuan 90`.
+   - *Silabus* (bagian di bawah Ekspor): satu .xlsx per tingkat berisi pertemuan (60/90/120/180 menit), materi, subtema, nomor slide di deck gabungan, menit, kuis, contoh soal, stok soal latihan, dan jalur deck per subtema di .zip. Durasi dihitung dari slide hasil tata letak: slide isi 2 menit, rumus/contoh soal/pembahasan 3 menit, pembatas 0,5 menit. Kepadatan standar, 90 menit: A 34 subtema ±26 jam (20 pertemuan), A+B 48 ±37 jam (27), A+B+C 69 ±53 jam (40). CLI: `npm run materi -- --tingkat A --silabus --menit-pertemuan 90`.
 
    Setiap subtema menampilkan tingkatnya dan statusnya: *Belum disusun*, *Draf internal*, atau *Ditelaah*. Pilih kepadatan (Ringkas, Standar, atau Lengkap), jumlah contoh soal dan kuis, lalu tekan **Susun naskah**.
 
@@ -87,8 +87,9 @@ Deck PowerPoint materi per subtema dengan gaya template tim ("Template Desain Ma
 3. **Ekspor** di panel Cakupan deck:
    - Pilih format: .pptx, naskah .json, atau keduanya.
    - Pilih isi .pptx: *Deck lengkap* atau *Handout peserta* (versi ringkas: sampul, daftar isi, ikhtisar, rumus, rangkuman, dan kuis Benar/Salah, tanpa catatan pembicara; nama berkas `-handout.pptx`). Handout yang masih memuat teks acuan tetap meminta konfirmasi KM2.
-   - Tekan **Susun & unduh N deck**. Deck yang belum tersusun disusun dulu, lalu semuanya diunduh.
-   - Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip, misalnya `materi-tingkat-a-33-deck.zip` dengan satu folder per kode. Ukurannya sekitar 2,4 MB per deck .pptx.
+   - Tekan **Unduh semua · N deck** untuk semua subtema dalam cakupan sekarang, baik cakupan bawaan maupun yang sudah diatur. Bila hanya sebagian yang dicentang, tombol utama menjadi **Unduh yang dicentang**, dan *Unduh semua* tetap ada di bawahnya.
+   - Isi unduhan mengikuti pengaturan sekarang: deck yang belum ada, atau yang belum disunting tetapi disusun dengan tingkat, kepadatan, kuis, contoh soal, atau tanggal lain, disusun dulu. Deck yang sudah disunting atau ditelaah tidak ditimpa dan disebut di ringkasan.
+   - Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip berhierarki Tingkat / Materi / Subtema, misalnya `materi-tingkat-a-34-deck.zip` berisi `Tingkat A/04 PPN - PPN & SPT PPN/05 Pengkreditan Pajak Masukan.pptx`. Bentuk *Per materi*: `Tingkat A/04 PPN - PPN & SPT PPN/materi-ppn-tingkat-a.pptx`. Handout berakhiran ` - handout.pptx`, naskah ` - naskah.json`. Ukurannya sekitar 2,4 MB per deck .pptx (Tingkat A 84 MB, A+B+C 171 MB).
    - Bilah bawah juga menyediakan unduhan deck yang sedang dibuka (.pptx atau naskah .json). Naskah .json bisa diimpor lagi untuk topik lain.
    - Deck yang masih memuat teks acuan LatihUKP dan belum ditelaah meminta konfirmasi, lalu diberi tanda **Draf internal** di properti berkas dan catatan pembicara (PRD-Materi KM2).
 4. **Telaah.** Penelaah menandai tiap slide *Sesuai* atau *Perlu diubah* di panel kanan, dengan catatan dan nama. Tabel slide bisa disaring "Belum ditelaah" dan "Perlu diubah". **Lembar telaah .xlsx** bisa diisi di Excel oleh penelaah yang tidak memakai aplikasi, lalu diimpor kembali. Slide teks acuan yang ditelaah *Sesuai* tidak lagi membuat deck Draf internal; menyunting isi slide menghapus hasil telaahnya.
@@ -160,10 +161,11 @@ npm run materi -- --tingkat A --kode BM --gabung --handout --pdf
   - `--kode`: per materi (semua subtema kode itu).
   - Tanpa keduanya: per tingkat. Tambahkan `--hanya-baru` untuk subtema yang mulai di tingkat itu saja.
   - Tambahkan `--gabung` untuk satu deck per materi (misalnya `materi-pp-tingkat-b.pptx`), bukan satu deck per subtema.
+- Lebih dari satu berkas ditulis berhierarki Tingkat / Materi / Subtema, sama dengan .zip tab Materi; satu berkas langsung di folder hasil.
 - `--handout` menulis handout peserta (`-handout.pptx`, tanpa catatan pembicara). `--pdf` menyimpan PDF setiap .pptx lewat PowerPoint (`scripts/materi-pdf.ps1`; hanya Windows dengan PowerPoint, tidak bersama `--zip`). Contoh: handout BM gabungan Tingkat A 24 slide (deck lengkap 73), PDF 24 halaman.
 - Cakupan mengikuti `--tingkat`: A 34 subtema, A+B 48, A+B+C 69. Subtema atau kode di luar cakupan ditolak.
 - `--setuju-acuan` wajib untuk .pptx selama isi deck masih teks acuan LatihUKP. Berkasnya diberi tanda Draf internal (PRD-Materi KM2), sama dengan dialog di tab Materi. `--format json` (naskah saja) tidak memerlukannya.
-- Hasil ditulis ke `output/materi-<lingkup>/`: `laporan.json` (slide, teks meluap, catatan penyusun per deck), lalu .pptx/.json per subtema dengan folder per kode, atau satu .zip dengan `--zip`.
+- Hasil ditulis ke `output/materi-<lingkup>/`: `laporan.json` (slide, teks meluap, catatan penyusun per deck), lalu .pptx/.json berhierarki Tingkat / Materi / Subtema, atau satu .zip dengan `--zip`.
 - Satu tingkat penuh (34 deck) selesai sekitar 9 detik. Untuk uji render: `powershell -ExecutionPolicy Bypass -File scripts/materi-render.ps1 output/materi-tingkat-a` (membaca subfolder).
 
 `agent-office.json` berisi pekerjaan Buka UKP Studio, Buat paket UKP, Buat deck materi UKP (termasuk handout dan PDF), Buat silabus UKP, Verifikasi, dan Impor data. Perbarui berkas ini setiap kali opsi CLI atau script berubah; `npm run verify` dan `npm run verify:materi` memeriksa kesesuaiannya.

@@ -2,11 +2,11 @@
 // (termasuk slide lanjutan), lalu subtema dibagi ke pertemuan berdurasi tetap. Dipakai tab Materi dan CLI.
 import { CAKUPAN_TINGKAT, diujiDi, labelTingkat, URUTAN_KODE } from '../config';
 import { dalamCakupan, tingkatSoal } from '../data';
-import { slug } from '../export/common';
 import { xlsx } from '../export/siadu';
 import { MODELS } from '../models';
 import type { DataUkp, Kode, Tingkat } from '../types';
 import { NAMA_POLA, type Naskah, type Pola } from './naskah';
+import { hierarkiDeck, jalurBerkasDeck, namaDeckGabungan } from './jalur';
 import { daftarSubtema, susunNaskahMateri, type PengaturanMateri } from './susun';
 import { tataLetak } from './tata-letak';
 
@@ -81,7 +81,6 @@ export interface Silabus {
   total: { materi: number; subtema: number; slide: number; menit: number; jp: number; pertemuan: number };
 }
 
-export const namaDeckGabungan = (kode: string, tingkat: Tingkat, tambahan: boolean) => `materi-${slug(kode)}-tingkat-${tingkat.toLowerCase()}${tambahan ? '-tambahan' : ''}.pptx`;
 const bulat = (n: number) => Math.round(n * 10) / 10;
 
 /**
@@ -189,14 +188,15 @@ const latihan = (u: Pick<UnitSilabus, 'soalBank' | 'soalOrisinal' | 'model'>) =>
 export const namaBerkasSilabus = (s: Silabus) => `silabus-tingkat-${s.tingkat.toLowerCase()}${s.hanyaBaru ? '-tambahan' : ''}-${s.menitPertemuan}-menit.xlsx`;
 
 /** Lembar silabus .xlsx: Silabus (per pertemuan), Per materi, dan Ringkasan beserta asumsi durasi. */
-export function lembarSilabus(s: Silabus): Uint8Array {
+export function lembarSilabus(data: DataUkp, s: Silabus): Uint8Array {
   const pertemuanMateri = (kode: Kode) => {
     const no = s.pertemuan.filter((p) => p.isi.some((x) => x.kode === kode)).map((p) => p.nomor);
     return no.length ? (no[0] === no[no.length - 1] ? String(no[0]) : no[0] + '–' + no[no.length - 1]) : '';
   };
+  const h = hierarkiDeck(data, s.tingkat, s.tanggalAcuan, s.hanyaBaru);
   const baris = s.pertemuan.flatMap((p) => p.isi.map((x, i) => [
     i ? '' : p.nomor, i ? '' : Math.round(p.menit), x.kode + ' · ' + x.materi, x.subtema + (x.bagian ? ` (bagian ${x.bagian})` : ''), diujiDi(x.tingkat),
-    s.materi.find((m) => m.kode === x.kode)?.berkas ?? '', x.slideAwal + '–' + x.slideAkhir, x.slide, Math.round(x.menit), x.kuis, x.contohSoal, latihan(x),
+    s.materi.find((m) => m.kode === x.kode)?.berkas ?? '', x.slideAwal + '–' + x.slideAkhir, x.slide, Math.round(x.menit), x.kuis, x.contohSoal, latihan(x), jalurBerkasDeck(h, x.kode, x.subtema),
   ]));
   const perMateri = s.materi.map((m) => [m.kode, m.nama, m.berkas + (m.disunting ? ' (disunting)' : ''), m.unit.length, m.slide, Math.round(m.menit), Math.ceil(m.menit / MENIT_JP), pertemuanMateri(m.kode)]);
   const ringkas: (string | number)[][] = [
@@ -217,10 +217,11 @@ export function lembarSilabus(s: Silabus): Uint8Array {
     ['', ''],
     ['Catatan', 'Durasi adalah perkiraan penyampaian materi. Tambahkan waktu tanya jawab, latihan, dan jeda sesuai kelas. Slide lanjutan dihitung sebagai slide tersendiri.'],
     ['Catatan', 'Sampul dan daftar isi ikut subtema pertama tiap materi; penutup ikut subtema terakhir. Subtema yang lebih panjang dari satu pertemuan dipecah di batas slide.'],
+    ['Catatan', 'Kolom Deck dan Slide merujuk deck gabungan per materi; kolom terakhir merujuk deck per subtema di .zip unduhan (nomor slidenya sendiri).'],
     ...(s.materi.some((m) => m.disunting) ? [['Catatan', 'Deck bertanda (disunting) memakai naskah yang sudah diubah di browser.']] : []),
   ];
   return xlsx([
-    { nama: 'Silabus', baris: [['Pertemuan', 'Menit pertemuan', 'Materi', 'Subtema', 'Diuji di', 'Deck', 'Slide', 'Jumlah slide', 'Menit', 'Kuis', 'Contoh soal', 'Soal latihan tersedia'], ...baris], lebar: [10, 10, 28, 46, 13, 34, 9, 8, 8, 6, 8, 26] },
+    { nama: 'Silabus', baris: [['Pertemuan', 'Menit pertemuan', 'Materi', 'Subtema', 'Diuji di', 'Deck', 'Slide', 'Jumlah slide', 'Menit', 'Kuis', 'Contoh soal', 'Soal latihan tersedia', 'Berkas deck per subtema (dalam .zip)'], ...baris], lebar: [10, 10, 28, 46, 13, 34, 9, 8, 8, 6, 8, 26, 70] },
     { nama: 'Per materi', baris: [['Kode', 'Materi', 'Deck', 'Subtema', 'Slide', 'Menit', 'JP', 'Pertemuan'], ...perMateri], lebar: [7, 34, 40, 9, 8, 8, 6, 11] },
     { nama: 'Ringkasan', baris: ringkas, lebar: [30, 90] },
   ]);

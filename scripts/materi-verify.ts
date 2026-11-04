@@ -18,10 +18,11 @@ import { muatDataNode } from '../lib/data-node';
 import { tingkatSoal, tingkatSubtema } from '../lib/data';
 import { MODELS } from '../lib/models';
 import { adaTeksAcuan } from '../lib/materi/naskah';
-import { aturSlide, bacaNaskah, buatDeck, kembalikanSlide, suntingSlide, tandaiTelaah, telaahSlide, terapkanLembarTelaah, urungkan } from '../lib/materi/deck';
+import { aturSlide, bacaNaskah, buatDeck, deckDisunting, kembalikanSlide, rencanaDeck, suntingSlide, tandaiTelaah, telaahSlide, terapkanLembarTelaah, urungkan } from '../lib/materi/deck';
 import { bacaLembarTelaah, bacaXlsx, lembarTelaah, ringkasTelaah } from '../lib/materi/telaah';
 import { bagiPertemuan, lembarSilabus, MENIT_POLA, susunSilabus, type UnitSilabus } from '../lib/materi/silabus';
 import { naskahHandout, POLA_HANDOUT } from '../lib/materi/handout';
+import { folderMateri, folderTingkat, hierarkiDeck, jalurBerkasDeck, namaAman, namaDeckGabungan } from '../lib/materi/jalur';
 import { xlsx } from '../lib/export/siadu';
 import { berlakuPada, daftarSubtema, labelPendek, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, type Kepadatan, type PengaturanMateri } from '../lib/materi/susun';
 import type { Kode } from '../lib/types';
@@ -540,7 +541,7 @@ bagian('Silabus per tingkat (R7)');
   cek('deck gabungan yang disunting di browser dipakai (slide tersembunyi tidak dihitung)', pPpn.disunting && pPpn.slide === tataLetak(sunting).length && pPpn.slide < ppn.slide);
   const sebagian = { ...naskahPpn, slides: naskahPpn.slides.filter((s) => !(s.pola === 'P16' && s.id.startsWith('2-'))) };
   cek('deck gabungan berisi sebagian subtema saja tidak dipakai', !susunSilabus(data, { tingkat: 'A', hanyaBaru: false, menitPertemuan: 90, deck }, () => sebagian).materi.some((m) => m.disunting));
-  const lembar = bacaXlsx(lembarSilabus(a));
+  const lembar = bacaXlsx(lembarSilabus(data, a));
   cek('lembar silabus .xlsx terbaca: baris pertemuan + kepala, kolom Pertemuan sampai Soal latihan', lembar.length === isi.length + 1 && lembar[0][0] === 'Pertemuan' && lembar[0][11] === 'Soal latihan tersedia' && lembar[1][0] === '1', lembar[0]);
 }
 
@@ -563,6 +564,47 @@ bagian('Handout peserta (R9)');
   cek('slide tersembunyi tidak masuk handout', !sembunyi.slides.some((s) => s.pola === 'P14'));
 }
 
+bagian('Hierarki unduhan Tingkat / Materi / Subtema dan rencana deck');
+{
+  const data = muatDataNode();
+  const tgl = '2026-11-04';
+  const ILEGAL = /[\\:*?"<>|]/;
+  cek('namaAman: titik dua dan garis miring diganti, tanpa karakter terlarang Windows, tanpa titik di ujung', namaAman('P3B: residensi') === 'P3B - residensi' && namaAman('PPh 25/29 & SPT') === 'PPh 25-29 & SPT' && namaAman('a*b?c"d<e>f|g.') === 'abcdefg');
+  cek('folder tingkat: A, B (A+B), C (A+B+C), dan tambahan', folderTingkat('A') === 'Tingkat A' && folderTingkat('B') === 'Tingkat B (A+B)' && folderTingkat('C') === 'Tingkat C (A+B+C)' && folderTingkat('C', true) === 'Tingkat C (hanya subtema baru)');
+  for (const [t, nMateri, nSub] of [['A', 5, 34], ['B', 8, 48], ['C', 10, 69]] as const) {
+    const h = hierarkiDeck(data, t, tgl);
+    const jalur = h.materi.flatMap((m) => m.subtema.map((s) => jalurBerkasDeck(h, m.kode, s)));
+    const nomorMateri = h.materi.map((m) => Number(folderMateri(h, m.kode).split('/')[1].slice(0, 2)));
+    const nomorSub = h.materi.every((m) => m.subtema.every((s, i) => Number(jalurBerkasDeck(h, m.kode, s).split('/')[2].slice(0, 2)) === i + 1));
+    cek(`Tingkat ${t}: ${nMateri} materi, ${nSub} jalur unik tiga tingkat, nomor berurutan, tanpa karakter terlarang, < 160 karakter`, h.materi.length === nMateri && new Set(jalur).size === nSub
+      && jalur.every((j) => j.split('/').length === 3 && j.startsWith(folderTingkat(t) + '/') && j.endsWith('.pptx') && !j.split('/').some((b) => ILEGAL.test(b)) && j.length < 160)
+      && nomorMateri.every((n, i) => n === i + 1) && nomorSub, jalur.filter((j) => j.length >= 160 || ILEGAL.test(j)));
+  }
+  const hC = hierarkiDeck(data, 'C', tgl);
+  cek('jalur subtema bernama ilegal terbaca', jalurBerkasDeck(hC, 'INT', 'P3B: residensi & tie breaker') === 'Tingkat C (A+B+C)/10 INT - Pajak Internasional/02 P3B - residensi & tie breaker.pptx', jalurBerkasDeck(hC, 'INT', 'P3B: residensi & tie breaker'));
+  cek('jalur handout dan naskah di folder yang sama', jalurBerkasDeck(hC, 'PP', 'Natura & kenikmatan', 'handout').endsWith(' - handout.pptx') && jalurBerkasDeck(hC, 'PP', 'Natura & kenikmatan', 'naskah').endsWith(' - naskah.json') && jalurBerkasDeck(hC, 'PP', 'Natura & kenikmatan', 'naskah').split('/')[1] === folderMateri(hC, 'PP').split('/')[1]);
+  const hB = hierarkiDeck(data, 'B', tgl, true);
+  cek('hanya subtema baru: 3 materi bernomor 01–03, deck gabungan memakai nama yang sama dengan silabus', hB.tambahan && hB.materi.map((m) => m.kode).join() === 'AKT,BDN,BTI' && jalurBerkasDeck(hB, 'AKT', null) === 'Tingkat B (hanya subtema baru)/01 AKT - Akuntansi Perpajakan/' + namaDeckGabungan('AKT', 'B', true));
+  cek('hierarki Tingkat A tidak memuat materi yang mulai di tingkat lebih tinggi', !hierarkiDeck(data, 'A', tgl).materi.some((m) => ['PBB', 'AKT', 'BDN', 'BTI', 'INT'].includes(m.kode)));
+
+  const deck = { ...PENGATURAN_MATERI_AWAL, tanggalAcuan: tgl, dibuat: tgl };
+  const isiC = { tingkat: 'C' as const, kepadatan: deck.kepadatan, sumberSoal: deck.sumberSoal, jumlahSoal: deck.jumlahSoal, jumlahKuis: deck.jumlahKuis, tanggalAcuan: tgl };
+  const pengC = { ...deck, kode: 'PPN' as Kode, subtema: 'Pengkreditan Pajak Masukan', tingkat: 'C' as const };
+  const dC = buatDeck(susunNaskah(data, pengC), pengC, tgl);
+  const dA = susunNaskah(data, { ...pengC, tingkat: 'A' });
+  cek('deck subtema yang sama berbeda isi antartingkat: contoh soal mengikuti tingkat', JSON.stringify(dC.naskah.slides.find((s) => s.pola === 'P12')) !== JSON.stringify(dA.slides.find((s) => s.pola === 'P12')));
+  cek('rencana: belum ada → susun; pengaturan sama → pakai', rencanaDeck(undefined, isiC) === 'susun' && rencanaDeck(dC, isiC) === 'pakai');
+  cek('rencana: belum disunting, tingkat/kepadatan/kuis/contoh soal/tanggal berbeda → susun ulang', (['tingkat', 'kepadatan', 'jumlahKuis', 'jumlahSoal', 'tanggalAcuan'] as const).every((k) => rencanaDeck(dC, { ...isiC, [k]: k === 'tingkat' ? 'A' : k === 'kepadatan' ? 'ringkas' : k === 'tanggalAcuan' ? '2026-11-05' : 0 }) === 'susun'));
+  const disunting = suntingSlide(dC, dC.naskah.slides[1].id, (s) => s, tgl);
+  cek('rencana: sudah disunting, ditelaah, atau impor dengan pengaturan lain → dipakai apa adanya, tidak ditimpa', deckDisunting(disunting) && rencanaDeck(disunting, { ...isiC, tingkat: 'A' }) === 'lama'
+    && rencanaDeck(tandaiTelaah(dC, true, tgl), { ...isiC, tingkat: 'A' }) === 'lama' && rencanaDeck({ ...dC, pengaturan: null }, isiC) === 'lama');
+  cek('rencana: deck disunting dengan pengaturan sama tetap dipakai', rencanaDeck(disunting, isiC) === 'pakai');
+  const pengG = { ...deck, kode: 'BM' as Kode, subtema: '', tingkat: 'A' as const, gabung: ['Objek & pengecualian', 'Tarif, saat & pihak terutang'] };
+  const dG = buatDeck(susunNaskahMateri(data, pengG, pengG.gabung), pengG, tgl, 'gabung:BM|A');
+  const isiA = { ...isiC, tingkat: 'A' as const };
+  cek('rencana gabungan: isi subtema sama (urutan bebas) → pakai; berbeda → susun ulang', rencanaDeck(dG, isiA, [...pengG.gabung].reverse()) === 'pakai' && rencanaDeck(dG, isiA, [...pengG.gabung, 'Pemungut & pembayaran']) === 'susun');
+}
+
 bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
 {
   const tmp = mkdtempSync(path.join(os.tmpdir(), 'ukp-materi-cli-'));
@@ -577,17 +619,18 @@ bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
   const tanpaSetuju = jalan(['--tingkat', 'A', '--subtema', 'KUP::Banding, gugatan & PK', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'x')]);
   cek('.pptx bertek acuan tanpa --setuju-acuan ditolak (KM2), kode keluar 1', tanpaSetuju.kode === 1 && /Error: .*teks acuan LatihUKP.*--setuju-acuan/.test(tanpaSetuju.out), tanpaSetuju.out);
   const naskahSaja = jalan(['--tingkat', 'A', '--kode', 'BM', '--format', 'json', '--out', path.join(tmp, 'json')]);
-  cek('--format json (naskah saja) tidak butuh --setuju-acuan', naskahSaja.kode === 0 && readdirSync(path.join(tmp, 'json')).filter((f) => f.startsWith('naskah-bm-')).length === 4, naskahSaja.out);
+  const semuaBerkas = (d: string) => (readdirSync(d, { recursive: true }) as string[]).map((f) => f.replace(/\\/g, '/'));
+  cek('--format json (naskah saja) tidak butuh --setuju-acuan, berkas di folder materi', naskahSaja.kode === 0 && semuaBerkas(path.join(tmp, 'json')).filter((f) => f.startsWith('Tingkat A/05 BM - Bea Meterai/') && f.endsWith(' - naskah.json')).length === 4, naskahSaja.out);
   // Bea Meterai sudah ditulis ulang (R2): tidak bertanda Draf internal, jadi tidak perlu --setuju-acuan.
   const perKode = jalan(['--tingkat', 'A', '--kode', 'BM', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'bm')]);
-  const pptxBm = readdirSync(path.join(tmp, 'bm')).filter((f) => f.endsWith('.pptx'));
+  const pptxBm = semuaBerkas(path.join(tmp, 'bm')).filter((f) => f.endsWith('.pptx'));
   cek('per kode: 4 deck BM tanpa --setuju-acuan (sudah ditulis ulang), 0 teks meluap, 0 Draf internal, berkas .pptx sah', perKode.kode === 0 && /^RINGKASAN -> 4 deck \(materi BM, cakupan Tingkat A, ringkas\), \d+ slide, 0 teks meluap, 0 Draf internal/m.test(perKode.out)
     && pptxBm.length === 4 && pptxBm.every((f) => periksaPaket(new Uint8Array(readFileSync(path.join(tmp, 'bm', f)))).length === 0), perKode.out);
   const lap = JSON.parse(readFileSync(path.join(tmp, 'bm', 'laporan.json'), 'utf8'));
   cek('laporan.json memuat tiap deck dengan tingkat subtema dan tanda Draf internal (BM: bukan draf)', lap.deck.length === 4 && lap.deck.every((d: { tingkatSubtema: string; drafInternal: boolean }) => d.tingkatSubtema === 'A' && !d.drafInternal));
   const perSub = jalan(['--tingkat', 'C', '--subtema', 'PPN::DPP & tarif PPN;KUP::Sanksi administrasi', '--kepadatan', 'ringkas', '--setuju-acuan', '--zip', '--out', path.join(tmp, 'sub')]);
   const isiZip = existsSync(path.join(tmp, 'sub', 'materi-subtema-2-deck.zip')) ? Object.keys(unzipSync(new Uint8Array(readFileSync(path.join(tmp, 'sub', 'materi-subtema-2-deck.zip'))))) : [];
-  cek('per subtema + --zip: satu .zip berisi folder per kode', perSub.kode === 0 && isiZip.sort().join() === 'KUP/materi-kup-sanksi-administrasi.pptx,PPN/materi-ppn-dpp-tarif-ppn.pptx', { out: perSub.out, isiZip });
+  cek('per subtema + --zip: satu .zip berhierarki Tingkat / Materi / Subtema', perSub.kode === 0 && isiZip.length === 2 && isiZip.every((f) => /^Tingkat C \(A\+B\+C\)\/0[14] (KUP|PPN) - [^/]+\/\d\d [^/]+\.pptx$/.test(f)) && isiZip.some((f) => f.endsWith('Sanksi administrasi.pptx')), { out: perSub.out, isiZip });
   const luar = jalan(['--tingkat', 'A', '--subtema', 'PBB::Objek & subjek PBB-P5L']);
   const kodeLuar = jalan(['--tingkat', 'A', '--kode', 'INT']);
   cek('subtema/kode di luar cakupan tingkat ditolak', luar.kode === 1 && /di luar cakupan Tingkat A/.test(luar.out) && kodeLuar.kode === 1 && /INT tidak punya subtema dalam cakupan Tingkat A/.test(kodeLuar.out));

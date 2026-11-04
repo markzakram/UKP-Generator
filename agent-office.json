@@ -98,7 +98,7 @@
         "gabung": { "jenis": "tanda", "label": "Satu deck per materi", "bantuan": "Subtema dalam lingkup digabung menjadi satu deck per materi untuk tingkat itu: sampul, daftar isi (tanda subtema baru di tingkat itu), pembatas per subtema. Tanpa centang: satu deck per subtema.", "jika_disebut": ["per materi", "satu deck per materi", "deck gabungan", "gabungan", "gabung"] },
         "kepadatan": { "jenis": "teks", "label": "Kepadatan", "bantuan": "ringkas (±9 slide per subtema), standar (±18), atau lengkap (±31). Deck gabungan per materi = jumlah semua subtemanya.", "contoh": "standar", "bawaan": "standar", "pola": "^(ringkas|standar|lengkap)$", "dari_tugas": "\\b(ringkas|standar|lengkap)\\b" },
         "format": { "jenis": "teks", "label": "Berkas hasil", "bantuan": "pptx (deck) dan/atau json (naskah yang bisa diimpor di tab Materi), dipisah koma. Bawaan pptx.", "contoh": "pptx", "bawaan": "pptx", "pola": "^(pptx|json)(,(pptx|json))?$" },
-        "zip": { "jenis": "tanda", "label": "Bungkus jadi satu .zip", "bantuan": "Satu folder per kode bila lebih dari satu materi; sekitar 2,4 MB per deck.", "jika_disebut": ["zip", "satu berkas"] },
+        "zip": { "jenis": "tanda", "label": "Bungkus jadi satu .zip", "bantuan": "Berhierarki Tingkat / Materi / Subtema; sekitar 2,4 MB per deck.", "jika_disebut": ["zip", "satu berkas"] },
         "handout": {"jenis": "tanda", "label": "Handout peserta", "bantuan": "Versi ringkas untuk peserta: sampul, daftar isi, ikhtisar, rumus, rangkuman, dan kuis Benar/Salah, tanpa catatan pembicara (nama berkas -handout.pptx). Deck BM gabungan Tingkat A: 24 slide dari 73.", "jika_disebut": ["handout", "untuk peserta", "versi peserta", "ringkasan peserta"]},
         "pdf": {"jenis": "tanda", "label": "Simpan juga PDF", "bantuan": "PDF setiap .pptx lewat PowerPoint (hanya Windows dengan PowerPoint terpasang); tidak bisa bersama zip.", "jika_disebut": ["pdf"]},
         "setuju_acuan": { "jenis": "tanda", "label": "Setuju deck memuat teks acuan LatihUKP (Draf internal)", "bantuan": "Wajib untuk .pptx yang masih memuat teks acuan LatihUKP yang belum ditulis ulang atau ditelaah; berkas diberi tanda Draf internal dan bukan untuk peserta (PRD-Materi KM2). Bea Meterai sudah ditulis ulang sehingga tidak memerlukannya.", "jika_disebut": ["setuju acuan", "draf internal", "internal"] }
@@ -106,7 +106,7 @@
       "catatan": [
         "menjalankan npm run materi (scripts/materi.ts); tanpa API key dan tanpa internet; satu deck per subtema, atau satu deck per materi bila Satu deck per materi dicentang",
         "lingkup: isi subtema untuk per subtema, kode untuk per materi, atau kosongkan keduanya untuk per tingkat",
-        "hasil di output/materi-<tanggal_jam>/: laporan.json (slide, teks meluap, catatan penyusun per deck) dan .pptx/.json per subtema (folder per kode) atau satu .zip",
+        "hasil di output/materi-<tanggal_jam>/: laporan.json (slide, teks meluap, catatan penyusun per deck) dan .pptx/.json berhierarki Tingkat / Materi / Subtema atau satu .zip",
         "suntingan naskah, pratinjau, dan tanda Ditelaah hanya di aplikasi (tab Materi)"
       ],
       "hasil": "^(?:RINGKASAN|BERKAS) -> (.+)$",

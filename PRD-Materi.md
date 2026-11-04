@@ -230,11 +230,12 @@ Cakupan lain:
 Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tanggal acuan, sumber contoh soal, dan jumlah contoh soal/kuis.
 
 - **Tingkat** mengikuti tingkat subtema di `data/ukp-mapping.json` (PRD K3, disahkan terhadap dokumen BPPK): A 34 subtema, A+B 48, A+B+C 69. Semua kartu aturan dalam subtema ikut tingkat subtemanya, jadi label kisi pada kartu tidak lagi menyaring isi deck. Sampul menulis tingkat subtema.
-- **Lingkup** (tambahan 3 November 2026), satu deck per subtema:
-  - *Subtema*: centang subtema satu per satu dari satu materi.
-  - *Materi* (kode): semua subtema satu materi langsung tercentang.
+- **Lingkup** (tambahan 3 November 2026; sejak 4 November 2026 tab Materi berbawaan Tingkat A dan lingkup *Tingkat*, semua subtema langsung tercentang; CLI tetap `--tingkat` bawaan C), satu deck per subtema:
   - *Tingkat*: semua subtema dalam cakupan tingkat, dikelompokkan per materi. Opsi "hanya subtema yang mulai di tingkat ini" (B 14, C 21).
-- Unduhan beberapa deck menjadi satu .zip tanpa kompresi ulang. Lingkup tingkat memberi satu folder per kode, misalnya `materi-tingkat-b-tambahan-23-deck.zip`.
+  - *Materi* (kode): semua subtema satu materi langsung tercentang.
+  - *Subtema*: centang subtema satu per satu dari satu materi.
+- Pengaturan cakupan diingat per browser (localStorage) dan bisa dikembalikan dengan *Kembali ke bawaan*. Deck yang terbuka mengikuti cakupan. Dibuka dari saran remedial: lingkup Subtema, tanpa mengubah pengaturan yang diingat.
+- Unduhan beberapa berkas menjadi satu .zip tanpa kompresi ulang, berhierarki Tingkat / Materi / Subtema (`lib/materi/jalur.ts`, dipakai juga CLI dan silabus), misalnya `Tingkat B (A+B)/06 AKT - Akuntansi Perpajakan/01 Jurnal PPh & PPN.pptx`. Nomor mengikuti urutan pemetaan dalam cakupan tingkat.
 - **Bentuk deck** (tambahan 3 November 2026, dipilih user: materi dibedakan per tingkat):
   - *Per subtema* (bawaan): satu deck per subtema.
   - *Per materi*: subtema yang dicentang digabung menjadi satu deck per materi untuk tingkat ujian itu, disusun `susunNaskahMateri()`. Contohnya PP Tingkat A berisi 7 subtema dan PP Tingkat B · A+B berisi 8.
@@ -261,7 +262,7 @@ Pilih tingkat (A, A+B, atau A+B+C), materi, subtema atau aturan, kepadatan, tang
 ### F5. Unduh, P0
 - .pptx dan naskah .json.
 - Unduhan massal satu materi berupa .zip berisi satu deck per subtema.
-- **Ekspor di panel Cakupan deck** (3 November 2026): pilih format (.pptx, naskah .json, atau keduanya), lalu satu tombol "Susun & unduh N deck". Deck yang belum tersusun disusun dulu; deck yang sudah ada (termasuk yang disunting) diunduh apa adanya. Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip (folder per kode bila deck per subtema dari beberapa materi). Ringkasan di atas tombol menyebut jumlah deck, bentuk unduhan, perkiraan ukuran, dan jumlah deck yang akan disusun dulu. Nama .zip mengikuti lingkup, misalnya `materi-tingkat-a-33-deck.zip`, `materi-tingkat-a-33-deck-naskah.zip`, atau `materi-tingkat-a-per-materi-5-deck.zip`.
+- **Ekspor di panel Cakupan deck** (3 November 2026, diubah 4 November 2026): pilih format (.pptx, naskah .json, atau keduanya), lalu "Unduh semua · N deck" untuk seluruh cakupan, atau "Unduh yang dicentang" bila hanya sebagian yang dicentang. Deck yang belum ada, atau yang belum disunting tetapi disusun dengan pengaturan lain (id deck subtema tidak memuat tingkat, sedangkan contoh soalnya mengikuti tingkat), disusun dulu; deck yang sudah disunting atau ditelaah tidak ditimpa dan disebut di ringkasan. Satu berkas diunduh langsung; lebih dari satu berkas menjadi satu .zip berhierarki. Ringkasan di atas tombol menyebut jumlah deck, bentuk unduhan, perkiraan ukuran, jumlah deck yang disusun dulu, dan yang dipakai apa adanya. Nama .zip mengikuti lingkup, misalnya `materi-tingkat-a-33-deck.zip`, `materi-tingkat-a-33-deck-naskah.zip`, atau `materi-tingkat-a-per-materi-5-deck.zip`.
 - PDF menyusul (P2). Sementara bisa lewat PowerPoint (Simpan sebagai PDF).
 
 ### F6. Riwayat, P1
@@ -277,7 +278,7 @@ npm run materi -- --tingkat B --gabung --setuju-acuan --zip
 - `--gabung`: satu deck per materi (lihat F1, bentuk deck).
 - Lingkup: `--subtema` (per subtema), `--kode` (per materi), atau keduanya kosong (per tingkat, opsi `--hanya-baru`). Cakupan mengikuti `--tingkat`; subtema atau kode di luar cakupan ditolak. `--daftar` menampilkan subtema tanpa menulis berkas.
 - `--setuju-acuan` wajib untuk .pptx yang memuat teks acuan LatihUKP (KM2, setara dialog di tab Materi); `--format json` tidak memerlukannya.
-- CLI mencetak `RINGKASAN ->` dan `BERKAS ->`, lalu menulis `laporan.json` (slide, teks meluap, catatan penyusun per deck) serta berkas per subtema dengan folder per kode, atau satu .zip.
+- CLI mencetak `RINGKASAN ->` dan `BERKAS ->`, lalu menulis `laporan.json` (slide, teks meluap, catatan penyusun per deck) serta berkas berhierarki Tingkat / Materi / Subtema, atau satu .zip.
 - `agent-office.json` mendapat pekerjaan `buatmateri` ("Buat deck materi UKP"); `verify:materi` memeriksa opsinya terhadap `--help`.
 
 ### F8. Impor naskah, P1

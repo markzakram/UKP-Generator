@@ -23,6 +23,24 @@ export const idDeck = (kode: string, subtema: string) => kode + '|' + subtema;
 /** Deck gabungan satu materi untuk satu tingkat ujian; `tambahan` = hanya subtema yang baru di tingkat itu. */
 export const idGabungan = (kode: string, tingkat: string, tambahan = false) => 'gabung:' + kode + '|' + tingkat + (tambahan ? '+baru' : '');
 
+/** Pengaturan yang menentukan isi deck, dibandingkan dengan pengaturan cakupan sekarang saat mengunduh. */
+export type PengaturanIsiDeck = Pick<PengaturanMateri, 'tingkat' | 'kepadatan' | 'sumberSoal' | 'jumlahSoal' | 'jumlahKuis' | 'tanggalAcuan'>;
+/** Disunting, ditelaah, atau hasil impor: isinya tidak boleh ditimpa otomatis. */
+export const deckDisunting = (d: DeckMateri) => !d.pengaturan || d.riwayat.length > 0 || d.status === 'telaah';
+/**
+ * Apa yang dilakukan pada deck saat diunduh dengan pengaturan `p`: `susun` bila belum ada atau disusun dengan pengaturan
+ * lain dan belum disunting (contoh soal bergantung pada tingkat, jadi id subtema yang sama bisa berbeda isi); `lama` bila
+ * pengaturannya berbeda tetapi sudah disunting, sehingga dipakai apa adanya; `pakai` bila sudah sesuai.
+ * `gabung` = subtema yang seharusnya ada di deck gabungan.
+ */
+export function rencanaDeck(d: DeckMateri | undefined, p: PengaturanIsiDeck, gabung?: string[]): 'susun' | 'pakai' | 'lama' {
+  if (!d) return 'susun';
+  const a = d.pengaturan;
+  const isiSama = !gabung || (!!a?.gabung && [...a.gabung].sort().join('|') === [...gabung].sort().join('|'));
+  const sama = !!a && isiSama && a.tingkat === p.tingkat && a.kepadatan === p.kepadatan && a.sumberSoal === p.sumberSoal && a.jumlahSoal === p.jumlahSoal && a.jumlahKuis === p.jumlahKuis && a.tanggalAcuan === p.tanggalAcuan;
+  return sama ? 'pakai' : deckDisunting(d) ? 'lama' : 'susun';
+}
+
 export function buatDeck(naskah: Naskah, pengaturan: PengaturanMateri | null, waktu: string, id?: string): DeckMateri {
   return { id: id ?? (naskah.kode && naskah.subtema ? idDeck(naskah.kode, naskah.subtema) : 'impor:' + naskah.judul), judul: naskah.judul, naskah, asli: naskah, pengaturan, status: 'draf', diperbarui: waktu, riwayat: [] };
 }

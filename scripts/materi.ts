@@ -11,6 +11,7 @@ import { slug } from '../lib/export/common';
 import { zip } from '../lib/export/unduh';
 import { periksaPaket, periksaTataLetak } from '../lib/materi/cek';
 import { naskahHandout } from '../lib/materi/handout';
+import { hierarkiDeck, jalurBerkasDeck, namaDeckGabungan, type JenisBerkasDeck } from '../lib/materi/jalur';
 import { adaTeksAcuan } from '../lib/materi/naskah';
 import { tulisPptx } from '../lib/materi/pptx';
 import { lembarSilabus, namaBerkasSilabus, PILIHAN_MENIT_PERTEMUAN, ringkasSilabus, susunSilabus } from '../lib/materi/silabus';
@@ -32,6 +33,7 @@ const BANTUAN = `Pemakaian: npm run materi -- [opsi]
   --seed TEKS                bawaan MATERI-01
   --format pptx,json         pptx (deck) dan/atau json (naskah); bawaan pptx
   --zip                      bungkus semua berkas menjadi satu .zip
+                             lebih dari satu berkas ditulis berhierarki: Tingkat / Materi / Subtema
   --handout                  .pptx versi peserta: rangkuman, rumus, dan kuis tanpa catatan pembicara (nama berkas -handout)
   --pdf                      simpan juga PDF setiap .pptx lewat PowerPoint (Windows dengan PowerPoint; tidak bersama --zip)
   --setuju-acuan             izinkan .pptx yang memuat teks acuan LatihUKP, diberi tanda Draf internal (PRD-Materi KM2)
@@ -109,17 +111,25 @@ function main() {
     const out = path.resolve(ambil('--out') ?? path.join('output', namaBerkasSilabus(s).replace(/\.xlsx$/, '')));
     mkdirSync(out, { recursive: true });
     const f = path.join(out, namaBerkasSilabus(s));
-    writeFileSync(f, lembarSilabus(s));
+    writeFileSync(f, lembarSilabus(data, s));
     console.log('RINGKASAN -> silabus ' + ringkasSilabus(s) + ' (kepadatan ' + kepadatan + ', aturan per ' + tanggalAcuan + ')');
     console.log('BERKAS -> ' + f);
     return;
   }
   const dasar = new Uint8Array(readFileSync(path.join('assets', 'materi', 'dasar.pptx')));
-  // --gabung: satu deck per materi berisi subtema dalam lingkup; tanpa itu satu deck per subtema (folder per kode).
-  const perFolder = !gabung && new Set(pilih.map((s) => s.kode)).size > 1;
+  // --gabung: satu deck per materi berisi subtema dalam lingkup; tanpa itu satu deck per subtema.
   const kelompok = gabung
     ? [...new Set(pilih.map((s) => s.kode))].map((k) => ({ kode: k, subtema: pilih.filter((s) => s.kode === k) }))
     : pilih.map((s) => ({ kode: s.kode, subtema: [s] }));
+  // Sama dengan unduhan tab Materi: satu berkas langsung, lebih dari satu berhierarki Tingkat / Materi / Subtema.
+  const hierarki = hierarkiDeck(data, tingkat, tanggalAcuan, tambahan);
+  const berhierarki = kelompok.length * format.length > 1;
+  const namaKeluaran = (k: Kode, sub: string | null, jenis: JenisBerkasDeck) => {
+    if (berhierarki) return jalurBerkasDeck(hierarki, k, sub, jenis);
+    if (sub === null) return namaDeckGabungan(k, tingkat, tambahan, jenis);
+    const dasar = slug(k) + '-' + slug(sub);
+    return jenis === 'naskah' ? 'naskah-' + dasar + '.json' : 'materi-' + dasar + (jenis === 'handout' ? '-handout' : '') + '.pptx';
+  };
   const isiBerkas: Record<string, Uint8Array> = {};
   const laporan: unknown[] = [];
   const galat: string[] = [];
@@ -132,11 +142,9 @@ function main() {
       const hasil = handout ? tulisPptx(naskahHandout(naskah), dasar, { tanpaCatatan: true }) : tulisPptx(naskah, dasar);
       const tata = periksaTataLetak(hasil.slides);
       const paket = periksaPaket(hasil.berkas);
-      const nama = gabung
-        ? 'materi-' + slug(g.kode) + '-tingkat-' + tingkat.toLowerCase() + (tambahan ? '-tambahan' : '')
-        : (perFolder ? g.kode + '/' : '') + 'materi-' + slug(g.kode) + '-' + slug(nama1[0]);
-      if (format.includes('pptx')) isiBerkas[nama + (handout ? '-handout' : '') + '.pptx'] = hasil.berkas;
-      if (format.includes('json')) isiBerkas[nama.replace(/materi-(?=[^/]*$)/, 'naskah-') + '.json'] = new TextEncoder().encode(JSON.stringify(naskah, null, 2));
+      const sub = gabung ? null : nama1[0];
+      if (format.includes('pptx')) isiBerkas[namaKeluaran(g.kode, sub, handout ? 'handout' : 'pptx')] = hasil.berkas;
+      if (format.includes('json')) isiBerkas[namaKeluaran(g.kode, sub, 'naskah')] = new TextEncoder().encode(JSON.stringify(naskah, null, 2));
       slide += hasil.slides.length;
       meluap += tata.length;
       if (hasil.drafInternal) draf++;

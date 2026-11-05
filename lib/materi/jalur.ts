@@ -10,7 +10,8 @@ export interface HierarkiDeck {
   tambahan: boolean;
   materi: { kode: string; nama: string; subtema: string[] }[];
 }
-export type JenisBerkasDeck = 'pptx' | 'handout' | 'naskah';
+export type JenisBerkasDeck = 'pptx' | 'pdf' | 'handout' | 'handout-pdf' | 'naskah';
+const akhiranDeck = (jenis: JenisBerkasDeck) => (jenis === 'pdf' || jenis === 'handout-pdf' ? '.pdf' : '.pptx');
 
 /** Aman sebagai nama folder dan berkas di Windows, macOS, dan Linux: "P3B: residensi" → "P3B - residensi", "25/29" → "25-29". */
 export function namaAman(teks: string) {
@@ -24,7 +25,7 @@ export const folderTingkat = (t: Tingkat, tambahan = false) =>
 /** Nama deck gabungan satu materi; sama di unduhan tunggal, zip, CLI, dan kolom Deck silabus. */
 export const namaDeckGabungan = (kode: string, tingkat: Tingkat, tambahan: boolean, jenis: JenisBerkasDeck = 'pptx') => {
   const dasar = `${slug(kode)}-tingkat-${tingkat.toLowerCase()}${tambahan ? '-tambahan' : ''}`;
-  return jenis === 'naskah' ? `naskah-${dasar}.json` : `materi-${dasar}${jenis === 'handout' ? '-handout' : ''}.pptx`;
+  return jenis === 'naskah' ? `naskah-${dasar}.json` : `materi-${dasar}${jenis.startsWith('handout') ? '-handout' : ''}${akhiranDeck(jenis)}`;
 };
 
 /** Materi dan subtema dalam cakupan tingkat, urut seperti pemetaan. Nomor folder dan berkas mengikuti urutan ini. */
@@ -55,5 +56,5 @@ export function jalurBerkasDeck(h: HierarkiDeck, kode: string, subtema: string |
   if (subtema === null) return `${folder}/${namaDeckGabungan(kode, h.tingkat, h.tambahan, jenis)}`;
   const i = h.materi.find((m) => m.kode === kode)?.subtema.indexOf(subtema) ?? -1;
   const dasar = `${folder}/${i < 0 ? '' : nomor(i) + ' '}${namaAman(subtema)}`;
-  return dasar + (jenis === 'naskah' ? ' - naskah.json' : jenis === 'handout' ? ' - handout.pptx' : '.pptx');
+  return dasar + (jenis === 'naskah' ? ' - naskah.json' : (jenis.startsWith('handout') ? ' - handout' : '') + akhiranDeck(jenis));
 }

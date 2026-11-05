@@ -22,6 +22,7 @@ import { aturSlide, bacaNaskah, buatDeck, deckDisunting, kembalikanSlide, rencan
 import { bacaLembarTelaah, bacaXlsx, lembarTelaah, ringkasTelaah } from '../lib/materi/telaah';
 import { bagiPertemuan, lembarSilabus, MENIT_POLA, susunSilabus, type UnitSilabus } from '../lib/materi/silabus';
 import { naskahHandout, POLA_HANDOUT } from '../lib/materi/handout';
+import { HALAMAN_PDF, hurufTanpaGambar, tulisPdf } from '../lib/materi/pdf';
 import { folderMateri, folderTingkat, hierarkiDeck, jalurBerkasDeck, namaAman, namaDeckGabungan } from '../lib/materi/jalur';
 import { xlsx } from '../lib/export/siadu';
 import { berlakuPada, daftarSubtema, labelPendek, PENGATURAN_MATERI_AWAL, susunNaskah, susunNaskahMateri, type Kepadatan, type PengaturanMateri } from '../lib/materi/susun';
@@ -605,6 +606,44 @@ bagian('Hierarki unduhan Tingkat / Materi / Subtema dan rencana deck');
   cek('rencana gabungan: isi subtema sama (urutan bebas) → pakai; berbeda → susun ulang', rencanaDeck(dG, isiA, [...pengG.gabung].reverse()) === 'pakai' && rencanaDeck(dG, isiA, [...pengG.gabung, 'Pemungut & pembayaran']) === 'susun');
 }
 
+bagian('Deck .pdf tanpa PowerPoint');
+{
+  const data = muatDataNode();
+  const tgl = '2026-11-05';
+  const dasarP = new Uint8Array(readFileSync(path.join('assets', 'materi', 'dasar.pptx')));
+  const deck = { ...PENGATURAN_MATERI_AWAL, tanggalAcuan: tgl, dibuat: tgl };
+  const bm = susunNaskahMateri(data, { ...deck, kode: 'BM', subtema: '', tingkat: 'A' });
+  const hBm = tulisPdf(bm, dasarP, { kompres: false });
+  const isi = strFromU8(hBm.berkas, true);
+  const nHal = (isi.match(/\/Type \/Page\b(?!s)/g) ?? []).length;
+  cek('PDF: satu halaman per slide hasil tata letak (termasuk lanjutan)', hBm.halaman === tataLetak(bm).length && nHal === hBm.halaman, [hBm.halaman, nHal]);
+  cek('PDF: halaman 16 x 9 inci (lebar paling besar 16 inci, rasio sama dengan slide)', HALAMAN_PDF.w === 1152 && HALAMAN_PDF.h === 648 && /\/MediaBox \[0 0 1152\.?0* 648\.?0*\]/.test(isi));
+  cek('PDF: Poppins Regular dan Bold tertanam, teks bisa disalin (ToUnicode)', (isi.match(/\/FontFile2/g) ?? []).length === 2 && /Poppins/.test(isi) && /\/ToUnicode/.test(isi));
+  cek('PDF: foto latar tertanam sekali walau dipakai banyak halaman', (isi.match(/\/Width 1920/g) ?? []).length === 1);
+  cek('PDF: deck tanpa teks acuan tidak bertanda draf', !hBm.drafInternal && !/Draf internal/.test(isi) && !/DRAF INTERNAL/.test(isi));
+  const acuan = susunNaskah(data, { ...deck, kode: 'KUP', subtema: 'Banding, gugatan & PK', tingkat: 'A' });
+  const hAcuan = tulisPdf(acuan, dasarP, { kompres: false });
+  cek('PDF: deck bertek acuan bertanda Draf internal di properti berkas dan tiap halaman', hAcuan.drafInternal && /Draf internal/.test(strFromU8(hAcuan.berkas, true)) && (strFromU8(hAcuan.berkas, true).match(/\/Type \/Page\b(?!s)/g) ?? []).length === hAcuan.halaman);
+  cek('PDF: deck yang sudah ditelaah tidak lagi bertanda draf (KM2)', !tulisPdf(acuan, dasarP, { ditelaah: true }).drafInternal);
+  const ho = tulisPdf(naskahHandout(bm), dasarP, { kompres: false });
+  cek('PDF handout: lebih ringkas, jumlah halaman sama dengan tata letak handout', ho.halaman === tataLetak(naskahHandout(bm)).length && ho.halaman < hBm.halaman, [ho.halaman, hBm.halaman]);
+  const sembunyi = { ...bm, slides: bm.slides.map((s) => (s.pola === 'P14' ? { ...s, sembunyi: true } : s)) };
+  cek('PDF: slide tersembunyi tidak ikut', tulisPdf(sembunyi, dasarP).halaman < hBm.halaman);
+  cek('PDF: ukuran wajar (< 4 MB untuk 71 halaman)', tulisPdf(bm, dasarP).berkas.length < 4e6);
+  cek('PDF: fungsi uji mengenali huruf yang tidak bisa digambar', hurufTanpaGambar(dasarP, 'A→Σ中').join('') === '中');
+  let semua = '';
+  for (const s of daftarSubtema(data, 'C', tgl)) for (const kepadatan of ['standar', 'lengkap'] as const) {
+    for (const j of tataLetak(susunNaskah(data, { ...deck, kepadatan, kode: s.kode, subtema: s.subtema, tingkat: 'C' }))) {
+      for (const k of j.kotak) if (k.jenis === 'teks') for (const p of k.paragraf) for (const r of p.runs) semua += r.t;
+    }
+  }
+  const tanpa = hurufTanpaGambar(dasarP, semua);
+  cek('PDF: semua huruf di 69 deck bisa digambar (Poppins, atau Symbol untuk panah dan sigma)', tanpa.length === 0 && semua.includes('→'), tanpa);
+  const hA = hierarkiDeck(data, 'A', tgl);
+  cek('jalur .pdf di folder yang sama dengan .pptx', jalurBerkasDeck(hA, 'BM', 'Objek & pengecualian', 'pdf') === jalurBerkasDeck(hA, 'BM', 'Objek & pengecualian').replace(/\.pptx$/, '.pdf')
+    && jalurBerkasDeck(hA, 'BM', 'Objek & pengecualian', 'handout-pdf').endsWith(' - handout.pdf') && jalurBerkasDeck(hA, 'BM', null, 'pdf').endsWith('/materi-bm-tingkat-a.pdf') && jalurBerkasDeck(hA, 'BM', null, 'handout-pdf').endsWith('/materi-bm-tingkat-a-handout.pdf'));
+}
+
 bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
 {
   const tmp = mkdtempSync(path.join(os.tmpdir(), 'ukp-materi-cli-'));
@@ -655,8 +694,17 @@ bagian('CLI materi: npm run materi per tingkat, kode, dan subtema');
   const fHo = path.join(tmp, 'handout', 'materi-bm-tingkat-a-handout.pptx');
   cek('--handout: berkas -handout.pptx sah tanpa catatan pembicara, RINGKASAN menyebut handout', ho.kode === 0 && /handout peserta\)/.test(ho.out) && existsSync(fHo) && periksaPaket(new Uint8Array(readFileSync(fHo))).length === 0
     && !Object.keys(unzipSync(new Uint8Array(readFileSync(fHo)))).some((f) => f.startsWith('ppt/notesSlides/notesSlide')), ho.out);
-  const pdfZip = jalan(['--kode', 'BM', '--pdf', '--zip']);
-  cek('--pdf bersama --zip ditolak', pdfZip.kode === 1 && /--pdf tidak bisa bersama --zip/.test(pdfZip.out));
+  const pdfSaja = jalan(['--tingkat', 'A', '--kode', 'BM', '--gabung', '--format', 'pdf', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'pdf')]);
+  const fPdf = path.join(tmp, 'pdf', 'materi-bm-tingkat-a.pdf');
+  cek('--format pdf: satu berkas .pdf sah, tanpa PowerPoint', pdfSaja.kode === 0 && /1 PDF/.test(pdfSaja.out) && existsSync(fPdf) && strFromU8(new Uint8Array(readFileSync(fPdf)).subarray(0, 5)) === '%PDF-', pdfSaja.out);
+  const pdfZip = jalan(['--tingkat', 'A', '--kode', 'BM', '--pdf', '--zip', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'pdfzip')]);
+  const isiPdfZip = existsSync(path.join(tmp, 'pdfzip', 'materi-bm-4-deck.zip')) ? Object.keys(unzipSync(new Uint8Array(readFileSync(path.join(tmp, 'pdfzip', 'materi-bm-4-deck.zip'))))) : [];
+  cek('--pdf --zip: .pptx dan .pdf berdampingan di folder materi', pdfZip.kode === 0 && isiPdfZip.length === 8 && isiPdfZip.filter((f) => f.endsWith('.pdf')).length === 4 && isiPdfZip.every((f) => f.startsWith('Tingkat A/05 BM - Bea Meterai/')), { out: pdfZip.out, isiPdfZip });
+  const pdfAcuan = jalan(['--tingkat', 'A', '--subtema', 'KUP::Banding, gugatan & PK', '--format', 'pdf', '--kepadatan', 'ringkas', '--out', path.join(tmp, 'pdfacuan')]);
+  cek('.pdf bertek acuan tanpa --setuju-acuan ditolak (KM2)', pdfAcuan.kode === 1 && /teks acuan LatihUKP/.test(pdfAcuan.out), pdfAcuan.out);
+  const fmtSalah = jalan(['--format', 'docx']);
+  cek('format di luar pptx, pdf, json ditolak', fmtSalah.kode === 1 && /format tidak dikenal: docx/.test(fmtSalah.out));
+  cek('job buatmateri menerima format pdf', new RegExp(office.pekerjaan.find((p: { id: string }) => p.id === 'buatmateri').parameter.format.pola).test('pptx,pdf,json'));
   const jobMateri = office.pekerjaan.find((p: { id: string }) => p.id === 'buatmateri');
   cek('job buatmateri memuat parameter handout dan pdf', !!jobMateri.parameter.handout && !!jobMateri.parameter.pdf && JSON.stringify(jobMateri.perintah).includes('--handout') && JSON.stringify(jobMateri.perintah).includes('--pdf'));
   const silSalah = jalan(['--kode', 'PPN', '--silabus']);

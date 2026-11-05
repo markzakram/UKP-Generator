@@ -6,7 +6,7 @@ Generator paket soal Uji Kompetensi Perpajakan (UKP) Tingkat A, B, C, ditambah g
 
 - `data/` hasil impor yang dibundel: `ukp-bank.json`, `ukp-rules.json`, `ukp-mapping.json`, `ukp-parameter.json`, `ukp-konteks.json`, `ukp-jebakan.json`. Disalin ke `public/data/` oleh `npm run import:data` supaya browser bisa memuatnya.
 - `lib/` logika murni tanpa React (bisa dipakai browser dan CLI): `generate.ts`, `blueprint.ts`, `replace.ts`, `quality.ts`, `models/`, `export/`, `remedial.ts` (saran remedial dan paket latihan), `cadangan.ts`, `storage.ts` (khusus browser).
-- `lib/materi/` mesin deck materi: `naskah.ts` (format naskah), `metrik.ts` (lebar huruf Poppins), `tata-letak/` (pola P1–P16 → kotak berposisi), `pptx.ts` (penulis .pptx), `cek.ts` (pemeriksaan), `telaah.ts`, `silabus.ts` (silabus per tingkat), `handout.ts` (handout peserta), `jalur.ts` (hierarki unduhan Tingkat / Materi / Subtema).
+- `lib/materi/` mesin deck materi: `naskah.ts` (format naskah), `metrik.ts` (lebar huruf Poppins), `tata-letak/` (pola P1–P16 → kotak berposisi), `pptx.ts` (penulis .pptx), `pdf.ts` (penulis .pdf tanpa PowerPoint), `cek.ts` (pemeriksaan), `telaah.ts`, `silabus.ts` (silabus per tingkat), `handout.ts` (handout peserta), `jalur.ts` (hierarki unduhan Tingkat / Materi / Subtema).
 - `assets/materi/` template sumber, paket dasar `dasar.pptx` (dibuat `npm run materi:dasar`, juga disalin ke `public/materi/`), dan `metrik-poppins.json`.
 - `components/` dan `app/` tampilan desain B+ (PRD bagian 18; tab Materi: PRD-Materi bagian 19).
 - `data/ukp-kasus/` bank soal orisinal (ditulis tim, bukan acuan); `data/ukp-tulis.json` teks tulis ulang materi.

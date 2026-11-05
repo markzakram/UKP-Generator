@@ -544,3 +544,23 @@ Permintaan user: bawaan lingkup Tingkat dan bentuk Per subtema, opsi unduh semua
 | Silabus: kolom baru jalur deck per subtema di .zip, karena kolom Deck merujuk deck gabungan yang bukan bawaan unduhan | Ditambahkan |
 | verify:materi 201; verify 137; typecheck; build | Lulus |
 
+## Unduh materi sebagai PDF (5 Nov 2026)
+
+Permintaan user: pilihan unduh materi tidak hanya .pptx, tetapi juga .pdf, dengan lebar paling besar 16. Ditafsirkan sebagai halaman 16 × 9 inci (rasio slide sama); ukuran ada di satu konstanta `HALAMAN_PDF`. Situs Vercel tidak punya PowerPoint, jadi `lib/materi/pdf.ts` menggambar kotak hasil tata letak sebagai vektor dengan jsPDF, sama di browser dan CLI. `scripts/materi-pdf.ps1` (R9) dihapus; `--pdf` kini memakai penulis ini.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| Banding dengan ekspor PDF PowerPoint untuk deck yang sama (BM gabungan 71 halaman, PPN 25 halaman): baris sama persis 1.157 dari 1.170 dan 410 dari 417, jumlah halaman sama, selisih posisi median mendekati 0 (terbesar 1,4 pt horizontal di kanvas 1440) | Lulus |
+| Baca visual berdampingan: sampul, ikhtisar, tabel, konsep, kuis, rumus, gradien, bayangan, ikon | Lulus |
+| Teks miring bergeser keluar dari kotak karena matriks kemiringan ikut mengalikan posisi Y | Diperbaiki |
+| Gradien judul kurang kontras: PowerPoint merentangkannya sepanjang teks, bukan sepanjang kotak | Diperbaiki |
+| Garis dasar lebih rendah sekitar 5% ukuran huruf: dikalibrasi ke 0,755 × tinggi baris | Diperbaiki |
+| Baris putus lebih awal karena cadangan lebar pengukur: cadangan hanya untuk PowerPoint, di PDF lebar huruf pasti | Diperbaiki |
+| `→` (737 kali), `↔`, dan `Σ` tidak ada di Poppins: digambar dengan font Symbol bawaan PDF, tampil benar dan `→` bisa dicari. Semua huruf di 69 deck (standar dan lengkap) bisa digambar | Lulus (`verify:materi`) |
+| PDF: satu halaman per slide termasuk lanjutan, MediaBox 1152 × 648 pt, Poppins Regular dan Bold tertanam, ToUnicode ada, foto latar tertanam sekali, slide tersembunyi tidak ikut, 71 halaman 2,83 MB | Lulus (`verify:materi`) |
+| Draf internal: PDF tidak punya catatan pembicara, jadi tanda tampil di setiap halaman dan di properti berkas; hilang setelah deck ditelaah. Dialog KM2 berlaku untuk .pdf; CLI menolak tanpa `--setuju-acuan` | Lulus |
+| CLI: `--format pdf` satu berkas sah; `--pdf --zip` .pptx dan .pdf berdampingan di folder materi; format lain ditolak; job `buatmateri` menerima pdf | Lulus |
+| Tab Materi: format jadi pilihan yang bisa digabung (.pptx, .pdf, Naskah .json), format terakhir tidak bisa dikosongkan, nilai lama tersimpan tetap terbaca; tombol .pdf di bilah bawah | Lulus (browser) |
+| Browser, build produksi: satu deck .pdf 22 halaman 2,64 MB 1,3 detik; handout .pdf 6 halaman; Tingkat A .pptx + .pdf 68 berkas 174 MB 42 detik; Tingkat C .pptx + .pdf 138 berkas 354 MB 92 detik tanpa galat | Lulus (unduhan dicegat) |
+| verify:materi 218; verify 137; verify:export 52; verify:quality 40; typecheck; build | Lulus |
+

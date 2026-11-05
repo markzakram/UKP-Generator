@@ -2,7 +2,6 @@
 // Contoh: npm run materi -- --tingkat A --kode PPN --setuju-acuan --out output/materi-ppn
 //         npm run materi -- --tingkat B --gabung --setuju-acuan   (satu deck per materi Tingkat B)
 //         npm run materi -- --tingkat A --silabus --menit-pertemuan 90   (silabus .xlsx per tingkat)
-import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { hariIni, TINGKAT, URUTAN_KODE } from '../lib/config';
@@ -11,6 +10,7 @@ import { slug } from '../lib/export/common';
 import { zip } from '../lib/export/unduh';
 import { periksaPaket, periksaTataLetak } from '../lib/materi/cek';
 import { naskahHandout } from '../lib/materi/handout';
+import { tulisPdf } from '../lib/materi/pdf';
 import { hierarkiDeck, jalurBerkasDeck, namaDeckGabungan, type JenisBerkasDeck } from '../lib/materi/jalur';
 import { adaTeksAcuan } from '../lib/materi/naskah';
 import { tulisPptx } from '../lib/materi/pptx';
@@ -31,11 +31,11 @@ const BANTUAN = `Pemakaian: npm run materi -- [opsi]
   --sumber-soal baru|bank    contoh soal dari model & orisinal (bawaan) atau boleh bank acuan LatihUKP
   --tanggal YYYY-MM-DD       tanggal acuan aturan (bawaan hari ini)
   --seed TEKS                bawaan MATERI-01
-  --format pptx,json         pptx (deck) dan/atau json (naskah); bawaan pptx
+  --format pptx,pdf,json     pptx (deck), pdf (16 x 9 inci, tanpa catatan pembicara), json (naskah); dipisah koma; bawaan pptx
   --zip                      bungkus semua berkas menjadi satu .zip
                              lebih dari satu berkas ditulis berhierarki: Tingkat / Materi / Subtema
   --handout                  .pptx versi peserta: rangkuman, rumus, dan kuis tanpa catatan pembicara (nama berkas -handout)
-  --pdf                      simpan juga PDF setiap .pptx lewat PowerPoint (Windows dengan PowerPoint; tidak bersama --zip)
+  --pdf                      tambahkan pdf ke --format (tanpa PowerPoint, sama dengan unduhan tab Materi)
   --setuju-acuan             izinkan .pptx yang memuat teks acuan LatihUKP, diberi tanda Draf internal (PRD-Materi KM2)
   --daftar                   tampilkan subtema dalam lingkup tanpa menulis berkas
   --silabus                  silabus per tingkat (.xlsx): deck gabungan per materi, durasi dari jumlah slide, dibagi ke pertemuan
@@ -62,17 +62,14 @@ const jumlahKuis = Number(pilihan('--kuis', ['0', '3', '5'], '3'));
 const tanggalAcuan = ambil('--tanggal') ?? hariIni();
 if (!/^\d{4}-\d{2}-\d{2}$/.test(tanggalAcuan)) gagal('--tanggal harus YYYY-MM-DD');
 const format = (ambil('--format') ?? 'pptx').split(',').map((s) => s.trim());
-for (const f of format) if (!['pptx', 'json'].includes(f)) gagal('format tidak dikenal: ' + f + ' (pptx atau json)');
+for (const f of format) if (!['pptx', 'pdf', 'json'].includes(f)) gagal('format tidak dikenal: ' + f + ' (pptx, pdf, atau json)');
 const kode = ambil('--kode') ? ambil('--kode')!.split(',').map((s) => s.trim().toUpperCase()) as Kode[] : [];
 for (const k of kode) if (!URUTAN_KODE.includes(k)) gagal('kode materi tidak dikenal: ' + k);
 const subtemaDiminta = (ambil('--subtema') ?? '').split(';').map((s) => s.trim()).filter(Boolean);
 const hanyaBaru = args.includes('--hanya-baru');
 const gabung = args.includes('--gabung');
 const handout = args.includes('--handout');
-const pdf = args.includes('--pdf');
-if (pdf && args.includes('--zip')) gagal('--pdf tidak bisa bersama --zip; PDF ditulis di sebelah .pptx');
-if (pdf && !format.includes('pptx')) gagal('--pdf membutuhkan --format pptx');
-if (pdf && process.platform !== 'win32') gagal('--pdf hanya di Windows dengan PowerPoint terpasang');
+if (args.includes('--pdf') && !format.includes('pdf')) format.push('pdf');
 if (hanyaBaru && (kode.length || subtemaDiminta.length)) gagal('--hanya-baru hanya untuk lingkup tingkat (tanpa --kode dan --subtema)');
 const lingkup = subtemaDiminta.length ? 'subtema' : kode.length ? 'materi' : 'tingkat';
 const silabus = args.includes('--silabus');
@@ -128,22 +125,24 @@ function main() {
     if (berhierarki) return jalurBerkasDeck(hierarki, k, sub, jenis);
     if (sub === null) return namaDeckGabungan(k, tingkat, tambahan, jenis);
     const dasar = slug(k) + '-' + slug(sub);
-    return jenis === 'naskah' ? 'naskah-' + dasar + '.json' : 'materi-' + dasar + (jenis === 'handout' ? '-handout' : '') + '.pptx';
+    return jenis === 'naskah' ? 'naskah-' + dasar + '.json' : 'materi-' + dasar + (jenis.startsWith('handout') ? '-handout' : '') + (jenis.endsWith('pdf') ? '.pdf' : '.pptx');
   };
   const isiBerkas: Record<string, Uint8Array> = {};
   const laporan: unknown[] = [];
   const galat: string[] = [];
-  let slide = 0, draf = 0, meluap = 0;
+  let slide = 0, draf = 0, meluap = 0, jumlahPdf = 0;
   for (const g of kelompok) {
     const nama1 = g.subtema.map((s) => s.subtema);
     const peng: PengaturanMateri = { ...PENGATURAN_MATERI_AWAL, kode: g.kode, subtema: gabung ? '' : nama1[0], gabung: gabung ? nama1 : undefined, tingkat, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat, seed: ambil('--seed') ?? PENGATURAN_MATERI_AWAL.seed };
     try {
       const naskah = gabung ? susunNaskahMateri(data, peng, nama1) : susunNaskah(data, peng);
-      const hasil = handout ? tulisPptx(naskahHandout(naskah), dasar, { tanpaCatatan: true }) : tulisPptx(naskah, dasar);
+      const isiDeck = handout ? naskahHandout(naskah) : naskah;
+      const hasil = tulisPptx(isiDeck, dasar, { tanpaCatatan: handout });
       const tata = periksaTataLetak(hasil.slides);
       const paket = periksaPaket(hasil.berkas);
       const sub = gabung ? null : nama1[0];
       if (format.includes('pptx')) isiBerkas[namaKeluaran(g.kode, sub, handout ? 'handout' : 'pptx')] = hasil.berkas;
+      if (format.includes('pdf')) { isiBerkas[namaKeluaran(g.kode, sub, handout ? 'handout-pdf' : 'pdf')] = tulisPdf(isiDeck, dasar).berkas; jumlahPdf++; }
       if (format.includes('json')) isiBerkas[namaKeluaran(g.kode, sub, 'naskah')] = new TextEncoder().encode(JSON.stringify(naskah, null, 2));
       slide += hasil.slides.length;
       meluap += tata.length;
@@ -152,8 +151,8 @@ function main() {
     } catch (e) { galat.push(g.kode + (gabung ? '' : '::' + nama1[0]) + ': ' + (e as Error).message); }
   }
   if (!laporan.length) gagal('tidak ada deck yang bisa disusun. ' + galat.join(' · '));
-  // KM2: .pptx yang memuat teks acuan LatihUKP butuh persetujuan, sama dengan dialog di tab Materi.
-  if (format.includes('pptx') && draf && !args.includes('--setuju-acuan')) {
+  // KM2: .pptx dan .pdf yang memuat teks acuan LatihUKP butuh persetujuan, sama dengan dialog di tab Materi.
+  if ((format.includes('pptx') || format.includes('pdf')) && draf && !args.includes('--setuju-acuan')) {
     gagal(draf + ' dari ' + laporan.length + ' deck memuat teks acuan LatihUKP yang belum ditelaah (Draf internal, PRD-Materi KM2). Tambahkan --setuju-acuan untuk penggunaan internal, atau pakai --format json untuk naskah saja.');
   }
 
@@ -168,26 +167,15 @@ function main() {
   };
   tulis('laporan.json', JSON.stringify({ pengaturan: { tingkat, lingkup: label, kepadatan, sumberSoal, jumlahSoal, jumlahKuis, tanggalAcuan, dibuat, format }, deck: laporan, gagal: galat }, null, 2));
   const jumlahDeck = laporan.length;
-  let jumlahPdf = 0;
   if (args.includes('--zip')) {
-    // .pptx sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
+    // .pptx dan .pdf sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
     zip(isiBerkas, 0).then((z) => {
       tulis(namaDasar + '-' + jumlahDeck + '-deck.zip', z);
       selesai();
     }).catch((e: Error) => gagal(e.message));
   } else {
     for (const [nama, isi] of Object.entries(isiBerkas)) tulis(nama, isi);
-    if (pdf) buatPdf();
     selesai();
-  }
-
-  // PDF lewat PowerPoint (scripts/materi-pdf.ps1); berkas PDF ditulis di sebelah setiap .pptx.
-  function buatPdf() {
-    let keluaran = '';
-    try { keluaran = execFileSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join('scripts', 'materi-pdf.ps1'), out], { encoding: 'utf8' }); }
-    catch (e) { gagal('PDF gagal dibuat lewat PowerPoint: ' + ((e as { stdout?: string }).stdout ?? (e as Error).message).trim()); }
-    for (const b of keluaran.split(/\r?\n/)) { const m = b.match(/^BERKAS -> (.+)$/); if (m) ditulis.push(m[1].trim()); }
-    jumlahPdf = (keluaran.match(/^BERKAS -> /gm) ?? []).length;
   }
 
   function selesai() {

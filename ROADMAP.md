@@ -58,6 +58,7 @@
 - [ ] Jadikan repositori private dan putuskan pembatasan akses situs bila di-deploy publik (dikerjakan pemilik repo)
 - [x] QC akhir R1–R12: 554 cek, build, audit 0, render 138 deck 0 meluap (3 Nov 2026)
 - [x] Cakupan deck: bawaan lingkup Tingkat dan Per subtema, Unduh semua, .zip berhierarki Tingkat / Materi / Subtema (4 Nov 2026)
+- [x] Unduh materi sebagai .pdf di tab Materi dan CLI, tanpa PowerPoint (5 Nov 2026)
 - [ ] Tulis ulang materi lain (KUP, OP, PP, PPN, PBB, AKT, BDN, BTI, INT) di `data/ukp-tulis.json`
 - [x] Bank orisinal 56 soal di 10 materi; tryout tanpa soal acuan memenuhi target K4 (A 7, B 8, C 10 paket) (R5, 3 Nov 2026)
 - [ ] Soal orisinal untuk 4 subtema yang masih kosong: OP NPWP & pendaftaran, PP Tata cara penyetoran & pelaporan, PBB Pendaftaran/SPOP/SPPT, AKT Bank & lembaga pembiayaan

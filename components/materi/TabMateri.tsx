@@ -4,7 +4,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { periksaTataLetak } from '@/lib/materi/cek';
 import { aturSlide, bacaNaskah, buatDeck, idDeck, idGabungan, kembalikanSlide, rencanaDeck, suntingSlide, tandaiTelaah, telaahSlide, terapkanLembarTelaah, urungkan, type DeckMateri, type PengaturanIsiDeck } from '@/lib/materi/deck';
-import { folderTingkat, hierarkiDeck, jalurBerkasDeck } from '@/lib/materi/jalur';
+import { folderTingkat, hierarkiDeck, jalurBerkasDeck, type JenisBerkasDeck } from '@/lib/materi/jalur';
 import { bacaLembarTelaah, LABEL_TELAAH, lembarTelaah, perluTelaah, ringkasTelaah } from '@/lib/materi/telaah';
 import type { SlideJadi } from '@/lib/materi/kotak';
 import { adaTeksAcuan, NAMA_POLA, type AsalBlok, type SlideNaskah } from '@/lib/materi/naskah';
@@ -56,8 +56,10 @@ const muatDasar = () => (dasarCache ??= fetch('/materi/dasar.pptx').then((r) => 
   return r.arrayBuffer();
 }).then((b) => new Uint8Array(b)).catch((e) => { dasarCache = null; throw e; }));
 
-type FormatEkspor = 'pptx' | 'json' | 'keduanya';
-const LABEL_FORMAT: Record<FormatEkspor, string> = { pptx: '.pptx', json: 'naskah .json', keduanya: '.pptx + naskah .json' };
+type FormatBerkas = 'pptx' | 'pdf' | 'json';
+const URUT_FORMAT: FormatBerkas[] = ['pptx', 'pdf', 'json'];
+const LABEL_FORMAT: Record<FormatBerkas, string> = { pptx: '.pptx', pdf: '.pdf', json: 'naskah .json' };
+const labelFormat = (f: FormatBerkas[]) => URUT_FORMAT.filter((x) => f.includes(x)).map((x) => LABEL_FORMAT[x]).join(' + ');
 
 const namaBerkas = (d: DeckMateri, ext: string) => d.id.startsWith('gabung:')
   ? `materi-${slug(d.naskah.kode ?? 'impor')}-tingkat-${(d.naskah.tingkat ?? '').toLowerCase()}${d.id.endsWith('+baru') ? '-tambahan' : ''}.${ext}`
@@ -79,9 +81,15 @@ const KUNCI_CAKUPAN = 'ukp-materi-cakupan-v1';
 const CAKUPAN_BAWAAN = {
   tingkat: 'A' as Tingkat, kode: 'PP' as Kode, lingkup: 'tingkat' as Lingkup, hanyaBaru: false, bentuk: 'subtema' as 'subtema' | 'materi',
   kepadatan: PENGATURAN_MATERI_AWAL.kepadatan, sumberSoal: 'baru' as SumberSoalMateri, jumlahSoal: PENGATURAN_MATERI_AWAL.jumlahSoal, jumlahKuis: PENGATURAN_MATERI_AWAL.jumlahKuis,
-  formatEkspor: 'pptx' as FormatEkspor, isiEkspor: 'lengkap' as IsiEkspor,
+  formatEkspor: ['pptx'] as FormatBerkas[], isiEkspor: 'lengkap' as IsiEkspor,
 };
 type Cakupan = typeof CAKUPAN_BAWAAN;
+/** Daftar format tersimpan; nilai lama berupa satu kata (pptx, json, keduanya) ikut dibaca. */
+function formatTersimpan(v: unknown, awal: FormatBerkas[]): FormatBerkas[] {
+  const lama: Record<string, FormatBerkas[]> = { pptx: ['pptx'], json: ['json'], keduanya: ['pptx', 'json'] };
+  const f = Array.isArray(v) ? URUT_FORMAT.filter((x) => v.includes(x)) : lama[String(v)] ?? [];
+  return f.length ? f : awal;
+}
 function bacaCakupan(): Cakupan {
   const b = CAKUPAN_BAWAAN;
   try {
@@ -92,7 +100,7 @@ function bacaCakupan(): Cakupan {
       tingkat: pilih(s.tingkat, TINGKAT, b.tingkat), kode: pilih(s.kode, URUTAN_KODE, b.kode), lingkup: pilih<Lingkup>(s.lingkup, ['tingkat', 'materi', 'subtema'], b.lingkup), hanyaBaru: s.hanyaBaru === true,
       bentuk: pilih<Cakupan['bentuk']>(s.bentuk, ['subtema', 'materi'], b.bentuk), kepadatan: pilih<Kepadatan>(s.kepadatan, ['ringkas', 'standar', 'lengkap'], b.kepadatan),
       sumberSoal: pilih<SumberSoalMateri>(s.sumberSoal, ['baru', 'bank'], b.sumberSoal), jumlahSoal: pilih(s.jumlahSoal, [0, 1, 2], b.jumlahSoal), jumlahKuis: pilih(s.jumlahKuis, [0, 3, 5], b.jumlahKuis),
-      formatEkspor: pilih<FormatEkspor>(s.formatEkspor, ['pptx', 'json', 'keduanya'], b.formatEkspor), isiEkspor: pilih<IsiEkspor>(s.isiEkspor, ['lengkap', 'handout'], b.isiEkspor),
+      formatEkspor: formatTersimpan(s.formatEkspor, b.formatEkspor), isiEkspor: pilih<IsiEkspor>(s.isiEkspor, ['lengkap', 'handout'], b.isiEkspor),
     };
   } catch { return b; }
 }
@@ -140,8 +148,8 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
   const [dipilih, setDipilih] = useState<string | null>(null);
   const [keJadi, setKeJadi] = useState(0);
   const [besar, setBesar] = useState(false);
-  const [dialog, setDialog] = useState<null | { jenis: 'k2'; daftar: DeckMateri[]; format: FormatEkspor } | { jenis: 'timpa'; ids: string[] }>(null);
-  const [formatEkspor, setFormatEkspor] = useState<FormatEkspor>(awal.formatEkspor);
+  const [dialog, setDialog] = useState<null | { jenis: 'k2'; daftar: DeckMateri[]; format: FormatBerkas[] } | { jenis: 'timpa'; ids: string[] }>(null);
+  const [formatEkspor, setFormatEkspor] = useState<FormatBerkas[]>(awal.formatEkspor);
   const [isiEkspor, setIsiEkspor] = useState<IsiEkspor>(awal.isiEkspor);
   const [saringSlide, setSaringSlide] = useState<'semua' | 'belum' | 'ubah'>('semua');
   const [penelaah, setPenelaah] = useState(() => { try { return typeof window === 'undefined' ? '' : localStorage.getItem(KUNCI_PENELAAH) ?? ''; } catch { return ''; } });
@@ -277,37 +285,39 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
 
   /**
    * Unduh deck dalam format terpilih. Satu berkas langsung; lebih dari satu berkas dibungkus .zip berhierarki
-   * Tingkat / Materi / Subtema. .pptx bertek acuan meminta konfirmasi Draf internal (KM2).
+   * Tingkat / Materi / Subtema. .pptx dan .pdf bertek acuan meminta konfirmasi Draf internal (KM2).
    */
-  const unduhDeck = async (daftar: DeckMateri[], setuju: boolean, format: FormatEkspor = formatEkspor) => {
+  const unduhDeck = async (daftar: DeckMateri[], setuju: boolean, format: FormatBerkas[] = formatEkspor) => {
     if (!daftar.length) return kabar('Belum ada deck untuk diunduh.', true);
-    const pakaiPptx = format !== 'json';
-    const draf = pakaiPptx ? daftar.filter((d) => adaTeksAcuan(d.naskah) && d.status !== 'telaah') : [];
+    const pakaiDeck = format.includes('pptx') || format.includes('pdf');
+    const draf = pakaiDeck ? daftar.filter((d) => adaTeksAcuan(d.naskah) && d.status !== 'telaah') : [];
     if (draf.length && !setuju) { setDialog({ jenis: 'k2', daftar, format }); return; }
     setSibuk(true);
     try {
-      const dasar = pakaiPptx ? await muatDasar() : new Uint8Array();
+      const dasar = pakaiDeck ? await muatDasar() : new Uint8Array();
+      const modulPdf = format.includes('pdf') ? await import('@/lib/materi/pdf') : null;
       const semuaGabung = daftar.every((d) => d.id.startsWith('gabung:'));
       const h = hierarkiDeck(data, tingkat, tanggalAcuan, tambahan);
-      const jalur = (d: DeckMateri, jenis: 'pptx' | 'handout' | 'naskah') => jalurBerkasDeck(h, d.naskah.kode ?? 'impor', d.id.startsWith('gabung:') ? null : d.naskah.subtema ?? d.judul, jenis);
-      const handout = pakaiPptx && isiEkspor === 'handout';
+      const jalur = (d: DeckMateri, jenis: JenisBerkasDeck) => jalurBerkasDeck(h, d.naskah.kode ?? 'impor', d.id.startsWith('gabung:') ? null : d.naskah.subtema ?? d.judul, jenis);
+      const handout = pakaiDeck && isiEkspor === 'handout';
+      const tunggal = (d: DeckMateri, ext: string) => (handout ? namaBerkas(d, ext).replace('.' + ext, '-handout.' + ext) : namaBerkas(d, ext));
       const berkas: { nama: string; tunggal: string; isi: Uint8Array; mime: string }[] = [];
       for (const [i, d] of daftar.entries()) {
         // Jeda per deck supaya kemajuan tampil; puluhan deck butuh belasan detik.
         if (daftar.length > 1) { setKemajuan(`${i + 1}/${daftar.length}`); await new Promise((r) => setTimeout(r, 0)); }
         // Handout peserta (R9): rangkuman, rumus, dan kuis tanpa catatan pembicara; naskah .json tetap lengkap.
-        if (pakaiPptx) berkas.push(handout
-          ? { nama: jalur(d, 'handout'), tunggal: namaBerkas(d, 'pptx').replace(/\.pptx$/, '-handout.pptx'), isi: tulisPptx(naskahHandout(d.naskah), dasar, { ditelaah: d.status === 'telaah', tanpaCatatan: true }).berkas, mime: MIME.pptx }
-          : { nama: jalur(d, 'pptx'), tunggal: namaBerkas(d, 'pptx'), isi: tulisPptx(d.naskah, dasar, { ditelaah: d.status === 'telaah' }).berkas, mime: MIME.pptx });
-        if (format !== 'pptx') berkas.push({ nama: jalur(d, 'naskah'), tunggal: namaNaskah(d), isi: new TextEncoder().encode(JSON.stringify(d.naskah, null, 2)), mime: MIME.json });
+        const naskah = handout ? naskahHandout(d.naskah) : d.naskah, ditelaah = d.status === 'telaah';
+        if (format.includes('pptx')) berkas.push({ nama: jalur(d, handout ? 'handout' : 'pptx'), tunggal: tunggal(d, 'pptx'), isi: tulisPptx(naskah, dasar, { ditelaah, tanpaCatatan: handout }).berkas, mime: MIME.pptx });
+        if (modulPdf) berkas.push({ nama: jalur(d, handout ? 'handout-pdf' : 'pdf'), tunggal: tunggal(d, 'pdf'), isi: modulPdf.tulisPdf(naskah, dasar, { ditelaah }).berkas, mime: MIME.pdf });
+        if (format.includes('json')) berkas.push({ nama: jalur(d, 'naskah'), tunggal: namaNaskah(d), isi: new TextEncoder().encode(JSON.stringify(d.naskah, null, 2)), mime: MIME.json });
       }
       const namaZip = (lingkup === 'tingkat' ? `materi-tingkat-${tingkat.toLowerCase()}${tambahan ? '-tambahan' : ''}` : `materi-${slug(kode)}`)
-        + (semuaGabung ? '-per-materi' : '') + `-${daftar.length}-deck` + (format === 'json' ? '-naskah' : '');
+        + (semuaGabung ? '-per-materi' : '') + `-${daftar.length}-deck` + (pakaiDeck ? '' : '-naskah');
       if (berkas.length === 1) unduh(berkas[0].isi, berkas[0].tunggal, berkas[0].mime);
-      // .pptx sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
-      else unduh(await zip(Object.fromEntries(berkas.map((b) => [b.nama, b.isi])), pakaiPptx ? 0 : 6), namaZip + '.zip', MIME.zip);
+      // .pptx dan .pdf sudah terkompresi, jadi .zip cukup menyimpan tanpa kompresi ulang.
+      else unduh(await zip(Object.fromEntries(berkas.map((b) => [b.nama, b.isi])), pakaiDeck ? 0 : 6), namaZip + '.zip', MIME.zip);
       const lama = daftar.length > 1 ? daftar.filter((d) => rencanaDeck(d, pengaturanKini) === 'lama').length : 0;
-      kabar(`${daftar.length} deck diunduh (${handout ? 'handout peserta, ' : ''}${LABEL_FORMAT[format]}${berkas.length > 1 ? ', .zip' : ''})${draf.length ? `; ${draf.length} bertanda Draf internal` : ''}${lama ? `; ${lama} deck yang sudah disunting tetap memakai pengaturan lamanya` : ''}.`);
+      kabar(`${daftar.length} deck diunduh (${handout ? 'handout peserta, ' : ''}${labelFormat(format)}${berkas.length > 1 ? ', .zip' : ''})${draf.length ? `; ${draf.length} bertanda Draf internal` : ''}${lama ? `; ${lama} deck yang sudah disunting tetap memakai pengaturan lamanya` : ''}.`);
     } catch (e) { kabar((e as Error).message, true); }
     finally { setSibuk(false); setKemajuan(''); }
   };
@@ -340,11 +350,11 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
       unduhDeck(siap, false);
     }, 0);
   };
-  const jadiZip = (r: typeof rSemua) => r.ids.length * (formatEkspor === 'keduanya' ? 2 : 1) > 1;
+  const jadiZip = (r: typeof rSemua) => r.ids.length * formatEkspor.length > 1;
   const labelEkspor = (r: typeof rSemua, semua: boolean) => `${r.susun.length ? 'Susun & unduh' : 'Unduh'} ${semua ? 'semua' : 'yang dicentang'} · ${r.ids.length} deck${jadiZip(r) ? ' (.zip)' : ''}`;
-  const mb = Math.round(rUtama.ids.length * (formatEkspor === 'json' ? 0.05 : gabung ? 2.8 : 2.4));
+  const mb = Math.round(rUtama.ids.length * ((formatEkspor.includes('pptx') ? (gabung ? 2.8 : 2.4) : 0) + (formatEkspor.includes('pdf') ? 2.8 : 0) + (formatEkspor.includes('json') ? 0.05 : 0)));
   const ringkasEkspor = !rUtama.ids.length ? 'Tidak ada subtema dalam cakupan ini.'
-    : `${rUtama.ids.length} deck ${LABEL_FORMAT[formatEkspor]} → ${jadiZip(rUtama) ? `satu .zip: ${folderTingkat(tingkat, tambahan)} / materi${gabung ? '' : ' / subtema'}` : 'satu berkas'}, sekitar ${mb < 1 ? '< 1' : mb} MB.`
+    : `${rUtama.ids.length} deck ${labelFormat(formatEkspor)} → ${jadiZip(rUtama) ? `satu .zip: ${folderTingkat(tingkat, tambahan)} / materi${gabung ? '' : ' / subtema'}` : 'satu berkas'}, sekitar ${mb < 1 ? '< 1' : mb} MB.`
       + (rUtama.susun.length ? ` ${rUtama.susun.length} deck disusun dulu sesuai pengaturan.` : '')
       + (rUtama.lama ? ` ${rUtama.lama} deck yang sudah disunting dipakai apa adanya.` : '');
 
@@ -506,9 +516,17 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
             <button type="button" className="btn btn-besar" style={{ background: 'var(--tinta)', color: '#fff', borderColor: 'var(--tinta)' }} disabled={!dicentang.length || sibuk} onClick={() => susun(dicentang.map((s) => s.id), false)}>{sibuk ? 'Memproses…' : `Susun naskah · ${idDipilih.length} deck`}</button>
             <section className="ekspor-materi" aria-labelledby="mt-ekspor">
               <h3 id="mt-ekspor" className="label-kecil" style={{ margin: 0 }}>Ekspor</h3>
-              <Segmented label="Format" nilai={formatEkspor} ubah={setFormatEkspor} pilihan={[{ nilai: 'pptx', label: '.pptx', judul: 'Deck PowerPoint' }, { nilai: 'json', label: '.json', judul: 'Naskah .json (bisa diimpor lagi)' }, { nilai: 'keduanya', label: 'Keduanya', judul: '.pptx dan naskah .json' }]} />
-              <Segmented label="Isi .pptx" nilai={isiEkspor} ubah={setIsiEkspor} pilihan={[{ nilai: 'lengkap', label: 'Deck lengkap', judul: 'Semua slide beserta catatan pembicara' }, { nilai: 'handout', label: 'Handout peserta', judul: 'Versi ringkas untuk peserta: rangkuman, rumus, dan kuis, tanpa catatan pembicara' }]} />
-              <p className="kecil redup" style={{ margin: 0 }}>{ringkasEkspor}{isiEkspor === 'handout' ? ' Handout: rangkuman, rumus, dan kuis tanpa catatan pembicara. PDF lewat CLI --pdf (Windows dengan PowerPoint).' : ''}</p>
+              <fieldset className="tanpa-bingkai">
+                <legend className="label-kecil">Format berkas (boleh lebih dari satu)</legend>
+                <div className="chips" role="group" aria-label="Format berkas">
+                  {URUT_FORMAT.map((f) => (
+                    <button key={f} type="button" className="chip" aria-pressed={formatEkspor.includes(f)} title={f === 'pptx' ? 'Deck PowerPoint, bisa disunting, dengan catatan pembicara' : f === 'pdf' ? 'Siap dibagikan dan dicetak, 16 x 9 inci, tanpa catatan pembicara' : 'Naskah yang bisa diimpor lagi'}
+                      onClick={() => setFormatEkspor((x) => (!x.includes(f) ? [...x, f] : x.length > 1 ? x.filter((y) => y !== f) : x))}>{f === 'json' ? 'Naskah .json' : LABEL_FORMAT[f]}</button>
+                  ))}
+                </div>
+              </fieldset>
+              <Segmented label="Isi deck" nilai={isiEkspor} ubah={setIsiEkspor} pilihan={[{ nilai: 'lengkap', label: 'Lengkap', judul: 'Deck lengkap: semua slide' }, { nilai: 'handout', label: 'Handout', judul: 'Handout peserta: versi ringkas berisi rangkuman, rumus, dan kuis, tanpa catatan pembicara' }]} />
+              <p className="kecil redup" style={{ margin: 0 }}>{ringkasEkspor}{isiEkspor === 'handout' ? ' Handout: rangkuman, rumus, dan kuis tanpa catatan pembicara.' : ''}</p>
               <button type="button" className="btn btn-utama btn-besar" disabled={!rUtama.ids.length || sibuk} onClick={() => ekspor(rUtama)}>{sibuk ? `Memproses${kemajuan ? ' ' + kemajuan : ''}…` : labelEkspor(rUtama, !sebagian)}</button>
               {sebagian && <button type="button" className="btn" disabled={sibuk} onClick={() => ekspor(rSemua)}>{labelEkspor(rSemua, true)}</button>}
             </section>
@@ -689,7 +707,8 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
           <div className="mono kecil" style={{ color: 'var(--abu-2)' }}>{dicentang.length} subtema dipilih · {deckDipilih.length} deck tersusun · {totalSlide} slide · {nDraf} deck bertanda Draf internal</div>
           <div className="kanan">
             <button type="button" className="btn" disabled={!deck} onClick={unduhNaskah}>Naskah .json</button>
-            <button type="button" className="btn" disabled={!deck || sibuk} onClick={() => deck && unduhDeck([deck], false, 'pptx')}>Unduh deck ini .pptx</button>
+            <button type="button" className="btn" disabled={!deck || sibuk} onClick={() => deck && unduhDeck([deck], false, ['pptx'])}>Unduh deck ini .pptx</button>
+            <button type="button" className="btn" disabled={!deck || sibuk} onClick={() => deck && unduhDeck([deck], false, ['pdf'])}>.pdf</button>
             <button type="button" className="btn btn-utama btn-besar" disabled={!rUtama.ids.length || sibuk} onClick={() => ekspor(rUtama)}>{sibuk ? `Memproses${kemajuan ? ' ' + kemajuan : ''}…` : labelEkspor(rUtama, !sebagian)}</button>
           </div>
         </div>
@@ -702,7 +721,7 @@ export default function TabMateri({ data, tanggalAcuan, kabar, fokus, selesaiFok
         </>}>
           <p style={{ margin: 0 }}>{dialog.daftar.filter((d) => adaTeksAcuan(d.naskah) && d.status !== 'telaah').length} deck masih memuat slide berasal <b>teks acuan</b> LatihUKP yang belum ditulis ulang atau ditelaah (PRD-Materi KM2).</p>
           <ul className="kecil" style={{ margin: 0 }}>
-            <li>Berkas diberi tanda <b>Draf internal</b> di properti berkas dan catatan pembicara.</li>
+            <li>Berkas diberi tanda <b>Draf internal</b>: .pptx di properti berkas dan catatan pembicara, .pdf di properti berkas dan di setiap halaman.</li>
             <li>Jangan bagikan ke peserta sebelum slide acuan ditulis ulang, atau deck ditandai <b>Ditelaah</b>.</li>
           </ul>
         </Dialog>
